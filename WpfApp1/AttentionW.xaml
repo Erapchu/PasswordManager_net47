@@ -1,0 +1,27 @@
+﻿<Window x:Class="WpfApp1.AttentionW"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WpfApp1"
+        mc:Ignorable="d"
+        
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal" 
+        TextOptions.TextRenderingMode="Auto"        
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
+        
+        Title="Information" Height="180" Width="200" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
+            <TextBlock Name="InformationText" FontSize="16" TextWrapping="Wrap" Text="TextBlock" HorizontalAlignment="Left" Margin="0 0 0 20" VerticalAlignment="Center"/>
+        </Grid>
+        <Grid HorizontalAlignment="Right" VerticalAlignment="Bottom">
+            <Button Content="OK" HorizontalAlignment="Right" Margin="0 0 10 10" Width="75" Padding="4" IsDefault="True" Click="Button_Click" Height="32" VerticalAlignment="Bottom"/>
+        </Grid>
+    </Grid>
+</Window>
