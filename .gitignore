@@ -1,6 +1,6 @@
 
 .vs/
 
-/WpfApp1/obj/*
+obj/
 
-/WpfApp1/bin/*
+bin/
