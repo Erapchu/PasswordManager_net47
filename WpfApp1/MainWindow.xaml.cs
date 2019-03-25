@@ -29,7 +29,6 @@ namespace WpfApp1
             //System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.GetCultureInfo("De-DE");
             InitializeComponent();
             Authorization();
-
         }
 
         public List<int> SearchIndexes { get; set; }
