@@ -8,3 +8,7 @@
 \.vs/WpfApp1/v15/Server/sqlite3/storage\.ide-shm
 
 \.vs/WpfApp1/v15/Server/sqlite3/storage\.ide-wal
+
+/WpfApp1/obj/*
+
+/WpfApp1/bin/*
