@@ -1,10 +1,6 @@
 
-\.vs/WpfApp1/v15/\.suo
+.vs/
 
-\.vs/WpfApp1/v15/Server/sqlite3/db\.lock
+obj/
 
-\.vs/WpfApp1/v15/Server/sqlite3/storage\.ide
-
-\.vs/WpfApp1/v15/Server/sqlite3/storage\.ide-shm
-
-\.vs/WpfApp1/v15/Server/sqlite3/storage\.ide-wal
+bin/
