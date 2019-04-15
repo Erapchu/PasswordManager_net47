@@ -3,18 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.ComponentModel;
 
 namespace WpfApp1
 {
@@ -50,7 +41,7 @@ namespace WpfApp1
                 AuthText.Text = "Type your new password";
                 OKButtonAuth.Click -= OKButtonAuth_Click;
 
-                firstAuth = delegate(object sender, RoutedEventArgs e)
+                firstAuth = delegate (object sender, RoutedEventArgs e)
                 {
                     try
                     {
@@ -467,7 +458,7 @@ namespace WpfApp1
                 Application.Current.Resources.MergedDictionaries[3].Source = new Uri(Properties.Settings.Default.AccentColor);
             try
             {
-                if(EncryptDecrypt.Decrypt(MyDocuments + @"\passdata.dat", 4) != null)
+                if (EncryptDecrypt.Decrypt(MyDocuments + @"\passdata.dat", 4) != null)
                 {
                     MemoryStream stream = new MemoryStream(EncryptDecrypt.Decrypt(MyDocuments + @"\passdata.dat", 4));
                     using (BinaryReader br = new BinaryReader(stream))
@@ -504,12 +495,12 @@ namespace WpfApp1
             }
             AccountsList.Items.Clear();
             AllItems = AllItems.OrderBy(a => a.Name).ToList();
-            foreach(DataAccount da in AllItems)
+            foreach (DataAccount da in AllItems)
             {
                 AccountsList.Items.Add(da);
             }
         }
-        
+
         private void ToggleButton_Click(object sender, RoutedEventArgs e)
         {
             /*!!!!!!!!!!!!!!!!!new PaletteHelper().SetLightDark(true);
@@ -522,7 +513,7 @@ namespace WpfApp1
 
             if ((bool)toggleButton.IsChecked) Application.Current.Resources.MergedDictionaries[0].Source = new Uri("pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml", UriKind.RelativeOrAbsolute);
             else Application.Current.Resources.MergedDictionaries[0].Source = new Uri("pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Light.xaml", UriKind.RelativeOrAbsolute);
-            
+
             Properties.Settings.Default.DesignTheme = Application.Current.Resources.MergedDictionaries[0].Source.OriginalString;
             Properties.Settings.Default.Save();
         }
@@ -546,7 +537,7 @@ namespace WpfApp1
                     }
                 case 1:
                     {
-                        Application.Current.Resources.MergedDictionaries[3].Source = new Uri(String.Format(AccentColorString, "Blue"));                   
+                        Application.Current.Resources.MergedDictionaries[3].Source = new Uri(String.Format(AccentColorString, "Blue"));
                         break;
                     }
                 case 2:
@@ -740,7 +731,7 @@ namespace WpfApp1
             }
             else
             {
-                if(Properties.Settings.Default.PrimaryColor != string.Empty)
+                if (Properties.Settings.Default.PrimaryColor != string.Empty)
                     Application.Current.Resources.MergedDictionaries[2].Source = new Uri(Properties.Settings.Default.PrimaryColor);
                 OKButtonAuth.Command = DialogHost.CloseDialogCommand;
                 HintAssist.SetHint(PasswordAccount, Properties.Resources.CorrectPassword);
