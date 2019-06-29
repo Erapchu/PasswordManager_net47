@@ -21,13 +21,7 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_5D621CA32459928E9FAFBEF241988DD6"
-        "OwnerKey" = "8:_04F169995A164B3398A08D6B5C04AD0D"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_65E386C2857BBE4829769E6166334F13"
+        "MsmKey" = "8:_06D81C64AD4E14D5CD88A382600A23B0"
         "OwnerKey" = "8:_04F169995A164B3398A08D6B5C04AD0D"
         "MsmSig" = "8:_UNDEFINED"
         }
@@ -39,32 +33,38 @@
         }
         "Entry"
         {
-        "MsmKey" = "8:_E50596029F1F7D0D54F7C88C871BEDED"
+        "MsmKey" = "8:_AFA34D2B653AF9ED2D30B6BD629AB4B0"
+        "OwnerKey" = "8:_04F169995A164B3398A08D6B5C04AD0D"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_EDEEEC3220A97348333BF7528B87FB2B"
         "OwnerKey" = "8:_04F169995A164B3398A08D6B5C04AD0D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_E50596029F1F7D0D54F7C88C871BEDED"
-        "MsmSig" = "8:_UNDEFINED"
-        }
-        "Entry"
-        {
-        "MsmKey" = "8:_UNDEFINED"
         "OwnerKey" = "8:_04F169995A164B3398A08D6B5C04AD0D"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_65E386C2857BBE4829769E6166334F13"
+        "OwnerKey" = "8:_EDEEEC3220A97348333BF7528B87FB2B"
         "MsmSig" = "8:_UNDEFINED"
         }
         "Entry"
         {
         "MsmKey" = "8:_UNDEFINED"
-        "OwnerKey" = "8:_5D621CA32459928E9FAFBEF241988DD6"
+        "OwnerKey" = "8:_06D81C64AD4E14D5CD88A382600A23B0"
+        "MsmSig" = "8:_UNDEFINED"
+        }
+        "Entry"
+        {
+        "MsmKey" = "8:_UNDEFINED"
+        "OwnerKey" = "8:_AFA34D2B653AF9ED2D30B6BD629AB4B0"
         "MsmSig" = "8:_UNDEFINED"
         }
     }
@@ -162,51 +162,20 @@
         }
         "File"
         {
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_5D621CA32459928E9FAFBEF241988DD6"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_06D81C64AD4E14D5CD88A382600A23B0"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:MaterialDesignColors, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL"
                 "ScatterAssemblies"
                 {
-                    "_5D621CA32459928E9FAFBEF241988DD6"
+                    "_06D81C64AD4E14D5CD88A382600A23B0"
                     {
                     "Name" = "8:MaterialDesignColors.dll"
                     "Attributes" = "3:512"
                     }
                 }
             "SourcePath" = "8:MaterialDesignColors.dll"
-            "TargetName" = "8:"
-            "Tag" = "8:"
-            "Folder" = "8:_3276B12C91D74457A7BFEFD11C144166"
-            "Condition" = "8:"
-            "Transitive" = "11:FALSE"
-            "Vital" = "11:TRUE"
-            "ReadOnly" = "11:FALSE"
-            "Hidden" = "11:FALSE"
-            "System" = "11:FALSE"
-            "Permanent" = "11:FALSE"
-            "SharedLegacy" = "11:FALSE"
-            "PackageAs" = "3:1"
-            "Register" = "3:1"
-            "Exclude" = "11:FALSE"
-            "IsDependency" = "11:TRUE"
-            "IsolateTo" = "8:"
-            }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_65E386C2857BBE4829769E6166334F13"
-            {
-            "AssemblyRegister" = "3:1"
-            "AssemblyIsInGAC" = "11:FALSE"
-            "AssemblyAsmDisplayName" = "8:MaterialDesignThemes.Wpf, Version=2.5.0.1205, Culture=neutral, processorArchitecture=MSIL"
-                "ScatterAssemblies"
-                {
-                    "_65E386C2857BBE4829769E6166334F13"
-                    {
-                    "Name" = "8:MaterialDesignThemes.Wpf.dll"
-                    "Attributes" = "3:512"
-                    }
-                }
-            "SourcePath" = "8:MaterialDesignThemes.Wpf.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3276B12C91D74457A7BFEFD11C144166"
@@ -244,20 +213,51 @@
             "IsDependency" = "11:FALSE"
             "IsolateTo" = "8:"
             }
-            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_E50596029F1F7D0D54F7C88C871BEDED"
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_AFA34D2B653AF9ED2D30B6BD629AB4B0"
             {
             "AssemblyRegister" = "3:1"
             "AssemblyIsInGAC" = "11:FALSE"
             "AssemblyAsmDisplayName" = "8:System.Net.Http, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a"
                 "ScatterAssemblies"
                 {
-                    "_E50596029F1F7D0D54F7C88C871BEDED"
+                    "_AFA34D2B653AF9ED2D30B6BD629AB4B0"
                     {
                     "Name" = "8:System.Net.Http.dll"
                     "Attributes" = "3:512"
                     }
                 }
             "SourcePath" = "8:System.Net.Http.dll"
+            "TargetName" = "8:"
+            "Tag" = "8:"
+            "Folder" = "8:_3276B12C91D74457A7BFEFD11C144166"
+            "Condition" = "8:"
+            "Transitive" = "11:FALSE"
+            "Vital" = "11:TRUE"
+            "ReadOnly" = "11:FALSE"
+            "Hidden" = "11:FALSE"
+            "System" = "11:FALSE"
+            "Permanent" = "11:FALSE"
+            "SharedLegacy" = "11:FALSE"
+            "PackageAs" = "3:1"
+            "Register" = "3:1"
+            "Exclude" = "11:FALSE"
+            "IsDependency" = "11:TRUE"
+            "IsolateTo" = "8:"
+            }
+            "{9F6F8455-1EF1-4B85-886A-4223BCC8E7F7}:_EDEEEC3220A97348333BF7528B87FB2B"
+            {
+            "AssemblyRegister" = "3:1"
+            "AssemblyIsInGAC" = "11:FALSE"
+            "AssemblyAsmDisplayName" = "8:MaterialDesignThemes.Wpf, Version=2.5.1.1345, Culture=neutral, processorArchitecture=MSIL"
+                "ScatterAssemblies"
+                {
+                    "_EDEEEC3220A97348333BF7528B87FB2B"
+                    {
+                    "Name" = "8:MaterialDesignThemes.Wpf.dll"
+                    "Attributes" = "3:512"
+                    }
+                }
+            "SourcePath" = "8:MaterialDesignThemes.Wpf.dll"
             "TargetName" = "8:"
             "Tag" = "8:"
             "Folder" = "8:_3276B12C91D74457A7BFEFD11C144166"
@@ -342,15 +342,15 @@
         {
         "Name" = "8:Microsoft Visual Studio"
         "ProductName" = "8:Password Manager"
-        "ProductCode" = "8:{0EF7048F-FF16-437F-9D6E-02C354EB64EB}"
-        "PackageCode" = "8:{F23950B7-C6BF-42B5-9387-0083567FE44E}"
+        "ProductCode" = "8:{EAAFA31C-35EF-4475-867F-FA48BB0E60B6}"
+        "PackageCode" = "8:{DE2D70FC-D7F0-42AA-AC01-6C6CEFED6B66}"
         "UpgradeCode" = "8:{DAF1A9F7-7B04-42DF-918E-E330BE4152C2}"
         "AspNetVersion" = "8:4.0.30319.0"
         "RestartWWWService" = "11:FALSE"
         "RemovePreviousVersions" = "11:TRUE"
         "DetectNewerInstalledVersion" = "11:FALSE"
         "InstallAllUsers" = "11:FALSE"
-        "ProductVersion" = "8:1.0.3"
+        "ProductVersion" = "8:1.0.4"
         "Manufacturer" = "8:Erapchu Corporation"
         "ARPHELPTELEPHONE" = "8:"
         "ARPHELPLINK" = "8:"
