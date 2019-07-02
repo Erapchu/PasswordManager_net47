@@ -126,6 +126,9 @@
   <data name="AuthTextContent" xml:space="preserve">
     <value>Genehmigung</value>
   </data>
+  <data name="AuthTextNewPass" xml:space="preserve">
+    <value>Geben Sie ein neues Passwort ein</value>
+  </data>
   <data name="CancelButtonContent" xml:space="preserve">
     <value>Stornieren</value>
   </data>
@@ -161,6 +164,9 @@
   </data>
   <data name="NextToolTip" xml:space="preserve">
     <value>Nächster</value>
+  </data>
+  <data name="NoItemSelected" xml:space="preserve">
+    <value>Es wurde kein Element aus der Liste ausgewählt</value>
   </data>
   <data name="OtherHint" xml:space="preserve">
     <value>Andere</value>

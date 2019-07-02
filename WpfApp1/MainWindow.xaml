@@ -139,16 +139,14 @@
                                 <ColumnDefinition Width="auto"></ColumnDefinition>
                                 <ColumnDefinition Width="auto"></ColumnDefinition>
                             </Grid.ColumnDefinitions>
-                            <TextBlock VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" Margin="5 15 45 0" Text="{x:Static res:Resources.DarkMode}" FontSize="16"/>
-                            <ToggleButton VerticalAlignment="Center" Grid.Column="1" Grid.Row="0" Margin="50 15 0 0" x:Name="toggleButton" Style="{StaticResource MaterialDesignSwitchToggleButton}" Click="ToggleButton_Click"/>
+                            <TextBlock VerticalAlignment="Center" Margin="10 0 20 0" Grid.Column="0" Grid.Row="0" Text="{x:Static res:Resources.DarkMode}" FontSize="16"/>
+                            <ToggleButton VerticalAlignment="Center" Grid.Column="1" Grid.Row="0" x:Name="toggleButton" Style="{StaticResource MaterialDesignSwitchToggleButton}" Click="ToggleButton_Click"/>
                         
-                            <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Text="{x:Static res:Resources.AccentColor}" FontSize="16" Margin="5 15 40 0"/>
-                            <Button x:Name="AccentButton" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Width="35" Height="35" Margin="43 0 0 0" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" Click="AccentButton_Click"/>
+                            <TextBlock Grid.Column="0" Grid.Row="1" VerticalAlignment="Center" Text="{x:Static res:Resources.AccentColor}" FontSize="16" Margin="10 0 20 0"/>
+                            <Button x:Name="AccentButton" VerticalAlignment="Center" Grid.Row="1" Grid.Column="1" Width="35" Height="35" Style="{StaticResource MaterialDesignFloatingActionMiniAccentButton}" Click="AccentButton_Click"/>
                         
-                        
-                            <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Text="{x:Static res:Resources.PrimaryColor}" FontSize="16" Margin="5 15 34 0"/>
-                            <Button x:Name="PrimaryButton" Grid.Column="1" VerticalAlignment="Center" Grid.Row="2" Width="35" Height="35" Margin="43 0 0 0" Style="{StaticResource MaterialDesignFloatingActionMiniButton}" Click="PrimaryButton_Click"/>
-                        
+                            <TextBlock Grid.Column="0" Grid.Row="2" VerticalAlignment="Center" Text="{x:Static res:Resources.PrimaryColor}" FontSize="16" Margin="10 0 20 0"/>
+                            <Button x:Name="PrimaryButton" Grid.Column="1" VerticalAlignment="Center" Grid.Row="2" Width="35" Height="35" Style="{StaticResource MaterialDesignFloatingActionMiniButton}" Click="PrimaryButton_Click"/>
                         </Grid>
                         <Button CommandTarget="{Binding ElementName=SettingsDialog}"
                             Command="{x:Static materialDesign:DialogHost.CloseDialogCommand}" 

@@ -88,6 +88,15 @@ namespace WpfApp1.Properties {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на Type your new password.
+        /// </summary>
+        public static string AuthTextNewPass {
+            get {
+                return ResourceManager.GetString("AuthTextNewPass", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на Cancel.
         /// </summary>
         public static string CancelButtonContent {
@@ -192,6 +201,15 @@ namespace WpfApp1.Properties {
         public static string NextToolTip {
             get {
                 return ResourceManager.GetString("NextToolTip", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на No item selected from the list.
+        /// </summary>
+        public static string NoItemSelected {
+            get {
+                return ResourceManager.GetString("NoItemSelected", resourceCulture);
             }
         }
         
