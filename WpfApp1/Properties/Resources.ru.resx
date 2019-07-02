@@ -126,6 +126,9 @@
   <data name="AuthTextContent" xml:space="preserve">
     <value>Авторизация</value>
   </data>
+  <data name="AuthTextNewPass" xml:space="preserve">
+    <value>Введите новый пароль</value>
+  </data>
   <data name="CancelButtonContent" xml:space="preserve">
     <value>Отмена</value>
   </data>
@@ -161,6 +164,9 @@
   </data>
   <data name="NextToolTip" xml:space="preserve">
     <value>Следующий</value>
+  </data>
+  <data name="NoItemSelected" xml:space="preserve">
+    <value>Не выбран элемент из списка</value>
   </data>
   <data name="OtherHint" xml:space="preserve">
     <value>Другое</value>

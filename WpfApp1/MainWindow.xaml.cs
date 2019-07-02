@@ -38,7 +38,7 @@ namespace WpfApp1
 
             if (EncryptDecrypt.Decrypt(MyDocuments + @"\passdata.dat", 4) == null)
             {
-                AuthText.Text = "Type your new password";
+                AuthText.Text = Properties.Resources.AuthTextNewPass;
                 OKButtonAuth.Click -= OKButtonAuth_Click;
 
                 firstAuth = delegate (object sender, RoutedEventArgs e)
@@ -46,7 +46,7 @@ namespace WpfApp1
                     try
                     {
                         if (PasswordAccount.Password == string.Empty)
-                            throw new Exception("Your password is empty");
+                            throw new Exception(Properties.Resources.EmptyPassword);
                         CorrectPassword = PasswordAccount.Password;
                         using (BinaryWriter bw = new BinaryWriter(File.Open(MyDocuments + @"\passdata.dat", FileMode.Create)))
                         {
@@ -115,7 +115,7 @@ namespace WpfApp1
             else
             {
                 AttentionW win = new AttentionW();
-                win.InformationText.Text = "No item selected from the list.";
+                win.InformationText.Text = Properties.Resources.NoItemSelected;
                 win.ShowDialog();
             }
         }
@@ -142,15 +142,15 @@ namespace WpfApp1
             else
             {
                 AttentionW win = new AttentionW();
-                win.InformationText.Text = "No item selected from the list.";
+                win.InformationText.Text = Properties.Resources.NoItemSelected;
                 win.ShowDialog();
             }
         }
-
+        /// <summary>
+        /// Обновление индексов для поиска
+        /// </summary>
         private void UpdateIndexes()
         {
-            //Обновление индексов для поиска
-
             SearchIndexes = new List<int>();
             CurrentN = 0;
             if (SearchTextBox.Text != string.Empty)
@@ -187,18 +187,24 @@ namespace WpfApp1
             }
             IsUpdateIndex = true;
         }
-
+        /// <summary>
+        /// Индексация и настройка видимости кнопки для очистки
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            //Индексация и настройка видимости кнопки для очистки
             UpdateIndexes();
             if (SearchTextBox.Text != string.Empty) Clearbutton.Visibility = Visibility.Visible;
             else Clearbutton.Visibility = Visibility.Hidden;
         }
-
+        /// <summary>
+        /// Сохранение данных в файл
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SaveButton_Click(object sender, RoutedEventArgs e)
         {
-            //Сохранение данных в файл
             if (!IsSaved)
             {
                 MemoryStream stream = new MemoryStream();
@@ -226,10 +232,11 @@ namespace WpfApp1
         {
             SearchNext();
         }
-
+        /// <summary>
+        /// Переход к следующему элементу
+        /// </summary>
         private void SearchNext()
         {
-            //Переход к следующему элементу
             if (!IsUpdateIndex)
             {
                 UpdateIndexes();
@@ -252,10 +259,13 @@ namespace WpfApp1
                 label6.Text = string.Format("{0}/{1}", CurrentN + 1, SearchIndexes.Count);
             }
         }
-
+        /// <summary>
+        /// Переход к предыдущему элементу
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void PrevButton_Click(object sender, RoutedEventArgs e)
         {
-            //Переход к предыдущему элементу
             if (!IsUpdateIndex)
             {
                 UpdateIndexes();
@@ -278,19 +288,25 @@ namespace WpfApp1
                 label6.Text = string.Format("{0}/{1}", CurrentN + 1, SearchIndexes.Count);
             }
         }
-
+        /// <summary>
+        /// При нажатии кнопок в поисковом поле, если Enter, ищем следующий
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            //При нажатии кнопок в поисковом поле, если Enter, ищем следующий
             if (e.Key == Key.Enter)
             {
                 if (SearchIndexes.Count != 0) SearchNext();
             }
         }
-
+        /// <summary>
+        /// Применение изменений
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OKButton_Click(object sender, RoutedEventArgs e)
         {
-            //Применение изменений
             try
             {
                 if (NameTextBox.Text == string.Empty || LoginTextBox.Text == string.Empty || PasswordTextBox.Text == string.Empty)
@@ -314,7 +330,6 @@ namespace WpfApp1
                     AccountsList.Items.Remove(AccountsList.SelectedItem);   //Если изменяем
                     AccountsList.Items.Add(account);
                     Sorting();
-                    //Ищем элемент, который добавился и является отсортированным (т.е. выделение при добавлении и сортировке в listBox1 снимается)
                     FindCurrent(account);
                 }
                 IsSaved = false;
@@ -327,14 +342,17 @@ namespace WpfApp1
                 win.ShowDialog();
             }
         }
-
+        /// <summary>
+        /// Ищем элемент, который добавился и является отсортированным (т.е. выделение при добавлении и сортировке в listBox1 снимается)
+        /// </summary>
+        /// <param name="account"></param>
         private void FindCurrent(object account)
         {
-            foreach (object var in AccountsList.Items)
+            foreach (object @var in AccountsList.Items)
             {
-                if (var == account)
+                if (@var == account)
                 {
-                    AccountsList.SelectedItem = var;
+                    AccountsList.SelectedItem = @var;
                     AccountsList.ScrollIntoView(AccountsList.SelectedItem);
                     return;
                 }
