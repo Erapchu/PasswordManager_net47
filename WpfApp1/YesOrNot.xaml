@@ -18,7 +18,7 @@
         Title="Message" Height="180" Width="200" ResizeMode="NoResize" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock Margin="0 0 0 20" Name="textBlock" TextWrapping="Wrap" Text="Delete?" Height="21" FontSize="16"/>
+            <TextBlock Margin="0 0 0 20" Name="textBlock" TextWrapping="Wrap" Text="Text" Height="21" FontSize="16"/>
         </Grid>
         <Grid VerticalAlignment="Bottom" HorizontalAlignment="Right">
             <StackPanel Orientation="Horizontal">

@@ -94,6 +94,8 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
     </Compile>
+    <Compile Include="Saver.cs" />
+    <Compile Include="Search.cs" />
     <Compile Include="YesOrNot.xaml.cs">
       <DependentUpon>YesOrNot.xaml</DependentUpon>
     </Compile>

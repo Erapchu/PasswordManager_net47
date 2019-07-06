@@ -22,8 +22,10 @@ namespace WpfApp1
             Authorization();
         }
 
+        private int CurrentN;
+
         public List<int> SearchIndexes { get; set; }
-        public int CurrentN { get; set; }
+        public int CurrentNumber { get => CurrentN; set => CurrentN = value; }
         public bool IsUpdateIndex { get; set; }
         public bool IsSaved { get; set; }
         static public string CorrectPassword { get; set; }
@@ -126,6 +128,7 @@ namespace WpfApp1
             if (AccountsList.SelectedIndex != -1)
             {
                 YesOrNot win = new YesOrNot();
+                win.textBlock.Text = "Delete?";
                 win.ShowDialog();
                 if (win.DialogResult == true)
                 {
@@ -151,40 +154,8 @@ namespace WpfApp1
         /// </summary>
         private void UpdateIndexes()
         {
-            SearchIndexes = new List<int>();
-            CurrentN = 0;
-            if (SearchTextBox.Text != string.Empty)
-            {
-                int currentIndex = 0;
-                foreach (object item in AccountsList.Items)
-                {
-                    if (item.ToString().ToLower().Contains(SearchTextBox.Text.ToLower()))
-                        SearchIndexes.Add(currentIndex);
-                    currentIndex++;
-                }
-                if (SearchIndexes.Count != 0)
-                {
-                    AccountsList.SelectedIndex = SearchIndexes[0];
-                    AccountsList.ScrollIntoView(AccountsList.SelectedItem);
-                    NextButton.IsEnabled = true;
-                    PrevButton.IsEnabled = true;
-                    label6.Text = string.Format("{0}/{1}", 1, SearchIndexes.Count);
-                }
-                else
-                {
-                    AccountsList.SelectedIndex = -1;
-                    NextButton.IsEnabled = false;
-                    PrevButton.IsEnabled = false;
-                    label6.Text = string.Format("{0}/{1}", 0, SearchIndexes.Count);
-                }
-            }
-            else
-            {
-                AccountsList.SelectedIndex = -1;
-                NextButton.IsEnabled = false;
-                PrevButton.IsEnabled = false;
-                label6.Text = "0/0";
-            }
+            SearchIndexes = Search.GetIndexes(ref CurrentN, SearchTextBox, AccountsList);
+            label6.Text = string.Format("{0}/{1}", SearchIndexes.Count == 0 ? 0 : 1, SearchIndexes.Count);
             IsUpdateIndex = true;
         }
         /// <summary>
@@ -207,24 +178,8 @@ namespace WpfApp1
         {
             if (!IsSaved)
             {
-                MemoryStream stream = new MemoryStream();
-                using (BinaryWriter bw = new BinaryWriter(stream))
-                {
-                    bw.Write(CorrectPassword);
-                    foreach (DataAccount var in AccountsList.Items)
-                    {
-                        bw.Write(var.Name);
-                        bw.Write(var.Login);
-                        bw.Write(var.Password);
-                        bw.Write(var.OtherInf);
-                    }
-                    IsSaved = true;
-                }
-                byte[] TextToFile = EncryptDecrypt.Encrypt(stream, 4);
-                using (BinaryWriter bw = new BinaryWriter(File.Open(MyDocuments + @"\passdata.dat", FileMode.Create)))
-                {
-                    bw.Write(TextToFile);
-                }
+                Saver.Save(CorrectPassword, AccountsList, MyDocuments);
+                IsSaved = true;
             }
         }
 
@@ -243,20 +198,20 @@ namespace WpfApp1
             }
             if (SearchIndexes.Count != 0)
             {
-                CurrentN++;
-                if (CurrentN < SearchIndexes.Count)
+                CurrentNumber++;
+                if (CurrentNumber < SearchIndexes.Count)
                 {
-                    AccountsList.SelectedIndex = SearchIndexes[CurrentN];
+                    AccountsList.SelectedIndex = SearchIndexes[CurrentNumber];
                     AccountsList.ScrollIntoView(AccountsList.SelectedItem);
                 }
                 else
                 {
-                    CurrentN = 0;
-                    AccountsList.SelectedIndex = SearchIndexes[CurrentN];
+                    CurrentNumber = 0;
+                    AccountsList.SelectedIndex = SearchIndexes[CurrentNumber];
                     AccountsList.ScrollIntoView(AccountsList.SelectedItem);
                 }
                 SearchTextBox.Focus();
-                label6.Text = string.Format("{0}/{1}", CurrentN + 1, SearchIndexes.Count);
+                label6.Text = string.Format("{0}/{1}", CurrentNumber + 1, SearchIndexes.Count);
             }
         }
         /// <summary>
@@ -272,20 +227,20 @@ namespace WpfApp1
             }
             if (SearchIndexes.Count != 0)
             {
-                CurrentN--;
-                if (CurrentN < 0)
+                CurrentNumber--;
+                if (CurrentNumber < 0)
                 {
-                    CurrentN = SearchIndexes.Count - 1;
-                    AccountsList.SelectedIndex = SearchIndexes[CurrentN];
+                    CurrentNumber = SearchIndexes.Count - 1;
+                    AccountsList.SelectedIndex = SearchIndexes[CurrentNumber];
                     AccountsList.ScrollIntoView(AccountsList.SelectedItem);
                 }
                 else
                 {
-                    AccountsList.SelectedIndex = SearchIndexes[CurrentN];
+                    AccountsList.SelectedIndex = SearchIndexes[CurrentNumber];
                     AccountsList.ScrollIntoView(AccountsList.SelectedItem);
                 }
                 SearchTextBox.Focus();
-                label6.Text = string.Format("{0}/{1}", CurrentN + 1, SearchIndexes.Count);
+                label6.Text = string.Format("{0}/{1}", CurrentNumber + 1, SearchIndexes.Count);
             }
         }
         /// <summary>
@@ -391,7 +346,7 @@ namespace WpfApp1
         private void ChangePassword_Click(object sender, RoutedEventArgs e)
         {
             AuthDialog.IsOpen = true;
-            AuthText.Text = WpfApp1.Properties.Resources.ChangePasswordContent;
+            AuthText.Text = Properties.Resources.ChangePasswordContent;
             PasswordAccount.Password = "";
             HintAssist.SetHint(PasswordAccount, Properties.Resources.NewPassword);
         }
@@ -406,24 +361,7 @@ namespace WpfApp1
                 win.ShowDialog();
                 if (win.DialogResult == true)
                 {
-                    MemoryStream stream = new MemoryStream();
-                    using (BinaryWriter bw = new BinaryWriter(stream))
-                    {
-                        bw.Write(CorrectPassword);
-                        foreach (DataAccount var in AccountsList.Items)
-                        {
-                            bw.Write(var.Name);
-                            bw.Write(var.Login);
-                            bw.Write(var.Password);
-                            bw.Write(var.OtherInf);
-                        }
-                        IsSaved = true;
-                    }
-                    byte[] TextToFile = EncryptDecrypt.Encrypt(stream, 4);
-                    using (BinaryWriter bw = new BinaryWriter(File.Open(MyDocuments + @"\passdata.dat", FileMode.Create)))
-                    {
-                        bw.Write(TextToFile);
-                    }
+                    Saver.Save(CorrectPassword, AccountsList, MyDocuments);
                 }
             }
         }
@@ -464,7 +402,7 @@ namespace WpfApp1
             SearchIndexes = new List<int>();
             IsUpdateIndex = true;
             IsSaved = true;
-            CurrentN = 0;
+            CurrentNumber = 0;
 
             if (Properties.Settings.Default.DesignTheme == "pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml")
                 toggleButton.IsChecked = true;

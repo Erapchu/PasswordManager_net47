@@ -73,10 +73,10 @@
         <Grid HorizontalAlignment="Right">
             <StackPanel>
                 <StackPanel Orientation="Horizontal">
-                    <Button Name="PrevButton" Margin="5,0,0,0" VerticalAlignment="Top" Width="40" Height="40" Padding="2" Click="PrevButton_Click" IsEnabled="False" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="{x:Static res:Resources.PreviewToolTip}">
+                    <Button Name="PrevButton" Margin="5,0,0,0" VerticalAlignment="Top" Width="40" Height="40" Padding="2" Click="PrevButton_Click" IsEnabled="True" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="{x:Static res:Resources.PreviewToolTip}">
                         <materialDesign:PackIcon Kind="ArrowUp" Width="25" Height="25"/>
                     </Button>
-                    <Button Name="NextButton" Margin="5,0,0,0" VerticalAlignment="Top" Width="40" Height="40" Padding="2" Click="NextButton_Click" IsEnabled="False" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="{x:Static res:Resources.NextToolTip}">
+                    <Button Name="NextButton" Margin="5,0,0,0" VerticalAlignment="Top" Width="40" Height="40" Padding="2" Click="NextButton_Click" IsEnabled="True" Style="{StaticResource MaterialDesignFlatButton}" ToolTip="{x:Static res:Resources.NextToolTip}">
                         <materialDesign:PackIcon Kind="ArrowDown" Width="25" Height="25"/>
                     </Button>
                     <TextBlock Name="label6" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="0/0" VerticalAlignment="Center"/>
