@@ -21,15 +21,11 @@ namespace WpfApp1
             InitializeComponent();
             Authorization();
         }
-
-        private int CurrentN;
-
-        public List<int> SearchIndexes { get; set; }
-        public int CurrentNumber { get => CurrentN; set => CurrentN = value; }
-        public bool IsUpdateIndex { get; set; }
+        
         public bool IsSaved { get; set; }
         static public string CorrectPassword { get; set; }
         public string MyDocuments { get; set; }
+        public Search search;
 
         RoutedEventHandler firstAuth;
 
@@ -139,7 +135,7 @@ namespace WpfApp1
                     AccountsList.Items.Remove(AccountsList.SelectedItem);
                     AccountsList.SelectedIndex = a;
                     IsSaved = false;
-                    IsUpdateIndex = false;
+                    search.isUpdateIndex = false;
                 }
             }
             else
@@ -150,24 +146,21 @@ namespace WpfApp1
             }
         }
         /// <summary>
-        /// Обновление индексов для поиска
-        /// </summary>
-        private void UpdateIndexes()
-        {
-            SearchIndexes = Search.GetIndexes(ref CurrentN, SearchTextBox, AccountsList);
-            label6.Text = string.Format("{0}/{1}", SearchIndexes.Count == 0 ? 0 : 1, SearchIndexes.Count);
-            IsUpdateIndex = true;
-        }
-        /// <summary>
         /// Индексация и настройка видимости кнопки для очистки
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
         private void SearchTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            UpdateIndexes();
-            if (SearchTextBox.Text != string.Empty) Clearbutton.Visibility = Visibility.Visible;
-            else Clearbutton.Visibility = Visibility.Hidden;
+            search.UpdateIndexes();
+            if (SearchTextBox.Text != string.Empty)
+            {
+                Clearbutton.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                Clearbutton.Visibility = Visibility.Hidden;
+            }
         }
         /// <summary>
         /// Сохранение данных в файл
@@ -185,34 +178,7 @@ namespace WpfApp1
 
         private void NextButton_Click(object sender, RoutedEventArgs e)
         {
-            SearchNext();
-        }
-        /// <summary>
-        /// Переход к следующему элементу
-        /// </summary>
-        private void SearchNext()
-        {
-            if (!IsUpdateIndex)
-            {
-                UpdateIndexes();
-            }
-            if (SearchIndexes.Count != 0)
-            {
-                CurrentNumber++;
-                if (CurrentNumber < SearchIndexes.Count)
-                {
-                    AccountsList.SelectedIndex = SearchIndexes[CurrentNumber];
-                    AccountsList.ScrollIntoView(AccountsList.SelectedItem);
-                }
-                else
-                {
-                    CurrentNumber = 0;
-                    AccountsList.SelectedIndex = SearchIndexes[CurrentNumber];
-                    AccountsList.ScrollIntoView(AccountsList.SelectedItem);
-                }
-                SearchTextBox.Focus();
-                label6.Text = string.Format("{0}/{1}", CurrentNumber + 1, SearchIndexes.Count);
-            }
+            search.SearchNext();
         }
         /// <summary>
         /// Переход к предыдущему элементу
@@ -221,27 +187,7 @@ namespace WpfApp1
         /// <param name="e"></param>
         private void PrevButton_Click(object sender, RoutedEventArgs e)
         {
-            if (!IsUpdateIndex)
-            {
-                UpdateIndexes();
-            }
-            if (SearchIndexes.Count != 0)
-            {
-                CurrentNumber--;
-                if (CurrentNumber < 0)
-                {
-                    CurrentNumber = SearchIndexes.Count - 1;
-                    AccountsList.SelectedIndex = SearchIndexes[CurrentNumber];
-                    AccountsList.ScrollIntoView(AccountsList.SelectedItem);
-                }
-                else
-                {
-                    AccountsList.SelectedIndex = SearchIndexes[CurrentNumber];
-                    AccountsList.ScrollIntoView(AccountsList.SelectedItem);
-                }
-                SearchTextBox.Focus();
-                label6.Text = string.Format("{0}/{1}", CurrentNumber + 1, SearchIndexes.Count);
-            }
+            search.SearchPreview();
         }
         /// <summary>
         /// При нажатии кнопок в поисковом поле, если Enter, ищем следующий
@@ -250,10 +196,7 @@ namespace WpfApp1
         /// <param name="e"></param>
         private void SearchTextBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Enter)
-            {
-                if (SearchIndexes.Count != 0) SearchNext();
-            }
+            if (e.Key == Key.Enter) search.SearchNext();
         }
         /// <summary>
         /// Применение изменений
@@ -288,7 +231,7 @@ namespace WpfApp1
                     FindCurrent(account);
                 }
                 IsSaved = false;
-                IsUpdateIndex = false;
+                search.isUpdateIndex = false;
             }
             catch (Exception E)
             {
@@ -398,11 +341,9 @@ namespace WpfApp1
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            //Считывание данных из файла, инициализация переменных
-            SearchIndexes = new List<int>();
-            IsUpdateIndex = true;
+            //Считывание данных из файла, инициализация объектов
             IsSaved = true;
-            CurrentNumber = 0;
+            search = new Search(SearchTextBox, AccountsList, label6);
 
             if (Properties.Settings.Default.DesignTheme == "pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Dark.xaml")
                 toggleButton.IsChecked = true;
