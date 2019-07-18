@@ -22,18 +22,16 @@ namespace Password_Manager.ViewModel
         /// </summary>
         public MainViewModel()
         {
-            if (IsInDesignMode)
-            {
-                // Code runs in Blend --> create design time data.
-                Title = "Password Manager (Design Mode)";
-            }
-            else
-            {
-                // Code runs "for real"
-                Title = "Password Manager";
-            }
-
+            //if (IsInDesignMode)
+            //{
+            //    // Code runs in Blend --> create design time data.
+            //    Title = "Password Manager (Design Mode)";
+            //}
+            //else
+            //{
+            //    // Code runs "for real"
+            //    Title = "Password Manager";
+            //}
         }
-        public string Title { get; set; }
     }
 }
