@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ namespace Password_Manager
             set
             {
                 _name = value;
-                OnPropertyChanged("Name");
+                OnPropertyChanged();
             }
         }
 
@@ -34,7 +35,7 @@ namespace Password_Manager
             set
             {
                 _login = value;
-                OnPropertyChanged("Login");
+                OnPropertyChanged();
             }
         }
 
@@ -48,7 +49,7 @@ namespace Password_Manager
             set
             {
                 _password = value;
-                OnPropertyChanged("Password");
+                OnPropertyChanged();
             }
         }
 
@@ -62,7 +63,7 @@ namespace Password_Manager
             set
             {
                 _other = value;
-                OnPropertyChanged("Other");
+                OnPropertyChanged();
             }
         }
 
@@ -89,9 +90,9 @@ namespace Password_Manager
 
         #region MVVM Pattern
         public event PropertyChangedEventHandler PropertyChanged;
-        void OnPropertyChanged(string property_name)
+        void OnPropertyChanged([CallerMemberName]string propertyName = "")
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property_name));
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
     }

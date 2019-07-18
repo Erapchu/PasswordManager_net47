@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Password_Manager"
         mc:Ignorable="d"
-        Title="Password Manager" Height="500" Width="600" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
+        Title="Password Manager" Height="500" Width="700" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
     <Window.DataContext>
         <local:MainViewModel/>
     </Window.DataContext>
@@ -19,21 +19,19 @@
             <RowDefinition Height="7*"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0">
-            <TextBox Name="SearchTextBox" Margin="5" Width="200">
-            </TextBox>
-            <Button Name="Clearbutton" Content="X" HorizontalAlignment="Left" VerticalAlignment="Top" Width="30" Margin="5" Height="30" Visibility="Visible">
-            </Button>
+            <TextBox Name="SearchTextBox" Margin="5" Width="200"/>
+            <Button Name="Clearbutton" Content="X" HorizontalAlignment="Left" VerticalAlignment="Top" Width="30" Margin="5" Height="30" Visibility="Visible"/>
         </StackPanel>
 
         <Grid Grid.Column="0" Grid.Row="1">
-            <ListBox x:Name="AccountsList" Margin="5" ItemsSource="{Binding Path=AccountDatas}">
+            <ListBox x:Name="AccountsList" Margin="5" ItemsSource="{Binding Path=AccountDatas}" SelectedItem="{Binding Path=SelectedAccount, Mode=TwoWay}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Path=Name}"/>
                     </DataTemplate>
                 </ListBox.ItemTemplate>
             </ListBox>
-            <Button Name="PlusButton" Content="+" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="40" Height="40" Margin="15" >
+            <Button Name="PlusButton" Content="+" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="40" Height="40" Margin="10" >
             </Button>
         </Grid>
 
@@ -49,23 +47,23 @@
                 </StackPanel>
             </StackPanel>
         </Grid>
-        <Grid Grid.Row="1" Grid.Column="1" IsEnabled="False" x:Name="AccountData">
-            <StackPanel>
+        <Grid Grid.Row="1" Grid.Column="1">
+            <StackPanel x:Name="AccountData">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock Text="Name" VerticalAlignment="Center"></TextBlock>
-                    <TextBox Name="NameTextBox" Width="200" Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" ScrollViewer.CanContentScroll="True" MaxHeight="45"/>
+                    <TextBox Name="NameTextBox" Width="250" Margin="5" IsReadOnly="True" Text="{Binding Path=SelectedAccount.Name}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock Text="Login" VerticalAlignment="Center"></TextBlock>
-                    <TextBox Name="LoginTextBox" Width="200" Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" ScrollViewer.CanContentScroll="True" MaxHeight="45"/>
+                    <TextBox Name="LoginTextBox" Width="250" Margin="5" IsReadOnly="True" Text="{Binding Path=SelectedAccount.Login}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock Text="Password" VerticalAlignment="Center"></TextBlock>
-                    <TextBox Name="PasswordTextBox" Width="200" Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" ScrollViewer.CanContentScroll="True" MaxHeight="45"/>
+                    <TextBox Name="PasswordTextBox" Width="250" Margin="5" IsReadOnly="True" Text="{Binding Path=SelectedAccount.Password}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock Text="Other" VerticalAlignment="Center"></TextBlock>
-                    <TextBox Name="OtherTextBox" Width="200" Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" AcceptsReturn="True" MaxHeight="60"/>
+                    <TextBox Name="OtherTextBox" Width="250" Margin="5" IsReadOnly="True" Text="{Binding Path=SelectedAccount.Other}" TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="70" />
                 </StackPanel>
             </StackPanel>
             <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Bottom">
