@@ -24,7 +24,7 @@ namespace Password_Manager
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
+            //DataContext = new MainViewModel();
         }
     }
 }
