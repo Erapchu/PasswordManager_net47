@@ -67,26 +67,7 @@ namespace Password_Manager
             }
         }
 
-        public static AccountData[] ReadFile()
-        {
-            string MyDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            List<AccountData> accountDatas = new List<AccountData>();
-            MemoryStream stream = new MemoryStream(File.ReadAllBytes(MyDocuments + @"\testdata.dat"));
-            using (BinaryReader br = new BinaryReader(stream))
-            {
-                AccountData data;
-                while (br.PeekChar() != -1)
-                {
-                    data = new AccountData();
-                    data.Name = br.ReadString();
-                    data.Login = br.ReadString();
-                    data.Password = br.ReadString();
-                    data.Other = br.ReadString();
-                    accountDatas.Add(data);
-                }
-            }
-            return accountDatas.ToArray();
-        }
+
 
         #region MVVM Pattern
         public event PropertyChangedEventHandler PropertyChanged;

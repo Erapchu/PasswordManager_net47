@@ -5,49 +5,50 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Password_Manager"
         mc:Ignorable="d"
-        Title="Password Manager" Height="500" Width="700" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
+        Title="Password Manager" Height="auto" Width="auto" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight">
     <Window.DataContext>
         <local:MainViewModel/>
     </Window.DataContext>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="7*"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0">
-            <TextBox Name="SearchTextBox" Margin="5" Width="200"/>
-            <Button Name="Clearbutton" Content="X" HorizontalAlignment="Left" VerticalAlignment="Top" Width="30" Margin="5" Height="30" Visibility="Visible"/>
-        </StackPanel>
-
-        <Grid Grid.Column="0" Grid.Row="1">
-            <ListBox x:Name="AccountsList" Margin="5" ItemsSource="{Binding Path=AccountDatas}" SelectedItem="{Binding Path=SelectedAccount, Mode=TwoWay}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Path=Name}"/>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <Button Name="PlusButton" Content="+" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="40" Height="40" Margin="10" >
-            </Button>
-        </Grid>
-
-        <Grid Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal">
-                    <Button Name="PrevButton" Content="Next" Margin="5,0,0,0" VerticalAlignment="Top" Width="40" Height="40" Padding="2" IsEnabled="True">
+        <StackPanel>
+            <StackPanel Margin="0 0 5 0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0">
+                    <TextBlock Text="Search" VerticalAlignment="Center" Margin="5"/>
+                    <TextBox Name="SearchTextBox" Margin="5" Height="20" Width="200"/>
+                    <Button Name="Clearbutton" Content="Clear" HorizontalAlignment="Left" Margin="5" Height="30" Visibility="Visible"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Name="PrevButton" Content="Next" Margin="5" VerticalAlignment="Top" Width="40" Padding="2" IsEnabled="True">
                     </Button>
-                    <Button Name="NextButton" Content="Prev" Margin="5,0,0,0" VerticalAlignment="Top" Width="40" Height="40" Padding="2" IsEnabled="True">
+                    <Button Name="NextButton" Content="Prev" Margin="5" VerticalAlignment="Top" Width="40" Padding="2" IsEnabled="True">
                     </Button>
                     <TextBlock Name="label6" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="0/0" VerticalAlignment="Center"/>
-
                 </StackPanel>
             </StackPanel>
-        </Grid>
-        <Grid Grid.Row="1" Grid.Column="1">
+            <StackPanel Grid.Column="0" Grid.Row="1">
+                <StackPanel Orientation="Horizontal">
+                    <Button Content="Add" Margin="5" Height="30" Padding="5"/>
+                    <Button Content="Change" Margin="5" Height="30" Padding="5"/>
+                    <Button Content="Remove" Margin="5" Height="30" Padding="5"/>
+                    <Button Content="Save" Margin="5" Height="30" Padding="5"/>
+                </StackPanel>
+                <ListBox x:Name="AccountsList" Margin="5" Height="300" ItemsSource="{Binding Path=DataOfAccount}" SelectedItem="{Binding Path=SelectedAccount, Mode=TwoWay}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Name}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+            </StackPanel>
+        </StackPanel>
+        <Grid Grid.Column="1">
             <StackPanel x:Name="AccountData">
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock Text="Name" VerticalAlignment="Center"></TextBlock>
@@ -65,10 +66,10 @@
                     <TextBlock Text="Other" VerticalAlignment="Center"></TextBlock>
                     <TextBox Name="OtherTextBox" Width="250" Margin="5" IsReadOnly="True" Text="{Binding Path=SelectedAccount.Other}" TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="70" />
                 </StackPanel>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                <Button Name="OKButton" Content="OK" Height="32" Width="50"/>
-                <Button Name="CancelButton" Content="Cancel" Margin="5 0 0 0" Height="32" Padding="4" Width="50"/>
+                <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Right">
+                    <Button Name="OKButton" Content="OK" Height="32" Width="50"/>
+                    <Button Name="CancelButton" Content="Cancel" Margin="5 0 0 0" Height="32" Padding="4" Width="50"/>
+                </StackPanel>
             </StackPanel>
         </Grid>
     </Grid>

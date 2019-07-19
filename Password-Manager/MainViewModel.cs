@@ -6,15 +6,23 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Input;
 
 namespace Password_Manager
 {
     class MainViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<AccountData> AccountDatas { get; private set; }
+        public ObservableCollection<AccountData> DataOfAccount { get; private set; }
         public MainViewModel()
         {
-            AccountDatas = new ObservableCollection<AccountData>(AccountData.ReadFile());
+            //Получение данных из файла
+            AccountData[] account_data = File_process.ReadFile();
+            if (account_data != null) DataOfAccount = new ObservableCollection<AccountData>(account_data);
+            else DataOfAccount = new ObservableCollection<AccountData>();
+
+            //Инициализация
+            //AddCommand = new DelegateCommand();
+            //RemoveCommand = new DelegateCommand();
         }
 
         private AccountData _selectedAccount;
@@ -31,6 +39,8 @@ namespace Password_Manager
             }
         }
 
+        public ICommand AddCommand { get; private set; }
+        public ICommand RemoveCommand { get; private set; }
 
         #region MVVM Pattern
         public event PropertyChangedEventHandler PropertyChanged;
