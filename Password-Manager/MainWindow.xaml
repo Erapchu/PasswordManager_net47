@@ -13,6 +13,7 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="auto"></ColumnDefinition>
             <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
@@ -34,10 +35,10 @@
             </StackPanel>
             <StackPanel Grid.Column="0" Grid.Row="1">
                 <StackPanel Orientation="Horizontal">
-                    <Button Content="Add" Margin="5" Height="30" Padding="5"/>
-                    <Button Content="Change" Margin="5" Height="30" Padding="5"/>
-                    <Button Content="Remove" Margin="5" Height="30" Padding="5"/>
-                    <Button Content="Save" Margin="5" Height="30" Padding="5"/>
+                    <Button Content="Add" Margin="5" Height="30" Padding="5" Command="{Binding Path=AddCommand}"/>
+                    <Button Content="Change" Margin="5" Height="30" Padding="5" Command="{Binding Path=ChangeCommand}"/>
+                    <Button Content="Remove" Margin="5" Height="30" Padding="5" Command="{Binding Path=RemoveCommand}"/>
+                    <Button Content="Save" Margin="5" Height="30" Padding="5" Command="{Binding Path=SaveCommand}"/>
                 </StackPanel>
                 <ListBox x:Name="AccountsList" Margin="5" Height="300" ItemsSource="{Binding Path=DataOfAccount}" SelectedItem="{Binding Path=SelectedAccount, Mode=TwoWay}">
                     <ListBox.ItemTemplate>
@@ -48,29 +49,27 @@
                 </ListBox>
             </StackPanel>
         </StackPanel>
-        <Grid Grid.Column="1">
-            <StackPanel x:Name="AccountData">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock Text="Name" VerticalAlignment="Center"></TextBlock>
-                    <TextBox Name="NameTextBox" Width="250" Margin="5" IsReadOnly="True" Text="{Binding Path=SelectedAccount.Name}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock Text="Login" VerticalAlignment="Center"></TextBlock>
-                    <TextBox Name="LoginTextBox" Width="250" Margin="5" IsReadOnly="True" Text="{Binding Path=SelectedAccount.Login}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock Text="Password" VerticalAlignment="Center"></TextBlock>
-                    <TextBox Name="PasswordTextBox" Width="250" Margin="5" IsReadOnly="True" Text="{Binding Path=SelectedAccount.Password}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock Text="Other" VerticalAlignment="Center"></TextBlock>
-                    <TextBox Name="OtherTextBox" Width="250" Margin="5" IsReadOnly="True" Text="{Binding Path=SelectedAccount.Other}" TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="70" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Right">
-                    <Button Name="OKButton" Content="OK" Height="32" Width="50"/>
-                    <Button Name="CancelButton" Content="Cancel" Margin="5 0 0 0" Height="32" Padding="4" Width="50"/>
-                </StackPanel>
+        <StackPanel Grid.Column="1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Name" VerticalAlignment="Center"></TextBlock>
+                <TextBox Name="NameTextBox" Width="250" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Name}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
             </StackPanel>
-        </Grid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Login" VerticalAlignment="Center"></TextBlock>
+                <TextBox Name="LoginTextBox" Width="250" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Login}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Password" VerticalAlignment="Center"></TextBlock>
+                <TextBox Name="PasswordTextBox" Width="250" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Password}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Other" VerticalAlignment="Center"></TextBlock>
+                <TextBox Name="OtherTextBox" Width="250" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Other}" TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="70" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Right">
+                <Button Name="OKButton" Content="OK" Height="32" Width="50" IsEnabled="{Binding IsEditMode.IsEnabled}"/>
+                <Button Name="CancelButton" Content="Cancel" Margin="5 0 0 0" Height="32" Padding="4" Width="50" IsEnabled="{Binding IsEditMode.IsEnabled}"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>
