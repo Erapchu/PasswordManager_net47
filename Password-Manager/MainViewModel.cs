@@ -65,8 +65,8 @@ namespace Password_Manager
                     (obj) =>
                     {
                         ChangableAccount = new AccountData {
-                            Login = SelectedAccount.Login, Name = SelectedAccount.Name,
-                            Other = SelectedAccount.Other, Password = SelectedAccount.Password
+                            Login = (obj as AccountData).Login, Name = (obj as AccountData).Name,
+                            Other = (obj as AccountData).Other, Password = (obj as AccountData).Password
                         };
                         IsEditMode.Switch(true, true);
                     },
@@ -110,16 +110,16 @@ namespace Password_Manager
                 return new DelegateCommand(
                     (obj) =>
                     {
-                        //додумать
                         if (IsEditMode.IsChange)
                         {
+                            DataOfAccount[DataOfAccount.IndexOf(SelectedAccount)] = ChangableAccount;
                             SelectedAccount = ChangableAccount;
-                        }
-                        SelectedAccount = null;
-                        if (IsEditMode.IsChange)
                             IsEditMode.Switch(false, false);
+                        }
                         else
+                        {
                             IsEditMode.Switch(false);
+                        }
                     });
             }
         }
@@ -139,7 +139,7 @@ namespace Password_Manager
         }
 
         /*Старый способ:
-        //AddCommand = new DelegateCommand(AddAccount);
+        AddCommand = new DelegateCommand(AddAccount);
         private void AddAccount(object obj)
         {
             SelectedAccount = null;
