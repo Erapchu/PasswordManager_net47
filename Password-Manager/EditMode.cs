@@ -10,16 +10,54 @@ namespace Password_Manager
 {
     class EditMode : INotifyPropertyChanged
     {
-        public EditMode(bool b)
+        public EditMode(bool forView, bool ischange)
         {
-            IsReadOnly = !b;
-            IsEnabled = b;
+            IsReadOnly = !forView;
+            IsEnabled = forView;
+            LeftPanel = !forView;
+            IsChange = ischange;
         }
 
-        public void Switch(bool b)
+        public void Switch(bool forView, bool ischange)
         {
-            IsReadOnly = !b;
-            IsEnabled = b;
+            IsReadOnly = !forView;
+            IsEnabled = forView;
+            LeftPanel = !forView;
+            IsChange = ischange;
+        }
+        public void Switch(bool forView)
+        {
+            IsReadOnly = !forView;
+            IsEnabled = forView;
+            LeftPanel = !forView;
+        }
+
+        private bool _IsChange;
+        public bool IsChange
+        {
+            get
+            {
+                return _IsChange;
+            }
+            set
+            {
+                _IsChange = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _LeftPanel;
+        public bool LeftPanel
+        {
+            get
+            {
+                return _LeftPanel;
+            }
+            set
+            {
+                _LeftPanel = value;
+                OnPropertyChanged();
+            }
         }
 
         private bool _IsReadOnly;
@@ -35,6 +73,7 @@ namespace Password_Manager
                 OnPropertyChanged();
             }
         }
+
         private bool _IsEnabled;
         public bool IsEnabled
         {

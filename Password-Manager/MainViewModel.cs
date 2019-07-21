@@ -13,6 +13,8 @@ namespace Password_Manager
     class MainViewModel : INotifyPropertyChanged
     {
         public ObservableCollection<AccountData> DataOfAccount { get; private set; }
+        public EditMode IsEditMode { get; set; }
+
         public MainViewModel()
         {
             //Получение данных из файла
@@ -21,55 +23,105 @@ namespace Password_Manager
             else DataOfAccount = new ObservableCollection<AccountData>();
 
             //Инициализация
-            AddCommand = new DelegateCommand(AddAccount);
-            RemoveCommand = new DelegateCommand(RemoveAccount, canRemoveAccount);
-            IsEditMode = new EditMode(false);
+            IsEditMode = new EditMode(false, false);
         }
 
-        public EditMode IsEditMode { get; set; }
+        public AccountData ChangableAccount { get; set; }
 
-        public ICommand AddCommand { get; private set; }
-        private void AddAccount(object obj)
+        public ICommand AddCommand
         {
-            SelectedAccount = null;
-            IsEditMode.Switch(true);
-            //делать новый биндинг на ... текстбоксы? для редактирования.
-            //+ создать EditableAccount и его забиндить на тестбоксы, работать с ним
+            get
+            {
+                return new DelegateCommand(
+                    (obj) =>
+                    {
+                        SelectedAccount = new AccountData();
+                        IsEditMode.Switch(true);
+                    });
+            }
         }
 
-        public ICommand RemoveCommand { get; private set; }
-        private void RemoveAccount(object obj)
+        public ICommand RemoveCommand
         {
-            DataOfAccount.Remove((AccountData)obj);
+            get
+            {
+                return new DelegateCommand(
+                    (obj) =>
+                    {
+                        DataOfAccount.Remove((AccountData)obj);
+                    },
+                    (obj) =>
+                    {
+                        return (obj as AccountData) != null;
+                    });
+            }
         }
 
-        private bool canRemoveAccount(object arg)
+        public ICommand ChangeCommand
         {
-            return (arg as AccountData) != null;
+            get
+            {
+                return new DelegateCommand(
+                    (obj) =>
+                    {
+                        ChangableAccount = new AccountData {
+                            Login = SelectedAccount.Login, Name = SelectedAccount.Name,
+                            Other = SelectedAccount.Other, Password = SelectedAccount.Password
+                        };
+                        IsEditMode.Switch(true, true);
+                    },
+                    (obj) => 
+                    {
+                        return (obj as AccountData) != null;
+                    });
+            }
         }
 
-        public ICommand ChangeCommand { get; private set; }
-        private void ChangeAccount()
-        {
+        public ICommand SaveCommand { get; }
 
+        public ICommand AcceptEditCommand
+        {
+            get
+            {
+                return new DelegateCommand(
+                    (obj) =>
+                    {
+                        if (IsEditMode.IsChange)
+                        {
+                            IsEditMode.Switch(false, false);
+                        }
+                        else
+                        {
+                            DataOfAccount.Add(new AccountData
+                            {
+                                Login = SelectedAccount.Login, Name = SelectedAccount.Name,
+                                Other = SelectedAccount.Other, Password = SelectedAccount.Password
+                            });
+                            IsEditMode.Switch(false);
+                        }
+                    });
+            }
         }
 
-        public ICommand SaveCommand { get; private set; }
-        private void SaveData()
+        public ICommand DeclineEditCommand
         {
-
-        }
-
-        public ICommand AcceptEditCommand { get; private set; }
-        private void AcceptEdit()
-        {
-            //DataOfAccount.Add(new AccountData { Login = })
-        }
-
-        public ICommand DeclineEditCommand { get; private set; }
-        private void DeclineEdit()
-        {
-
+            get
+            {
+                return new DelegateCommand(
+                    (obj) =>
+                    {
+                        //додумать
+                        if (IsEditMode.IsChange)
+                        {
+                            SelectedAccount = ChangableAccount;
+                        }
+                        SelectedAccount = null;
+                        if (IsEditMode.IsChange)
+                            IsEditMode.Switch(false, false);
+                        else
+                            IsEditMode.Switch(false);
+                    });
+            }
         }
 
         private AccountData _selectedAccount;
@@ -86,6 +138,13 @@ namespace Password_Manager
             }
         }
 
+        /*Старый способ:
+        //AddCommand = new DelegateCommand(AddAccount);
+        private void AddAccount(object obj)
+        {
+            SelectedAccount = null;
+            IsEditMode.Switch(true);
+        }*/
 
         #region MVVM Pattern
         public event PropertyChangedEventHandler PropertyChanged;
