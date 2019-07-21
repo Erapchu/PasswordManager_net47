@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Password_Manager
 {
-    static class File_process
+    static class FileProcess
     {
         private static string PathToMainFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\testdata.dat";
 
