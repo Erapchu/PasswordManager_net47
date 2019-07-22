@@ -11,20 +11,26 @@ namespace Password_Manager
     {
         private static string PathToMainFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\testdata.dat";
 
-        public static void WriteFile()
+        public static void WriteFile(AccountData[] datas)
         {
-            using (BinaryWriter bw = new BinaryWriter(File.Open(PathToMainFile, FileMode.Open)))
+            try
             {
-                //сделать запись файла
-                /*bw.Write(CorrectPassword);
-                foreach (DataAccount var in AccountsList.Items)
+                using (BinaryWriter bw = new BinaryWriter(File.Open(PathToMainFile, FileMode.Create)))
                 {
-                    bw.Write(var.Name);
-                    bw.Write(var.Login);
-                    bw.Write(var.Password);
-                    bw.Write(var.OtherInf);
-                }*/
+                    foreach (AccountData var in datas)
+                    {
+                        bw.Write(var.Name);
+                        bw.Write(var.Login);
+                        bw.Write(var.Password);
+                        bw.Write(var.Other);
+                    }
+                }
             }
+            catch
+            {
+                //ошибки обработать
+            }
+
         }
 
         public static AccountData[] ReadFile()

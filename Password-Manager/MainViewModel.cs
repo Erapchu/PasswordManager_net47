@@ -16,6 +16,7 @@ namespace Password_Manager
         public ObservableCollection<AccountData> DataOfAccount { get; private set; }
         public ICollectionView FilteringCollection { get; private set; }
         public EditMode IsEditMode { get; set; }
+        private bool IsSaved { get; set; }
 
         public MainViewModel()
         {
@@ -28,6 +29,7 @@ namespace Password_Manager
             else DataOfAccount = new ObservableCollection<AccountData>();
             FilteringCollection = CollectionViewSource.GetDefaultView(DataOfAccount);
             FilteringCollection.Filter = FilterAccounts;
+            IsSaved = true;
         }
 
         AccountData ChangableAccount { get; set; }
@@ -97,6 +99,7 @@ namespace Password_Manager
                     (obj) =>
                     {
                         DataOfAccount.Remove((AccountData)obj);
+                        IsSaved = false;
                     },
                     (obj) =>
                     {
@@ -125,7 +128,22 @@ namespace Password_Manager
             }
         }
 
-        public ICommand SaveCommand { get; }
+        public ICommand SaveCommand
+        {
+            get
+            {
+                return new DelegateCommand(
+                    (obj) =>
+                    {
+                        FileProcess.WriteFile(DataOfAccount.ToArray());
+                        IsSaved = true;
+                    },
+                    (obj) =>
+                    {
+                        return !IsSaved;
+                    });
+            }
+        }
 
         public ICommand AcceptEditCommand
         {
@@ -135,6 +153,7 @@ namespace Password_Manager
                     (obj) =>
                     {
                         if(CheckEmptyInput())
+                        {
                             if (IsEditMode.IsChange)
                             {
                                 IsEditMode.Switch(false, false);
@@ -143,12 +162,17 @@ namespace Password_Manager
                             {
                                 DataOfAccount.Add(new AccountData
                                 {
-                                    Login = SelectedAccount.Login, Name = SelectedAccount.Name,
-                                    Other = SelectedAccount.Other, Password = SelectedAccount.Password
+                                    Login = SelectedAccount.Login,
+                                    Name = SelectedAccount.Name,
+                                    Other = SelectedAccount.Other,
+                                    Password = SelectedAccount.Password
                                 });
                                 SelectedAccount = DataOfAccount.Last();
                                 IsEditMode.Switch(false);
                             }
+                            IsSaved = false;
+                        }
+
                     });
             }
         }
