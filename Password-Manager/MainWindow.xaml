@@ -5,73 +5,64 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Password_Manager"
         mc:Ignorable="d"
-        Title="Password Manager" Height="500" Width="600" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
+        Title="Password Manager" Height="auto" Width="auto" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize" SizeToContent="WidthAndHeight">
     <Window.DataContext>
         <local:MainViewModel/>
     </Window.DataContext>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="*"></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="7*"></RowDefinition>
+            <RowDefinition Height="auto"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0">
-            <TextBox Name="SearchTextBox" Margin="5" Width="200">
-            </TextBox>
-            <Button Name="Clearbutton" Content="X" HorizontalAlignment="Left" VerticalAlignment="Top" Width="30" Margin="5" Height="30" Visibility="Visible">
-            </Button>
-        </StackPanel>
-
-        <Grid Grid.Column="0" Grid.Row="1">
-            <ListBox x:Name="AccountsList" Margin="5" ItemsSource="{Binding Path=AccountDatas}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Path=Name}"/>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
-            <Button Name="PlusButton" Content="+" Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Width="40" Height="40" Margin="15" >
-            </Button>
-        </Grid>
-
-        <Grid Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
-            <StackPanel>
+        <StackPanel IsEnabled="{Binding IsEditMode.LeftPanel}">
+            <StackPanel Margin="0 0 5 0">
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0">
+                    <TextBlock Text="Search" VerticalAlignment="Center" Margin="5"/>
+                    <TextBox Name="SearchTextBox" Margin="5" Height="20" Width="200" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
+                    <Button Name="Clearbutton" Content="Clear" HorizontalAlignment="Left" Command="{Binding Path=ClearCommand}" Margin="5" Height="30"/>
+                </StackPanel>
+            </StackPanel>
+            <StackPanel Grid.Column="0" Grid.Row="1">
                 <StackPanel Orientation="Horizontal">
-                    <Button Name="PrevButton" Content="Next" Margin="5,0,0,0" VerticalAlignment="Top" Width="40" Height="40" Padding="2" IsEnabled="True">
-                    </Button>
-                    <Button Name="NextButton" Content="Prev" Margin="5,0,0,0" VerticalAlignment="Top" Width="40" Height="40" Padding="2" IsEnabled="True">
-                    </Button>
-                    <TextBlock Name="label6" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Left" Margin="10,0,0,0" TextWrapping="Wrap" Text="0/0" VerticalAlignment="Center"/>
-
+                    <Button Content="Add" Margin="5" Height="30" Padding="5" Command="{Binding Path=AddCommand}"/>
+                    <Button Content="Change" Margin="5" Height="30" Padding="5" Command="{Binding Path=ChangeCommand}" CommandParameter="{Binding SelectedAccount}"/>
+                    <Button Content="Remove" Margin="5" Height="30" Padding="5" Command="{Binding Path=RemoveCommand}" CommandParameter="{Binding SelectedAccount}"/>
+                    <Button Content="Save" Margin="5" Height="30" Padding="5" Command="{Binding Path=SaveCommand}"/>
                 </StackPanel>
+                <ListBox x:Name="AccountsList" Margin="5" Height="300" MaxWidth="350" ItemsSource="{Binding Path=DataOfAccount}" SelectedItem="{Binding Path=SelectedAccount, Mode=TwoWay}">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Path=Name}"/>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
             </StackPanel>
-        </Grid>
-        <Grid Grid.Row="1" Grid.Column="1" IsEnabled="False" x:Name="AccountData">
-            <StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock Text="Name" VerticalAlignment="Center"></TextBlock>
-                    <TextBox Name="NameTextBox" Width="200" Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" ScrollViewer.CanContentScroll="True" MaxHeight="45"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock Text="Login" VerticalAlignment="Center"></TextBlock>
-                    <TextBox Name="LoginTextBox" Width="200" Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" ScrollViewer.CanContentScroll="True" MaxHeight="45"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock Text="Password" VerticalAlignment="Center"></TextBlock>
-                    <TextBox Name="PasswordTextBox" Width="200" Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" ScrollViewer.CanContentScroll="True" MaxHeight="45"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock Text="Other" VerticalAlignment="Center"></TextBlock>
-                    <TextBox Name="OtherTextBox" Width="200" Margin="5" TextWrapping="Wrap" VerticalAlignment="Top" IsReadOnly="True" AcceptsReturn="True" MaxHeight="60"/>
-                </StackPanel>
+        </StackPanel>
+        <StackPanel Grid.Column="1">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Name" VerticalAlignment="Center"></TextBlock>
+                <TextBox Name="NameTextBox" Width="250" MaxHeight="36" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                <Button Name="OKButton" Content="OK" Height="32" Width="50"/>
-                <Button Name="CancelButton" Content="Cancel" Margin="5 0 0 0" Height="32" Padding="4" Width="50"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Login" VerticalAlignment="Center"></TextBlock>
+                <TextBox Name="LoginTextBox" Width="250" MaxHeight="36" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
             </StackPanel>
-        </Grid>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Password" VerticalAlignment="Center"></TextBlock>
+                <TextBox Name="PasswordTextBox" Width="250" MaxHeight="36" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <TextBlock Text="Other" VerticalAlignment="Center"></TextBlock>
+                <TextBox Name="OtherTextBox" Width="250" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Other, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="72" />
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Right">
+                <Button Name="OKButton" Content="OK" Height="32" Width="50" Command="{Binding AcceptEditCommand}" IsEnabled="{Binding IsEditMode.IsEnabled}"/>
+                <Button Name="CancelButton" Content="Cancel" Margin="5 0 0 0" Height="32" Padding="4" Width="50" Command="{Binding DeclineEditCommand}" IsEnabled="{Binding IsEditMode.IsEnabled}"/>
+            </StackPanel>
+        </StackPanel>
     </Grid>
 </Window>
