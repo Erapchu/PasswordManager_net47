@@ -17,7 +17,20 @@ namespace Password_Manager
         public ICollectionView FilteringCollection { get; private set; }
         public EditMode IsEditMode { get; set; }
         private bool IsSaved { get; set; }
-        AccountData ChangableAccount { get; set; }
+
+        private AccountData _ChangableAcount;
+        public AccountData ChangableAccount
+        {
+            get
+            {
+                return _ChangableAcount;
+            }
+            set
+            {
+                _ChangableAcount = value;
+                OnPropertyChanged();
+            }
+        }
 
         private AccountData _SelectedAccount;
         public AccountData SelectedAccount
@@ -87,7 +100,7 @@ namespace Password_Manager
         #region Delegate commands
         private bool CanClearFilteredText(object arg)
         {
-            return !string.IsNullOrEmpty(FilterText);
+            return !string.IsNullOrEmpty((string)arg);
         }
 
         private bool CanSaveAll(object arg)
@@ -112,7 +125,7 @@ namespace Password_Manager
 
         private void DeclineEdits(object obj)
         {
-            if (IsEditMode.IsChange)
+            if ((bool)obj)
             {
                 DataOfAccount[DataOfAccount.IndexOf(SelectedAccount)] = ChangableAccount;
                 SelectedAccount = ChangableAccount;
@@ -129,7 +142,7 @@ namespace Password_Manager
         {
             if (CheckEmptyInput())
             {
-                if (IsEditMode.IsChange)
+                if ((bool)obj)
                 {
                     IsEditMode.Switch(false, false);
                 }
@@ -151,7 +164,7 @@ namespace Password_Manager
 
         private void SaveAll(object obj)
         {
-            FileProcess.WriteFile(DataOfAccount.ToArray());
+            FileProcess.WriteFile((obj as ObservableCollection<AccountData>).ToArray());
             IsSaved = true;
         }
 
