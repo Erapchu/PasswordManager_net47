@@ -17,21 +17,6 @@ namespace Password_Manager
         public ICollectionView FilteringCollection { get; private set; }
         public EditMode IsEditMode { get; set; }
         private bool IsSaved { get; set; }
-
-        public MainViewModel()
-        {
-            //Получение данных из файла
-            AccountData[] account_data = FileProcess.ReadFile();
-
-            //Инициализация
-            IsEditMode = new EditMode(false, false);
-            if (account_data != null) DataOfAccount = new ObservableCollection<AccountData>(account_data);
-            else DataOfAccount = new ObservableCollection<AccountData>();
-            FilteringCollection = CollectionViewSource.GetDefaultView(DataOfAccount);
-            FilteringCollection.Filter = FilterAccounts;
-            IsSaved = true;
-        }
-
         AccountData ChangableAccount { get; set; }
 
         private AccountData _SelectedAccount;
@@ -63,6 +48,28 @@ namespace Password_Manager
             }
         }
 
+        public MainViewModel()
+        {
+            //Получение данных из файла
+            AccountData[] account_data = FileProcess.ReadFile();
+
+            //Инициализация
+            AddCommand = new DelegateCommand(AddAccount);
+            RemoveCommand = new DelegateCommand(RemoveAccount, CanRemoveAccount);
+            ChangeCommand = new DelegateCommand(ChangeAccount, CanChangeAccount);
+            SaveCommand = new DelegateCommand(SaveAll, CanSaveAll);
+            AcceptEditCommand = new DelegateCommand(AcceptEdits);
+            DeclineEditCommand = new DelegateCommand(DeclineEdits);
+            ClearCommand = new DelegateCommand(ClearFilteredText, CanClearFilteredText);
+
+            IsEditMode = new EditMode(false, false);
+            if (account_data != null) DataOfAccount = new ObservableCollection<AccountData>(account_data);
+            else DataOfAccount = new ObservableCollection<AccountData>();
+            FilteringCollection = CollectionViewSource.GetDefaultView(DataOfAccount);
+            FilteringCollection.Filter = FilterAccounts;
+            IsSaved = true;
+        }
+
         private bool FilterAccounts(object obj)
         {
             bool result = true;
@@ -77,143 +84,116 @@ namespace Password_Manager
             else return true;
         }
 
+        #region Delegate commands
+        private bool CanClearFilteredText(object arg)
+        {
+            return !string.IsNullOrEmpty(FilterText);
+        }
+
+        private bool CanSaveAll(object arg)
+        {
+            return !IsSaved;
+        }
+
+        private bool CanChangeAccount(object arg)
+        {
+            return (arg as AccountData) != null;
+        }
+
+        private bool CanRemoveAccount(object arg)
+        {
+            return (arg as AccountData) != null;
+        }
+
+        private void ClearFilteredText(object obj)
+        {
+            FilterText = string.Empty;
+        }
+
+        private void DeclineEdits(object obj)
+        {
+            if (IsEditMode.IsChange)
+            {
+                DataOfAccount[DataOfAccount.IndexOf(SelectedAccount)] = ChangableAccount;
+                SelectedAccount = ChangableAccount;
+                IsEditMode.Switch(false, false);
+            }
+            else
+            {
+                SelectedAccount = null;
+                IsEditMode.Switch(false);
+            }
+        }
+
+        private void AcceptEdits(object obj)
+        {
+            if (CheckEmptyInput())
+            {
+                if (IsEditMode.IsChange)
+                {
+                    IsEditMode.Switch(false, false);
+                }
+                else
+                {
+                    DataOfAccount.Add(new AccountData
+                    {
+                        Login = SelectedAccount.Login,
+                        Name = SelectedAccount.Name,
+                        Other = SelectedAccount.Other,
+                        Password = SelectedAccount.Password
+                    });
+                    SelectedAccount = DataOfAccount.Last();
+                    IsEditMode.Switch(false);
+                }
+                IsSaved = false;
+            }
+        }
+
+        private void SaveAll(object obj)
+        {
+            FileProcess.WriteFile(DataOfAccount.ToArray());
+            IsSaved = true;
+        }
+
+        private void ChangeAccount(object obj)
+        {
+            ChangableAccount = new AccountData
+            {
+                Login = (obj as AccountData).Login,
+                Name = (obj as AccountData).Name,
+                Other = (obj as AccountData).Other,
+                Password = (obj as AccountData).Password
+            };
+            IsEditMode.Switch(true, true);
+        }
+
+        private void RemoveAccount(object obj)
+        {
+            DataOfAccount.Remove((AccountData)obj);
+            IsSaved = false;
+        }
+
+        private void AddAccount(object obj)
+        {
+            SelectedAccount = new AccountData();
+            IsEditMode.Switch(true);
+        }
+        #endregion
+
         #region Commands of buttons
-        public ICommand AddCommand
-        {
-            get
-            {
-                return new DelegateCommand(
-                    (obj) =>
-                    {
-                        SelectedAccount = new AccountData();
-                        IsEditMode.Switch(true);
-                    });
-            }
-        }
+        public ICommand AddCommand { get; private set; }
 
-        public ICommand RemoveCommand
-        {
-            get
-            {
-                return new DelegateCommand(
-                    (obj) =>
-                    {
-                        DataOfAccount.Remove((AccountData)obj);
-                        IsSaved = false;
-                    },
-                    (obj) =>
-                    {
-                        return (obj as AccountData) != null;
-                    });
-            }
-        }
+        public ICommand RemoveCommand { get; private set; }
 
-        public ICommand ChangeCommand
-        {
-            get
-            {
-                return new DelegateCommand(
-                    (obj) =>
-                    {
-                        ChangableAccount = new AccountData {
-                            Login = (obj as AccountData).Login, Name = (obj as AccountData).Name,
-                            Other = (obj as AccountData).Other, Password = (obj as AccountData).Password
-                        };
-                        IsEditMode.Switch(true, true);
-                    },
-                    (obj) => 
-                    {
-                        return (obj as AccountData) != null;
-                    });
-            }
-        }
+        public ICommand ChangeCommand { get; private set; }
 
-        public ICommand SaveCommand
-        {
-            get
-            {
-                return new DelegateCommand(
-                    (obj) =>
-                    {
-                        FileProcess.WriteFile(DataOfAccount.ToArray());
-                        IsSaved = true;
-                    },
-                    (obj) =>
-                    {
-                        return !IsSaved;
-                    });
-            }
-        }
+        public ICommand SaveCommand { get; private set; }
 
-        public ICommand AcceptEditCommand
-        {
-            get
-            {
-                return new DelegateCommand(
-                    (obj) =>
-                    {
-                        if(CheckEmptyInput())
-                        {
-                            if (IsEditMode.IsChange)
-                            {
-                                IsEditMode.Switch(false, false);
-                            }
-                            else
-                            {
-                                DataOfAccount.Add(new AccountData
-                                {
-                                    Login = SelectedAccount.Login,
-                                    Name = SelectedAccount.Name,
-                                    Other = SelectedAccount.Other,
-                                    Password = SelectedAccount.Password
-                                });
-                                SelectedAccount = DataOfAccount.Last();
-                                IsEditMode.Switch(false);
-                            }
-                            IsSaved = false;
-                        }
+        public ICommand AcceptEditCommand { get; private set; }
 
-                    });
-            }
-        }
+        public ICommand DeclineEditCommand { get; private set; }
 
-        public ICommand DeclineEditCommand
-        {
-            get
-            {
-                return new DelegateCommand(
-                    (obj) =>
-                    {
-                        if (IsEditMode.IsChange)
-                        {
-                            DataOfAccount[DataOfAccount.IndexOf(SelectedAccount)] = ChangableAccount;
-                            SelectedAccount = ChangableAccount;
-                            IsEditMode.Switch(false, false);
-                        }
-                        else
-                        {
-                            SelectedAccount = null;
-                            IsEditMode.Switch(false);
-                        }
-                    });
-            }
-        }
-        
-        public ICommand ClearCommand
-        {
-            get
-            {
-                return new DelegateCommand(
-                    (obj) =>
-                    {
-                        FilterText = string.Empty;
-                    },
-                    (obj) =>
-                    {
-                        return !string.IsNullOrEmpty(FilterText);
-                    });
-            }
-        }
+        public ICommand ClearCommand { get; private set; }
         #endregion
 
         #region MVVM Pattern
@@ -224,12 +204,5 @@ namespace Password_Manager
         }
         #endregion
         
-        /*Старый способ:
-        AddCommand = new DelegateCommand(AddAccount);
-        private void AddAccount(object obj)
-        {
-            SelectedAccount = null;
-            IsEditMode.Switch(true);
-        }*/
     }
 }
