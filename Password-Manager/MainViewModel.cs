@@ -61,10 +61,25 @@ namespace Password_Manager
             }
         }
 
+        private string _StatusText;
+        public string StatusText
+        {
+            get
+            {
+                return _StatusText;
+            }
+            set
+            {
+                _StatusText = value;
+                OnPropertyChanged();
+            }
+        }
+
         public MainViewModel()
         {
             //Получение данных из файла
-            AccountData[] account_data = FileProcess.ReadFile();
+            AccountData[] account_data = FileProcess.ReadFile(out string st);
+            StatusText = st;
 
             //Инициализация
             AddCommand = new DelegateCommand(AddAccount);
@@ -152,19 +167,22 @@ namespace Password_Manager
                     {
                         Login = SelectedAccount.Login,
                         Name = SelectedAccount.Name,
-                        Other = SelectedAccount.Other,
+                        Other = SelectedAccount.Other == null ? string.Empty : SelectedAccount.Other,
                         Password = SelectedAccount.Password
                     });
                     SelectedAccount = DataOfAccount.Last();
                     IsEditMode.Switch(false);
                 }
                 IsSaved = false;
+                StatusText = "";
             }
+            else StatusText = "Необходимо заполнить: Name, Login, Password";
         }
 
         private void SaveAll(object obj)
         {
-            FileProcess.WriteFile((obj as ObservableCollection<AccountData>).ToArray());
+            FileProcess.WriteFile((obj as ObservableCollection<AccountData>).ToArray(), out string st);
+            StatusText = st;
             IsSaved = true;
         }
 
@@ -217,5 +235,18 @@ namespace Password_Manager
         }
         #endregion
         
+        /* динамическое создание делегатов, анонимные методы
+         * public ICommand AnyCommand
+         * {
+         *     get
+         *     {
+         *         return new DelegateCommand((obj) =>
+         *         {
+         *             //что-то выполняется
+         *         });
+         *     }
+         * }
+         */
+
     }
 }

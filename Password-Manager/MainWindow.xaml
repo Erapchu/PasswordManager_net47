@@ -63,6 +63,7 @@
                 <Button Name="OKButton" Content="OK" Height="32" Width="50" Command="{Binding AcceptEditCommand}" IsEnabled="{Binding IsEditMode.IsEnabled}" CommandParameter="{Binding IsEditMode.IsChange}"/>
                 <Button Name="CancelButton" Content="Cancel" Margin="5 0 0 0" Height="32" Padding="4" Width="50" Command="{Binding DeclineEditCommand}" CommandParameter="{Binding IsEditMode.IsChange}" IsEnabled="{Binding IsEditMode.IsEnabled}"/>
             </StackPanel>
+            <TextBlock Text="{Binding StatusText}" Margin="5" HorizontalAlignment="Right"/>
         </StackPanel>
     </Grid>
 </Window>
