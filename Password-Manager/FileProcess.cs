@@ -9,59 +9,62 @@ namespace Password_Manager
 {
     static class FileProcess
     {
-        private static string PathToMainFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\testdata.dat";
+        private static readonly string PathToMainFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\testdata.dat";
 
-        public static void WriteFile(AccountData[] datas)
+        public static void WriteFile(AccountData[] datas, out string status)
         {
             try
             {
                 using (BinaryWriter bw = new BinaryWriter(File.Open(PathToMainFile, FileMode.Create)))
                 {
-                    foreach (AccountData var in datas)
+                    foreach (AccountData data in datas)
                     {
-                        bw.Write(var.Name);
-                        bw.Write(var.Login);
-                        bw.Write(var.Password);
-                        bw.Write(var.Other);
+                        bw.Write(data.Name);
+                        bw.Write(data.Login);
+                        bw.Write(data.Password);
+                        bw.Write(data.Other);
                     }
                 }
+                status = "Файл сохранён";
             }
             catch
             {
-                //ошибки обработать
+                status = "Файл не был сохранен успешно";
             }
-
         }
 
-        public static AccountData[] ReadFile()
+        public static AccountData[] ReadFile(out string status)
         {
             try
             {
                 List<AccountData> accountDatas = new List<AccountData>();
-                MemoryStream stream = new MemoryStream(File.ReadAllBytes(PathToMainFile));
-                using (BinaryReader br = new BinaryReader(stream))
+                using (BinaryReader br = new BinaryReader(File.Open(PathToMainFile, FileMode.Open)))
                 {
                     AccountData data;
                     while (br.PeekChar() != -1)
                     {
-                        data = new AccountData();
-                        data.Name = br.ReadString();
-                        data.Login = br.ReadString();
-                        data.Password = br.ReadString();
-                        data.Other = br.ReadString();
+                        data = new AccountData
+                        {
+                            Name = br.ReadString(),
+                            Login = br.ReadString(),
+                            Password = br.ReadString(),
+                            Other = br.ReadString()
+                        };
                         accountDatas.Add(data);
                     }
                 }
+                status = "";
                 return accountDatas.ToArray();
             }
             catch(FileNotFoundException)
             {
                 File.Create(PathToMainFile);
+                status = "Новый файл создан";
                 return null;
             }
             catch
             {
-                //обработать тут остальные ошибушки
+                status = "Файл повреждён";
                 return null;
             }
         }
