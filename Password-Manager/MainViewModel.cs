@@ -96,6 +96,7 @@ namespace Password_Manager
             FilteringCollection = CollectionViewSource.GetDefaultView(DataOfAccount);
             FilteringCollection.Filter = FilterAccounts;
             IsSaved = true;
+
         }
 
         private bool FilterAccounts(object obj)
