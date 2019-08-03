@@ -11,50 +11,45 @@ namespace Password_Manager
     class FileProcess
     {
         private readonly string PathToMainFile;
-        private string CorrectPassword;
+        private readonly int DefaultRandomSize;
         public FileProcess()
         {
             PathToMainFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\testdata.dat";
+            DefaultRandomSize = 20;
         }
-        public void WriteFile(AccountData[] datas, string correctPass, out string status)
+
+        public bool WriteFile(AccountData[] datas, string correctPass, out string status)
         {
             try
             {
-                Encryption.KEY = new Random().Next(1, 10);
-                CorrectPassword = correctPass;
+                Encryption.KEY = new Random().Next(1, DefaultRandomSize);
 
                 using (BinaryWriter bw = new BinaryWriter(File.Open(PathToMainFile, FileMode.Create)))
                 {
-                    WriteHeader(bw);
-                    WriteContent(datas, bw);
+                    //Header Ключ для шифрования и зашифрованный пароль
+                    bw.Write(Encryption.KEY);
+                    bw.Write(Encryption.Process(correctPass));
+
+                    //Зашифрованные данные
+                    foreach (AccountData data in datas)
+                    {
+                        bw.Write(Encryption.Process(data.Name));
+                        bw.Write(Encryption.Process(data.Login));
+                        bw.Write(Encryption.Process(data.Password));
+                        bw.Write(Encryption.Process(data.Other));
+                    }
                 }
                 status = "Файл сохранён";
+                return true;
             }
             catch
             {
                 status = "Файл не был сохранен успешно";
+                return false;
             }
         }
 
-        private void WriteHeader(BinaryWriter bw)
-        {
-            //Ключ для шифрования
-            bw.Write(Encryption.KEY);
-            
-            //Зашифрованный пароль
-            bw.Write(Encryption.Encrypt(CorrectPassword));
-        }
-
-        private void WriteContent(AccountData[] datas, BinaryWriter bw)
-        {
-            foreach (AccountData data in datas)
-            {
-                bw.Write(Encryption.Encrypt(data.Name));
-                bw.Write(Encryption.Encrypt(data.Login));
-                bw.Write(Encryption.Encrypt(data.Password));
-                bw.Write(Encryption.Encrypt(data.Other));
-            }
-        }
+        private long offsetToRead;
 
         public AccountData[] ReadFile(out string status)
         {
@@ -63,6 +58,7 @@ namespace Password_Manager
                 List<AccountData> accountDatas = new List<AccountData>();
                 using (BinaryReader br = new BinaryReader(File.Open(PathToMainFile, FileMode.Open)))
                 {
+                    br.BaseStream.Position = offsetToRead;
                     AccountData data;
                     while (br.PeekChar() != -1)
                     {
@@ -79,12 +75,6 @@ namespace Password_Manager
                 status = "";
                 return accountDatas.ToArray();
             }
-            catch(FileNotFoundException)
-            {
-                File.Create(PathToMainFile);
-                status = "Новый файл создан";
-                return null;
-            }
             catch
             {
                 status = "Файл повреждён";
@@ -92,7 +82,34 @@ namespace Password_Manager
             }
         }
 
-
-
+        public string ReadPassword(out string status)
+        {
+            try
+            {
+                string pass;
+                using (BinaryReader br = new BinaryReader(File.Open(PathToMainFile, FileMode.Open)))
+                {
+                    //Получение ключа для дешифрования
+                    Encryption.KEY = br.ReadInt32();
+                    //Чтение пароля
+                    pass = Encryption.Process(br.ReadString());
+                    //Сохранение смещения позиции
+                    offsetToRead = br.BaseStream.Position;
+                }
+                status = "";
+                return pass;
+            }
+            catch (FileNotFoundException)
+            {
+                File.Create(PathToMainFile);
+                status = "Новый файл создан, потребуется пароль при сохранении";
+                return null;
+            }
+            catch
+            {
+                status = "Поврежден заголовок файла";
+                return null;
+            }
+        }
     }
 }
