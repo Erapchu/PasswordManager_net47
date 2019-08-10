@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 
 namespace Password_Manager
 {
@@ -17,8 +18,13 @@ namespace Password_Manager
             PathToMainFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\testdata.dat";
             DefaultRandomSize = 20;
         }
-
-        public bool WriteFile(AccountData[] datas, string correctPass, out string status)
+        /// <summary>
+        /// Write file to my documents
+        /// </summary>
+        /// <param name="datas">List of instances AccountData</param>
+        /// <param name="correctPass">Correct password</param>
+        /// <returns></returns>
+        public bool WriteFile(AccountData[] datas, string correctPass)
         {
             try
             {
@@ -39,19 +45,22 @@ namespace Password_Manager
                         bw.Write(Encryption.Process(data.Other));
                     }
                 }
-                status = "Файл сохранён";
                 return true;
             }
             catch
             {
-                status = "Файл не был сохранен успешно";
+                MessageBox.Show("File is corrupt", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false;
             }
         }
 
         private long offsetToRead;
 
-        public AccountData[] ReadFile(out string status)
+        /// <summary>
+        /// Read file data
+        /// </summary>
+        /// <returns></returns>
+        public AccountData[] ReadFile()
         {
             try
             {
@@ -72,17 +81,20 @@ namespace Password_Manager
                         accountDatas.Add(data);
                     }
                 }
-                status = "";
                 return accountDatas.ToArray();
             }
             catch
             {
-                status = "Файл повреждён";
+                MessageBox.Show("File is corrupt", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
 
-        public string ReadPassword(out string status)
+        /// <summary>
+        /// Read password
+        /// </summary>
+        /// <returns></returns>
+        public string ReadPassword()
         {
             try
             {
@@ -96,18 +108,17 @@ namespace Password_Manager
                     //Сохранение смещения позиции
                     offsetToRead = br.BaseStream.Position;
                 }
-                status = "";
                 return pass;
             }
             catch (FileNotFoundException)
             {
                 File.Create(PathToMainFile);
-                status = "Новый файл создан, потребуется пароль при сохранении";
+                MessageBox.Show("New file have been created", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return null;
             }
             catch
             {
-                status = "Поврежден заголовок файла";
+                MessageBox.Show("Header of file is corrupt", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return null;
             }
         }
