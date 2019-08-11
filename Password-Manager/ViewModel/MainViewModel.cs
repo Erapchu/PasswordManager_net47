@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
@@ -54,20 +55,6 @@ namespace Password_Manager
             {
                 _FilterText = value;
                 FilteringCollection.Refresh();
-                OnPropertyChanged();
-            }
-        }
-
-        private string _StatusText;
-        public string StatusText
-        {
-            get
-            {
-                return _StatusText;
-            }
-            set
-            {
-                _StatusText = value;
                 OnPropertyChanged();
             }
         }
@@ -179,9 +166,8 @@ namespace Password_Manager
                     IsEditMode.Switch(false);
                 }
                 IsSaved = false;
-                StatusText = "";
             }
-            else StatusText = "Необходимо заполнить: Name, Login, Password";
+            else MessageBox.Show("Please, fill this data: Name, Login, Password", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
         private void SaveAll(object obj)
