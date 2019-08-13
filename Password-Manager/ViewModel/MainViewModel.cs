@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Password_Manager.View;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -172,9 +173,13 @@ namespace Password_Manager
 
         private void SaveAll(object obj)
         {
-            if(CorrectPassword != null)
+            if (CorrectPassword != null)
                 WorkWithFile.WriteFile((obj as ObservableCollection<AccountData>).ToArray(), CorrectPassword);
-            else /*Create new Window, where user can create his password*/
+            else
+            {
+                if (new PasswordView().ShowDialog() == true)
+                    WorkWithFile.WriteFile((obj as ObservableCollection<AccountData>).ToArray(), CorrectPassword);
+            }
             IsSaved = true;
         }
 
