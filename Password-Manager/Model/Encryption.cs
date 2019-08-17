@@ -9,9 +9,7 @@ namespace Password_Manager.Model
 {
     static class Encryption
     {
-        public static int KEY { get; set; }
-
-        public static string Process(string s)
+        public static string Process(string s, int KEY)
         {
             byte[] buf = Encoding.Unicode.GetBytes(s);
 
