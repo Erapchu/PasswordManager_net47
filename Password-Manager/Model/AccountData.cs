@@ -67,8 +67,6 @@ namespace Password_Manager
             }
         }
 
-
-
         #region MVVM Pattern
         public event PropertyChangedEventHandler PropertyChanged;
         void OnPropertyChanged([CallerMemberName]string propertyName = "")

@@ -1,4 +1,6 @@
-﻿using Password_Manager.View;
+﻿using GalaSoft.MvvmLight;
+using Password_Manager.Model;
+using Password_Manager.View;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,9 +12,14 @@ using System.Windows.Input;
 
 namespace Password_Manager
 {
+    public enum PassOperation
+    {
+        NewUser,
+        DefaultUser,
+        ChangePassword
+    }
     class MainViewModel : INotifyPropertyChanged
     {
-        public ObservableCollection<AccountData> DataOfAccount { get; private set; }
         public ICollectionView FilteringCollection { get; private set; }
         public EditMode IsEditMode { get; set; }
         private bool IsSaved { get; set; }
@@ -60,18 +67,34 @@ namespace Password_Manager
             }
         }
 
-        public string CorrectPassword { get; private set; }
-
-        FileProcess WorkWithFile { get; set; }
+        public Account ThisAccount { get; set; }
 
         public MainViewModel()
         {
             //Получение данных из файла
-            WorkWithFile = new FileProcess();
-            AccountData[] account_data = null;
-            CorrectPassword = WorkWithFile.ReadPassword();
-            if(CorrectPassword != null)
-                account_data = WorkWithFile.ReadFile();
+            ThisAccount = FileProcess.Instance.ReadFile();
+            if(ThisAccount == null)
+            {
+                ThisAccount = new Account();
+            }
+
+            InputPassView inputPassView;
+            if (ThisAccount.CorrectPassword == null)
+            {
+                //Новый пользователь
+                inputPassView = new InputPassView(string.Empty, PassOperation.NewUser);
+                if (inputPassView.ShowDialog() == true)
+                {
+                    ThisAccount.CorrectPassword = inputPassView.inputPassViewModel.CorrectPassword;
+                    ThisAccount.Data = new ObservableCollection<AccountData>();
+                }
+            }
+            else
+            {
+                //Уже с паролем
+                inputPassView = new InputPassView(ThisAccount.CorrectPassword, PassOperation.DefaultUser);
+                inputPassView.ShowDialog();
+            }
 
             //Инициализация
             AddCommand = new DelegateCommand(AddAccount);
@@ -83,9 +106,7 @@ namespace Password_Manager
             ClearCommand = new DelegateCommand(ClearFilteredText, CanClearFilteredText);
 
             IsEditMode = new EditMode(false, false);
-            if (account_data != null) DataOfAccount = new ObservableCollection<AccountData>(account_data);
-            else DataOfAccount = new ObservableCollection<AccountData>();
-            FilteringCollection = CollectionViewSource.GetDefaultView(DataOfAccount);
+            FilteringCollection = CollectionViewSource.GetDefaultView(ThisAccount.Data);
             FilteringCollection.Filter = FilterAccounts;
             IsSaved = true;
 
@@ -135,7 +156,7 @@ namespace Password_Manager
         {
             if ((bool)obj)
             {
-                DataOfAccount[DataOfAccount.IndexOf(SelectedAccount)] = ChangableAccount;
+                ThisAccount.Data[ThisAccount.Data.IndexOf(SelectedAccount)] = ChangableAccount;
                 SelectedAccount = ChangableAccount;
                 IsEditMode.Switch(false, false);
             }
@@ -156,14 +177,14 @@ namespace Password_Manager
                 }
                 else
                 {
-                    DataOfAccount.Add(new AccountData
+                    ThisAccount.Data.Add(new AccountData
                     {
                         Login = SelectedAccount.Login,
                         Name = SelectedAccount.Name,
                         Other = SelectedAccount.Other == null ? string.Empty : SelectedAccount.Other,
                         Password = SelectedAccount.Password
                     });
-                    SelectedAccount = DataOfAccount.Last();
+                    SelectedAccount = ThisAccount.Data.Last();
                     IsEditMode.Switch(false);
                 }
                 IsSaved = false;
@@ -173,12 +194,12 @@ namespace Password_Manager
 
         private void SaveAll(object obj)
         {
-            if (CorrectPassword != null)
-                WorkWithFile.WriteFile((obj as ObservableCollection<AccountData>).ToArray(), CorrectPassword);
+            if (!string.IsNullOrWhiteSpace(ThisAccount.CorrectPassword))
+                FileProcess.Instance.WriteFile(obj as Account);
             else
             {
-                if (new PasswordView().ShowDialog() == true)
-                    WorkWithFile.WriteFile((obj as ObservableCollection<AccountData>).ToArray(), CorrectPassword);
+                if (new InputPassView().ShowDialog() == true)
+                    FileProcess.Instance.WriteFile(obj as Account);
             }
             IsSaved = true;
         }
@@ -197,7 +218,7 @@ namespace Password_Manager
 
         private void RemoveAccount(object obj)
         {
-            DataOfAccount.Remove((AccountData)obj);
+            ThisAccount.Data.Remove((AccountData)obj);
             IsSaved = false;
         }
 
