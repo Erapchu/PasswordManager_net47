@@ -12,6 +12,7 @@ namespace Password_Manager.ViewModel
 {
     internal class InputPassViewModel : INotifyPropertyChanged
     {
+        #region Fields
         private string _password;
         public string Password
         {
@@ -24,13 +25,24 @@ namespace Password_Manager.ViewModel
         }
 
         public string CorrectPassword { get; set; }
+        private PassOperation Operation { get; set; }
+        #endregion
 
+        #region Constructors
         public InputPassViewModel()
         {
             ContinueCommand = new DelegateCommand(Continue, CanContinue);
             ExitCommand = new DelegateCommand(Exit);
         }
 
+        public InputPassViewModel(string pass, PassOperation op): this()
+        {
+            this.Operation = op;
+            this.CorrectPassword = pass;
+        }
+        #endregion
+
+        #region Implements of commands
         private void Exit(object obj)
         {
             Environment.Exit(0);
@@ -46,16 +58,31 @@ namespace Password_Manager.ViewModel
             Window window = obj as Window;
             if (window == null) return;
 
-            if (CorrectPassword != null && CorrectPassword == Password) window.DialogResult = true;
-            else
+            switch (this.Operation)
             {
-                CorrectPassword = Password;
-                window.DialogResult = true;
+                case PassOperation.DefaultUser:
+                    if (CorrectPassword != null && CorrectPassword == Password) window.DialogResult = true;
+                    break;
+                case PassOperation.ChangePassword:
+                    if (CorrectPassword != Password)
+                    {
+                        CorrectPassword = Password;
+                        window.DialogResult = true;
+                    }
+                    else MessageBox.Show("New password is equivalent old password", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    break;
+                case PassOperation.NewUser:
+                    CorrectPassword = Password;
+                    window.DataContext = true;
+                    break;
             }
         }
+        #endregion
 
+        #region Commands
         public ICommand ContinueCommand { get; private set; }
         public ICommand ExitCommand { get; private set; }
+        #endregion
 
         #region MVVM Pattern
         public event PropertyChangedEventHandler PropertyChanged;

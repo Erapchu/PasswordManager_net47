@@ -1,5 +1,4 @@
-﻿using GalaSoft.MvvmLight;
-using Password_Manager.Model;
+﻿using Password_Manager.Model;
 using Password_Manager.View;
 using System;
 using System.Collections.ObjectModel;
@@ -85,7 +84,6 @@ namespace Password_Manager
                 inputPassView = new InputPassView(string.Empty, PassOperation.NewUser);
                 if (inputPassView.ShowDialog() == true)
                 {
-                    ThisAccount.CorrectPassword = inputPassView.inputPassViewModel.CorrectPassword;
                     ThisAccount.Data = new ObservableCollection<AccountData>();
                 }
             }
@@ -93,7 +91,7 @@ namespace Password_Manager
             {
                 //Уже с паролем
                 inputPassView = new InputPassView(ThisAccount.CorrectPassword, PassOperation.DefaultUser);
-                inputPassView.ShowDialog();
+                if (inputPassView.ShowDialog() == false) Environment.Exit(0);
             }
 
             //Инициализация

@@ -24,24 +24,15 @@ namespace Password_Manager.View
         public InputPassView()
         {
             InitializeComponent();
-            inputPassViewModel = new InputPassViewModel();
-            this.DataContext = inputPassViewModel;
         }
 
         public InputPassView(string password, PassOperation operation): this()
         {
-            switch (operation)
-            {
-                case PassOperation.ChangePassword:
-                    inputPassViewModel.CorrectPassword = password;
-                    break;
-                case PassOperation.DefaultUser:
-                    inputPassViewModel.CorrectPassword = password;
-                    break;
-                case PassOperation.NewUser:
-                    break;
-                default: break;
-            }
+            if (operation == PassOperation.ChangePassword || operation == PassOperation.DefaultUser)
+                inputPassViewModel = new InputPassViewModel(password, operation);
+            if (operation == PassOperation.NewUser)
+                inputPassViewModel = new InputPassViewModel();
+            this.DataContext = inputPassViewModel;
         }
     }
 }
