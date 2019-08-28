@@ -28,10 +28,16 @@ namespace Password_Manager.View
 
         public InputPassView(string password, PassOperation operation): this()
         {
-            if (operation == PassOperation.ChangePassword || operation == PassOperation.DefaultUser)
-                inputPassViewModel = new InputPassViewModel(password, operation);
-            if (operation == PassOperation.NewUser)
-                inputPassViewModel = new InputPassViewModel();
+            switch (operation)
+            {
+                case PassOperation.ChangePassword:
+                case PassOperation.DefaultUser:
+                    inputPassViewModel = new InputPassViewModel(password, operation);
+                    break;
+                case PassOperation.NewUser:
+                    inputPassViewModel = new InputPassViewModel();
+                    break;
+            }
             this.DataContext = inputPassViewModel;
         }
     }
