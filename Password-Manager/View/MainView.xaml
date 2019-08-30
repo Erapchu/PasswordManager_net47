@@ -40,27 +40,33 @@
             </StackPanel>
         </StackPanel>
         <StackPanel Grid.Column="1">
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <TextBlock Text="Name" VerticalAlignment="Center"></TextBlock>
-                <TextBox Name="NameTextBox" Width="250" MaxHeight="36" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
+            <StackPanel >
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="Name" VerticalAlignment="Center"></TextBlock>
+                    <TextBox Name="NameTextBox" Width="250" MaxHeight="36" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="Login" VerticalAlignment="Center"></TextBlock>
+                    <TextBox Name="LoginTextBox" Width="250" MaxHeight="36" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="Password" VerticalAlignment="Center"></TextBlock>
+                    <TextBox Name="PasswordTextBox" Width="250" MaxHeight="36" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="Other" VerticalAlignment="Center"></TextBlock>
+                    <TextBox Name="OtherTextBox" Width="250" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Other, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="72" />
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Right">
+                    <Button Name="OKButton" Content="OK" Height="32" Width="50" Command="{Binding AcceptEditCommand}" IsEnabled="{Binding IsEditMode.IsEnabled}"/>
+                    <Button Name="CancelButton" Content="Cancel" Margin="5 0 0 0" Height="32" Padding="4" Width="50" Command="{Binding DeclineEditCommand}" IsEnabled="{Binding IsEditMode.IsEnabled}"/>
+                </StackPanel>
+                <TextBlock Text="{Binding StatusText}" Margin="5" HorizontalAlignment="Right"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <TextBlock Text="Login" VerticalAlignment="Center"></TextBlock>
-                <TextBox Name="LoginTextBox" Width="250" MaxHeight="36" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
+            <StackPanel Grid.Column="1">
+                <Button Content="Copy login"/>
+                <Button Content="Copy password"/>
             </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <TextBlock Text="Password" VerticalAlignment="Center"></TextBlock>
-                <TextBox Name="PasswordTextBox" Width="250" MaxHeight="36" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" ScrollViewer.CanContentScroll="True"/>
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                <TextBlock Text="Other" VerticalAlignment="Center"></TextBlock>
-                <TextBox Name="OtherTextBox" Width="250" Margin="5" IsReadOnly="{Binding IsEditMode.IsReadOnly}" Text="{Binding Path=SelectedAccount.Other, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" TextWrapping="Wrap" AcceptsReturn="True" MaxHeight="72" />
-            </StackPanel>
-            <StackPanel Orientation="Horizontal" Margin="5" HorizontalAlignment="Right">
-                <Button Name="OKButton" Content="OK" Height="32" Width="50" Command="{Binding AcceptEditCommand}" IsEnabled="{Binding IsEditMode.IsEnabled}" CommandParameter="{Binding IsEditMode.IsChange}"/>
-                <Button Name="CancelButton" Content="Cancel" Margin="5 0 0 0" Height="32" Padding="4" Width="50" Command="{Binding DeclineEditCommand}" CommandParameter="{Binding IsEditMode.IsChange}" IsEnabled="{Binding IsEditMode.IsEnabled}"/>
-            </StackPanel>
-            <TextBlock Text="{Binding StatusText}" Margin="5" HorizontalAlignment="Right"/>
         </StackPanel>
     </Grid>
 </Window>

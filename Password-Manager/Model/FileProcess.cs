@@ -17,18 +17,18 @@ namespace Password_Manager
         private static Lazy<FileProcess> _fileProcess = new Lazy<FileProcess>(() => new FileProcess());
         public static FileProcess Instance { get { return _fileProcess.Value; } }
 
-        private readonly string PathToMainFile;
-        private readonly int DefaultRandomSize;
+        public string PathToMainFile { get; private set; }
+        public int DefaultRandomSize { get; private set; } = 20;
+        public string NameOfMainFile { get; private set; } = @"\testdata.dat";
         public FileProcess()
         {
-            PathToMainFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + @"\testdata.dat";
-            DefaultRandomSize = 20;
+            PathToMainFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + NameOfMainFile;
         }
 
         /// <summary>
         /// Write file to my documents
         /// </summary>
-        /// <param name="account">List of instances AccountData</param>
+        /// <param name="account">Account, that contains list of instances AccountData</param>
         /// <returns></returns>
         public bool WriteFile(Account account)
         {
@@ -77,13 +77,13 @@ namespace Password_Manager
             }
             catch (FileNotFoundException)
             {
-                File.Create(PathToMainFile);
-                MessageBox.Show("New file have been created", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("New file will be created", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                 return null;
             }
             catch
             {
-                MessageBox.Show("File is corrupt", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("File is corrupt, new file will be created instead of it", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                File.Create(PathToMainFile);
                 return null;
             }
         }

@@ -15,16 +15,26 @@ namespace Password_Manager
             IsReadOnly = !forView;
             IsEnabled = forView;
             LeftPanel = !forView;
-            IsChange = isChange;
+            DoesAccountChange = isChange;
         }
 
+        /// <summary>
+        /// Switch mode to "Edit" (isChange parameter) or "View datas"
+        /// </summary>
+        /// <param name="forView">IsReadOnly, IsEnabled properties for View must be opposite</param>
+        /// <param name="isChange">Does account change now</param>
         public void Switch(bool forView, bool isChange)
         {
             IsReadOnly = !forView;
             IsEnabled = forView;
             LeftPanel = !forView;
-            IsChange = isChange;
+            DoesAccountChange = isChange;
         }
+
+        /// <summary>
+        /// Switch mode to "Add" or "View datas"
+        /// </summary>
+        /// <param name="forView">IsReadOnly, IsEnabled properties for View must be opposite</param>
         public void Switch(bool forView)
         {
             IsReadOnly = !forView;
@@ -32,16 +42,16 @@ namespace Password_Manager
             LeftPanel = !forView;
         }
 
-        private bool _IsChange;
-        public bool IsChange
+        private bool _doesAccontChange;
+        public bool DoesAccountChange
         {
             get
             {
-                return _IsChange;
+                return _doesAccontChange;
             }
             set
             {
-                _IsChange = value;
+                _doesAccontChange = value;
                 OnPropertyChanged();
             }
         }

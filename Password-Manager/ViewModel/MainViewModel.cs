@@ -77,6 +77,8 @@ namespace Password_Manager
                 ThisAccount = new Account();
             }
 
+            //попробовать сделать мультиаккаунтность?
+
             InputPassView inputPassView;
             if (ThisAccount.CorrectPassword == null)
             {
@@ -85,6 +87,12 @@ namespace Password_Manager
                 if (inputPassView.ShowDialog() == true)
                 {
                     ThisAccount.Data = new ObservableCollection<AccountData>();
+                    ThisAccount.CorrectPassword = inputPassView.inputPassViewModel.CorrectPassword;
+                    FileProcess.Instance.WriteFile(ThisAccount);
+                }
+                else
+                {
+                    Environment.Exit(0);
                 }
             }
             else
@@ -152,7 +160,7 @@ namespace Password_Manager
 
         private void DeclineEdits(object obj)
         {
-            if ((bool)obj)
+            if (IsEditMode.DoesAccountChange)
             {
                 ThisAccount.Data[ThisAccount.Data.IndexOf(SelectedAccount)] = ChangableAccount;
                 SelectedAccount = ChangableAccount;
@@ -169,7 +177,7 @@ namespace Password_Manager
         {
             if (CheckEmptyInput())
             {
-                if ((bool)obj)
+                if (IsEditMode.DoesAccountChange)
                 {
                     IsEditMode.Switch(false, false);
                 }
@@ -217,6 +225,7 @@ namespace Password_Manager
 
         private void RemoveAccountData(object obj)
         {
+            //!!ВЫ чо реально хотите удалить это?
             ThisAccount.Data.Remove((AccountData)obj);
             IsSaved = false;
         }
