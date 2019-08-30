@@ -24,8 +24,8 @@ namespace Password_Manager.ViewModel
             }
         }
 
-        public string CorrectPassword { get; set; }
-        private PassOperation Operation { get; set; }
+        public string CorrectPassword { get; private set; }
+        public PassOperation Operation { get; private set; }
         #endregion
 
         #region Constructors
@@ -62,6 +62,7 @@ namespace Password_Manager.ViewModel
             {
                 case PassOperation.DefaultUser:
                     if (CorrectPassword != null && CorrectPassword == Password) window.DialogResult = true;
+                    //else - имплементировать выполнение графически ошибки
                     break;
                 case PassOperation.ChangePassword:
                     if (CorrectPassword != Password)
@@ -73,7 +74,7 @@ namespace Password_Manager.ViewModel
                     break;
                 case PassOperation.NewUser:
                     CorrectPassword = Password;
-                    window.DataContext = true;
+                    window.DialogResult = true;
                     break;
             }
         }

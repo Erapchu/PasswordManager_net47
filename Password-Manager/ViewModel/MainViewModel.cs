@@ -77,6 +77,8 @@ namespace Password_Manager
                 ThisAccount = new Account();
             }
 
+            //попробовать сделать мультиаккаунтность?
+
             InputPassView inputPassView;
             if (ThisAccount.CorrectPassword == null)
             {
@@ -85,6 +87,12 @@ namespace Password_Manager
                 if (inputPassView.ShowDialog() == true)
                 {
                     ThisAccount.Data = new ObservableCollection<AccountData>();
+                    ThisAccount.CorrectPassword = inputPassView.inputPassViewModel.CorrectPassword;
+                    FileProcess.Instance.WriteFile(ThisAccount);
+                }
+                else
+                {
+                    Environment.Exit(0);
                 }
             }
             else
@@ -95,9 +103,9 @@ namespace Password_Manager
             }
 
             //Инициализация
-            AddCommand = new DelegateCommand(AddAccount);
-            RemoveCommand = new DelegateCommand(RemoveAccount, CanRemoveAccount);
-            ChangeCommand = new DelegateCommand(ChangeAccount, CanChangeAccount);
+            AddCommand = new DelegateCommand(AddAccountData);
+            RemoveCommand = new DelegateCommand(RemoveAccountData, CanRemoveAccountData);
+            ChangeCommand = new DelegateCommand(ChangeAccountData, CanChangeAccountData);
             SaveCommand = new DelegateCommand(SaveAll, CanSaveAll);
             AcceptEditCommand = new DelegateCommand(AcceptEdits);
             DeclineEditCommand = new DelegateCommand(DeclineEdits);
@@ -105,12 +113,12 @@ namespace Password_Manager
 
             IsEditMode = new EditMode(false, false);
             FilteringCollection = CollectionViewSource.GetDefaultView(ThisAccount.Data);
-            FilteringCollection.Filter = FilterAccounts;
+            FilteringCollection.Filter = FilterAccountDatas;
             IsSaved = true;
 
         }
 
-        private bool FilterAccounts(object obj)
+        private bool FilterAccountDatas(object obj)
         {
             bool result = true;
             AccountData data = obj as AccountData;
@@ -135,12 +143,12 @@ namespace Password_Manager
             return !IsSaved;
         }
 
-        private bool CanChangeAccount(object arg)
+        private bool CanChangeAccountData(object arg)
         {
             return (arg as AccountData) != null;
         }
 
-        private bool CanRemoveAccount(object arg)
+        private bool CanRemoveAccountData(object arg)
         {
             return (arg as AccountData) != null;
         }
@@ -152,7 +160,7 @@ namespace Password_Manager
 
         private void DeclineEdits(object obj)
         {
-            if ((bool)obj)
+            if (IsEditMode.DoesAccountChange)
             {
                 ThisAccount.Data[ThisAccount.Data.IndexOf(SelectedAccount)] = ChangableAccount;
                 SelectedAccount = ChangableAccount;
@@ -169,7 +177,7 @@ namespace Password_Manager
         {
             if (CheckEmptyInput())
             {
-                if ((bool)obj)
+                if (IsEditMode.DoesAccountChange)
                 {
                     IsEditMode.Switch(false, false);
                 }
@@ -196,13 +204,14 @@ namespace Password_Manager
                 FileProcess.Instance.WriteFile(obj as Account);
             else
             {
+                //Если новый пользователь
                 if (new InputPassView().ShowDialog() == true)
                     FileProcess.Instance.WriteFile(obj as Account);
             }
             IsSaved = true;
         }
 
-        private void ChangeAccount(object obj)
+        private void ChangeAccountData(object obj)
         {
             ChangableAccount = new AccountData
             {
@@ -214,13 +223,14 @@ namespace Password_Manager
             IsEditMode.Switch(true, true);
         }
 
-        private void RemoveAccount(object obj)
+        private void RemoveAccountData(object obj)
         {
+            //!!ВЫ чо реально хотите удалить это?
             ThisAccount.Data.Remove((AccountData)obj);
             IsSaved = false;
         }
 
-        private void AddAccount(object obj)
+        private void AddAccountData(object obj)
         {
             SelectedAccount = new AccountData();
             IsEditMode.Switch(true);
