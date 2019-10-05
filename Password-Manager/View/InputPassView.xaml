@@ -5,20 +5,53 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Password_Manager.View"
         mc:Ignorable="d"
-        Title="Password Window" Height="200" Width="300" WindowStartupLocation="CenterScreen" ResizeMode="CanMinimize">
+        Title="Password Window"
+        WindowStartupLocation="CenterScreen" 
+        ResizeMode="CanMinimize" 
+        SizeToContent="WidthAndHeight"
+        >
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <TextBlock Text="Enter your password" HorizontalAlignment="Center" VerticalAlignment="Center" FontSize="20" Grid.Row="0"/>
-        <TextBox Grid.Row="1" Margin="20 0" Height="25" Text="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-            <Button VerticalAlignment="Center" Width="75" Content="OK" Height="25" IsDefault="True"
-                    Command="{Binding ContinueCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:InputPassView}}}"/>
-            <Button VerticalAlignment="Center" Width="75" Margin="10" Content="Cancel" Height="25"
+        <StackPanel>
+            <TextBlock 
+                Text="Enter your password" 
+                HorizontalAlignment="Center" 
+                VerticalAlignment="Center" 
+                FontSize="20" 
+                Grid.Row="0"
+                Margin="20"/>
+            <TextBox 
+                Grid.Row="1" 
+                Margin="15 0" 
+                Height="25" 
+                Width="300"
+                Text="{Binding Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            <TextBlock 
+                Margin="15 15 15 0" 
+                Text="{Binding Status}" 
+                TextWrapping="Wrap" 
+                HorizontalAlignment="Center" 
+                MaxWidth="270"
+                Visibility="{Binding StatusVisibility}"/>
+            <StackPanel 
+                Grid.Row="2" 
+                Orientation="Horizontal" 
+                VerticalAlignment="Bottom" 
+                HorizontalAlignment="Right">
+                <Button 
+                    VerticalAlignment="Center" 
+                    Width="75" 
+                    Content="OK" 
+                    Height="25" 
+                    IsDefault="True"
+                    Command="{Binding ContinueCommand}" 
+                    CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type local:InputPassView}}}"/>
+                <Button 
+                    VerticalAlignment="Center" 
+                    Width="75" 
+                    Margin="15" 
+                    Content="Cancel" Height="25"
                     Command="{Binding ExitCommand}"/>
+            </StackPanel>
         </StackPanel>
     </Grid>
 </Window>
