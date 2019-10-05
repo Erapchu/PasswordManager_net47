@@ -13,19 +13,47 @@ namespace Password_Manager.ViewModel
     internal class InputPassViewModel : INotifyPropertyChanged
     {
         #region Fields
-        private string _password;
+        private string password;
         public string Password
         {
-            get { return _password; }
+            get { return password; }
             set
             {
-                _password = value;
+                password = value;
                 OnPropertyChanged();
             }
         }
 
         public string CorrectPassword { get; private set; }
         public PassOperation Operation { get; private set; }
+
+        private string status;
+        public string Status 
+        { 
+            get
+            {
+                return status;
+            }
+            private set
+            {
+                status = value;
+                OnPropertyChanged();
+            } 
+        }
+
+        private Visibility statusVisibility;
+        public Visibility StatusVisibility 
+        { 
+            get 
+            { 
+                return statusVisibility; 
+            }
+            set 
+            {
+                statusVisibility = value;
+                OnPropertyChanged();
+            } 
+        }
         #endregion
 
         #region Constructors
@@ -33,6 +61,7 @@ namespace Password_Manager.ViewModel
         {
             ContinueCommand = new DelegateCommand(Continue, CanContinue);
             ExitCommand = new DelegateCommand(Exit);
+            statusVisibility = Visibility.Collapsed;
         }
 
         public InputPassViewModel(string pass, PassOperation op): this()
@@ -61,8 +90,13 @@ namespace Password_Manager.ViewModel
             switch (this.Operation)
             {
                 case PassOperation.DefaultUser:
-                    if (CorrectPassword != null && CorrectPassword == Password) window.DialogResult = true;
-                    //else - имплементировать выполнение графически ошибки
+                    if (!string.IsNullOrWhiteSpace(CorrectPassword) && CorrectPassword == Password)
+                        window.DialogResult = true;
+                    else
+                    {
+                        StatusVisibility = Visibility.Visible;
+                        Status = "Password is incorrect";
+                    }
                     break;
                 case PassOperation.ChangePassword:
                     if (CorrectPassword != Password)
@@ -70,7 +104,8 @@ namespace Password_Manager.ViewModel
                         CorrectPassword = Password;
                         window.DialogResult = true;
                     }
-                    else MessageBox.Show("New password is equivalent old password", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                    else 
+                        MessageBox.Show("New password is equivalent old password", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
                     break;
                 case PassOperation.NewUser:
                     CorrectPassword = Password;
