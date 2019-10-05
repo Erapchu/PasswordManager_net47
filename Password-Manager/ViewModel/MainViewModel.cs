@@ -70,14 +70,14 @@ namespace Password_Manager
 
         public MainViewModel()
         {
-            //Получение данных из файла
+            //Get data from file
             ThisAccount = FileProcess.Instance.ReadFile();
-            if(ThisAccount == null)
+            if (ThisAccount == null)
             {
                 ThisAccount = new Account();
             }
 
-            //попробовать сделать мультиаккаунтность?
+            //Try to do multi accounts?
 
             InputPassView inputPassView;
             if (ThisAccount.CorrectPassword == null)
@@ -97,12 +97,12 @@ namespace Password_Manager
             }
             else
             {
-                //Уже с паролем
+                //Already with password
                 inputPassView = new InputPassView(ThisAccount.CorrectPassword, PassOperation.DefaultUser);
                 if (inputPassView.ShowDialog() == false) Environment.Exit(0);
             }
 
-            //Инициализация
+            //Init
             AddCommand = new DelegateCommand(AddAccountData);
             RemoveCommand = new DelegateCommand(RemoveAccountData, CanRemoveAccountData);
             ChangeCommand = new DelegateCommand(ChangeAccountData, CanChangeAccountData);
@@ -204,7 +204,7 @@ namespace Password_Manager
                 FileProcess.Instance.WriteFile(obj as Account);
             else
             {
-                //Если новый пользователь
+                //If new user
                 if (new InputPassView().ShowDialog() == true)
                     FileProcess.Instance.WriteFile(obj as Account);
             }
@@ -225,9 +225,21 @@ namespace Password_Manager
 
         private void RemoveAccountData(object obj)
         {
-            //!!ВЫ чо реально хотите удалить это?
-            ThisAccount.Data.Remove((AccountData)obj);
-            IsSaved = false;
+            //Do you really want to delete it?
+            var result = MessageBox.Show("Do you really want to delete this item?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            switch (result)
+            {
+                case MessageBoxResult.Yes:
+                    {
+                        ThisAccount.Data.Remove((AccountData)obj);
+                        IsSaved = false;
+                        break;
+                    }
+                case MessageBoxResult.No:
+                    {
+                        break;
+                    }
+            }
         }
 
         private void AddAccountData(object obj)
