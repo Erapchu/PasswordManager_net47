@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
-using Password_Manager.Model;
+using PasswordManager.Helpers;
+using PasswordManager.Model;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -9,28 +10,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Password_Manager
+namespace PasswordManager.Helpers
 {
-    class FileProcess
+    internal static class FileWorker
     {
-
-        private static Lazy<FileProcess> _fileProcess = new Lazy<FileProcess>(() => new FileProcess());
-        public static FileProcess Instance { get { return _fileProcess.Value; } }
-
-        public string PathToMainFile { get; private set; }
-        public int DefaultRandomSize { get; private set; } = 20;
-        public string NameOfMainFile { get; private set; } = @"\testdata.dat";
-        public FileProcess()
-        {
-            PathToMainFile = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + NameOfMainFile;
-        }
+        public static int DefaultRandomSize { get; private set; } = 20;
 
         /// <summary>
         /// Write file to my documents
         /// </summary>
         /// <param name="account">Account, that contains list of instances AccountData</param>
         /// <returns></returns>
-        public bool WriteFile(Account account)
+        public static bool WriteFile(Account account)
         {
             try
             {
@@ -38,7 +29,7 @@ namespace Password_Manager
                 int keyEncrypt = new Random().Next(1, DefaultRandomSize);
                 string encryptedForFile = Encryption.Process(forFile, keyEncrypt);
 
-                using (BinaryWriter bw = new BinaryWriter(File.Open(PathToMainFile, FileMode.Create)))
+                using (BinaryWriter bw = new BinaryWriter(File.Open(Constants.PathToMainFile, FileMode.Create)))
                 {
                     bw.Write(keyEncrypt);
                     bw.Write(encryptedForFile);
@@ -56,7 +47,7 @@ namespace Password_Manager
         /// Read file data
         /// </summary>
         /// <returns></returns>
-        public Account ReadFile()
+        public static Account ReadFile()
         {
             try
             {
@@ -64,10 +55,13 @@ namespace Password_Manager
                 string encryptedFromFile;
                 string fromFile;
 
-                using(BinaryReader br = new BinaryReader(File.Open(PathToMainFile, FileMode.Open)))
+                using (var fileStream = File.Open(Constants.PathToMainFile, FileMode.Open))
                 {
-                    keyDecrypt = br.ReadInt32();
-                    encryptedFromFile = br.ReadString();
+                    using (BinaryReader br = new BinaryReader(fileStream))
+                    {
+                        keyDecrypt = br.ReadInt32();
+                        encryptedFromFile = br.ReadString();
+                    }
                 }
 
                 fromFile = Encryption.Process(encryptedFromFile, keyDecrypt);
@@ -83,7 +77,7 @@ namespace Password_Manager
             catch
             {
                 MessageBox.Show("File is corrupt, new file will be created instead of it", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                File.Create(PathToMainFile);
+                File.Create(Constants.PathToMainFile);
                 return null;
             }
         }

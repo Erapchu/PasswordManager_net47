@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Password_Manager.Model
+namespace PasswordManager.Helpers
 {
     static class Encryption
     {
@@ -20,6 +20,5 @@ namespace Password_Manager.Model
             string result = Encoding.Unicode.GetString(buf);
             return result;
         }
-
     }
 }

@@ -1,5 +1,6 @@
-﻿using Password_Manager.Model;
-using Password_Manager.View;
+﻿using PasswordManager.Helpers;
+using PasswordManager.Model;
+using PasswordManager.View;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -9,7 +10,7 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace Password_Manager
+namespace PasswordManager.ViewModel
 {
     public enum PassOperation
     {
@@ -17,6 +18,7 @@ namespace Password_Manager
         DefaultUser,
         ChangePassword
     }
+
     class MainViewModel : INotifyPropertyChanged
     {
         public ICollectionView FilteringCollection { get; private set; }
@@ -71,7 +73,7 @@ namespace Password_Manager
         public MainViewModel()
         {
             //Get data from file
-            ThisAccount = FileProcess.Instance.ReadFile();
+            ThisAccount = FileWorker.ReadFile();
             if (ThisAccount == null)
             {
                 ThisAccount = new Account();
@@ -88,7 +90,7 @@ namespace Password_Manager
                 {
                     ThisAccount.Data = new ObservableCollection<AccountData>();
                     ThisAccount.CorrectPassword = inputPassView.inputPassViewModel.CorrectPassword;
-                    FileProcess.Instance.WriteFile(ThisAccount);
+                    FileWorker.WriteFile(ThisAccount);
                 }
                 else
                 {
@@ -201,12 +203,12 @@ namespace Password_Manager
         private void SaveAll(object obj)
         {
             if (!string.IsNullOrWhiteSpace(ThisAccount.CorrectPassword))
-                FileProcess.Instance.WriteFile(obj as Account);
+                FileWorker.WriteFile(obj as Account);
             else
             {
                 //If new user
                 if (new InputPassView().ShowDialog() == true)
-                    FileProcess.Instance.WriteFile(obj as Account);
+                    FileWorker.WriteFile(obj as Account);
             }
             IsSaved = true;
         }

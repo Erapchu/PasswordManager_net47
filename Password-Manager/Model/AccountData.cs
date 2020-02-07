@@ -7,7 +7,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Password_Manager
+namespace PasswordManager.Model
 {
     class AccountData : INotifyPropertyChanged
     {
