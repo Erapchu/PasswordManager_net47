@@ -193,12 +193,12 @@ namespace PasswordManager.ViewModel
         private void SaveAll(object obj)
         {
             if (!string.IsNullOrWhiteSpace(ThisAccount.CorrectPassword))
-                FileWorker.WriteFile(obj as Account);
+                FileWorker.WriteFile(ThisAccount);
             else
             {
                 //If new user
                 if (new InputPassView().ShowDialog() == true)
-                    FileWorker.WriteFile(obj as Account);
+                    FileWorker.WriteFile(ThisAccount);
             }
             IsSaved = true;
         }
@@ -207,10 +207,10 @@ namespace PasswordManager.ViewModel
         {
             ChangableAccount = new AccountData
             {
-                Login = (obj as AccountData).Login,
-                Name = (obj as AccountData).Name,
-                Other = (obj as AccountData).Other,
-                Password = (obj as AccountData).Password
+                Login = SelectedAccount.Login,
+                Name = SelectedAccount.Name,
+                Other = SelectedAccount.Other,
+                Password = SelectedAccount.Password
             };
             IsEditMode.Switch(true, true);
         }
@@ -223,7 +223,7 @@ namespace PasswordManager.ViewModel
             {
                 case MessageBoxResult.Yes:
                     {
-                        ThisAccount.Data.Remove((AccountData)obj);
+                        ThisAccount.Data.Remove(SelectedAccount);
                         IsSaved = false;
                         break;
                     }

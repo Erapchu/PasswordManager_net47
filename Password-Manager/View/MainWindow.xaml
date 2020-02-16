@@ -21,15 +21,16 @@
         </Grid.ColumnDefinitions>
         <Menu Grid.ColumnSpan="2">
             <MenuItem Header="File">
+                <MenuItem Header="Save"
+                          Command="{Binding SaveCommand}"/>
+            </MenuItem>
+            <MenuItem Header="Account">
                 <MenuItem Header="Add new credentials"
-                          Command="{Binding AddCommand}"
-                          CommandParameter="{Binding SelectedAccount}"/>
+                          Command="{Binding AddCommand}"/>
                 <MenuItem Header="Change selected credentials"
-                          Command="{Binding ChangeCommand}"
-                          CommandParameter="{Binding SelectedAccount}"/>
+                          Command="{Binding ChangeCommand}"/>
                 <MenuItem Header="Remove selected credentials"
-                          Command="{Binding RemoveCommand}"
-                          CommandParameter="{Binding SelectedAccount}"/>
+                          Command="{Binding RemoveCommand}"/>
             </MenuItem>
         </Menu>
         <Grid IsEnabled="{Binding IsEditMode.LeftPanel}"
