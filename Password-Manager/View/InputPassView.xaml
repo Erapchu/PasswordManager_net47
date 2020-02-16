@@ -8,8 +8,7 @@
         Title="Password Window"
         WindowStartupLocation="CenterScreen" 
         ResizeMode="CanMinimize" 
-        SizeToContent="WidthAndHeight"
-        >
+        SizeToContent="WidthAndHeight">
     <Grid>
         <StackPanel>
             <TextBlock 

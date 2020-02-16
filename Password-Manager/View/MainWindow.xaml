@@ -6,45 +6,70 @@
         xmlns:local="clr-namespace:PasswordManager.View"
         mc:Ignorable="d"
         Title="Password Manager"
-        Height="auto" 
-        Width="auto" 
+        Height="400" 
+        Width="700" 
         WindowStartupLocation="CenterScreen" 
-        ResizeMode="CanMinimize" 
-        SizeToContent="WidthAndHeight">
+        ResizeMode="CanMinimize" >
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"></ColumnDefinition>
-            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
             <ColumnDefinition Width="auto"></ColumnDefinition>
         </Grid.ColumnDefinitions>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-        </Grid.RowDefinitions>
-        <StackPanel IsEnabled="{Binding IsEditMode.LeftPanel}">
-            <StackPanel Margin="0 0 5 0">
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Grid.Column="0" Grid.Row="0">
-                    <TextBlock Text="Search" VerticalAlignment="Center" Margin="5"/>
-                    <TextBox Name="SearchTextBox" Margin="5" Height="20" Width="200" Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}" />
-                    <Button Name="Clearbutton" Content="Clear" HorizontalAlignment="Left" Command="{Binding Path=ClearCommand}" CommandParameter="{Binding Path=FilterText}" Margin="5" Height="30"/>
-                </StackPanel>
-            </StackPanel>
-            <StackPanel Grid.Column="0" Grid.Row="1">
-                <StackPanel Orientation="Horizontal">
-                    <Button Content="Add" Margin="5" Height="30" Padding="5" Command="{Binding Path=AddCommand}"/>
-                    <Button Content="Change" Margin="5" Height="30" Padding="5" Command="{Binding Path=ChangeCommand}" CommandParameter="{Binding SelectedAccount}"/>
-                    <Button Content="Remove" Margin="5" Height="30" Padding="5" Command="{Binding Path=RemoveCommand}" CommandParameter="{Binding SelectedAccount}"/>
-                    <Button Content="Save" Margin="5" Height="30" Padding="5" Command="{Binding Path=SaveCommand}" CommandParameter="{Binding ThisAccount}"/>
-                </StackPanel>
-                <ListBox x:Name="AccountsList" Margin="5" Height="300" MaxWidth="350" ItemsSource="{Binding ThisAccount.Data}" SelectedItem="{Binding Path=SelectedAccount, Mode=TwoWay}">
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <TextBlock Text="{Binding Path=Name}"/>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-            </StackPanel>
-        </StackPanel>
-        <StackPanel Grid.Column="1">
+        <Menu Grid.ColumnSpan="2">
+            <MenuItem Header="File">
+                <MenuItem Header="Add new credentials"
+                          Command="{Binding AddCommand}"
+                          CommandParameter="{Binding SelectedAccount}"/>
+                <MenuItem Header="Change selected credentials"
+                          Command="{Binding ChangeCommand}"
+                          CommandParameter="{Binding SelectedAccount}"/>
+                <MenuItem Header="Remove selected credentials"
+                          Command="{Binding RemoveCommand}"
+                          CommandParameter="{Binding SelectedAccount}"/>
+            </MenuItem>
+        </Menu>
+        <Grid IsEnabled="{Binding IsEditMode.LeftPanel}"
+              Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <TextBox
+                Grid.Row="0"
+                Name="SearchTextBox" 
+                Margin="10" 
+                HorizontalAlignment="Stretch"
+                Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"/>
+            <ListBox Grid.Row="1"
+                     x:Name="AccountsList" 
+                     Margin="10" 
+                     ItemsSource="{Binding ThisAccount.Data}" 
+                     SelectedItem="{Binding SelectedAccount, Mode=TwoWay}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"/>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+                <ListBox.ContextMenu>
+                    <ContextMenu>
+                        <MenuItem Header="Add"
+                                  Command="{Binding AddCommand}"/>
+                        <MenuItem Header="Change"
+                                  Command="{Binding ChangeCommand}"
+                                  CommandParameter="{Binding SelectedAccount}"/>
+                        <MenuItem Header="Remove"
+                                  Command="{Binding RemoveCommand}"
+                                  CommandParameter="{Binding SelectedAccount}"/>
+                    </ContextMenu>
+                </ListBox.ContextMenu>
+            </ListBox>
+        </Grid>
+        <StackPanel Grid.Column="1"
+                    Grid.Row="1">
             <StackPanel >
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                     <TextBlock Text="Name" VerticalAlignment="Center"></TextBlock>

@@ -111,7 +111,6 @@ namespace PasswordManager.ViewModel
             SaveCommand = new DelegateCommand(SaveAll, CanSaveAll);
             AcceptEditCommand = new DelegateCommand(AcceptEdits);
             DeclineEditCommand = new DelegateCommand(DeclineEdits);
-            ClearCommand = new DelegateCommand(ClearFilteredText, CanClearFilteredText);
 
             IsEditMode = new EditMode(false, false);
             FilteringCollection = CollectionViewSource.GetDefaultView(ThisAccount.Data);
@@ -135,10 +134,6 @@ namespace PasswordManager.ViewModel
         }
 
         #region Delegate commands
-        private bool CanClearFilteredText(object arg)
-        {
-            return !string.IsNullOrEmpty((string)arg);
-        }
 
         private bool CanSaveAll(object arg)
         {
@@ -153,11 +148,6 @@ namespace PasswordManager.ViewModel
         private bool CanRemoveAccountData(object arg)
         {
             return (arg as AccountData) != null;
-        }
-
-        private void ClearFilteredText(object obj)
-        {
-            FilterText = string.Empty;
         }
 
         private void DeclineEdits(object obj)
@@ -263,8 +253,6 @@ namespace PasswordManager.ViewModel
         public ICommand AcceptEditCommand { get; private set; }
 
         public ICommand DeclineEditCommand { get; private set; }
-
-        public ICommand ClearCommand { get; private set; }
         #endregion
 
         #region MVVM Pattern
@@ -274,19 +262,5 @@ namespace PasswordManager.ViewModel
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
         #endregion
-
-        /* динамическое создание делегатов, анонимные методы
-         * public ICommand AnyCommand
-         * {
-         *     get
-         *     {
-         *         return new DelegateCommand((obj) =>
-         *         {
-         *             //что-то выполняется
-         *         });
-         *     }
-         * }
-         */
-
     }
 }
