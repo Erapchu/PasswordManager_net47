@@ -16,11 +16,15 @@ namespace PasswordManager
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             InitializeComponent();
-
             //Start reading file
 
             //Start Views
             StartupUri = new Uri("View/MainWindow.xaml", UriKind.RelativeOrAbsolute);
+        }
+
+        private void CreateIoC()
+        {
+
         }
     }
 }
