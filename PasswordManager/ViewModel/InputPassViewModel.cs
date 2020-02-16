@@ -1,4 +1,4 @@
-﻿using PasswordManager.Helpers;
+﻿using PasswordManager.Core.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

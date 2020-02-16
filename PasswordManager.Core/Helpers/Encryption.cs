@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PasswordManager.Helpers
+namespace PasswordManager.Core.Helpers
 {
-    static class Encryption
+    public static class Encryption
     {
         public static string Process(string s, int KEY)
         {

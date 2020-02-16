@@ -7,9 +7,9 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PasswordManager.Model
+namespace PasswordManager.Core.Data
 {
-    class Account : INotifyPropertyChanged
+    public class Account : INotifyPropertyChanged
     {
         public ObservableCollection<AccountData> Data { get; set; }
 

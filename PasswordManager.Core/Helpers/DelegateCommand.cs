@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 
-namespace PasswordManager.Helpers
+namespace PasswordManager.Core.Helpers
 {
-    class DelegateCommand : ICommand
+    public class DelegateCommand : ICommand
     {
         public DelegateCommand(Action<object> executeAction): this(executeAction, null)
         {

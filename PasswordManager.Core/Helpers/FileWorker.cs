@@ -1,18 +1,12 @@
 ﻿using Newtonsoft.Json;
-using PasswordManager.Helpers;
-using PasswordManager.Model;
+using PasswordManager.Core.Data;
 using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 
-namespace PasswordManager.Helpers
+namespace PasswordManager.Core.Helpers
 {
-    internal static class FileWorker
+    public static class FileWorker
     {
         public static int DefaultRandomSize { get; private set; } = 20;
 

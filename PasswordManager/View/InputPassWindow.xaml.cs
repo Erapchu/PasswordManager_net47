@@ -18,15 +18,15 @@ namespace PasswordManager.View
     /// <summary>
     /// Interaction logic for PasswordView.xaml
     /// </summary>
-    public partial class InputPassView : Window
+    public partial class InputPassWindow : Window
     {
         internal InputPassViewModel inputPassViewModel; 
-        public InputPassView()
+        public InputPassWindow()
         {
             InitializeComponent();
         }
 
-        public InputPassView(string password, PassOperation operation): this()
+        public InputPassWindow(string password, PassOperation operation): this()
         {
             inputPassViewModel = new InputPassViewModel(password, operation);
             this.DataContext = inputPassViewModel;
