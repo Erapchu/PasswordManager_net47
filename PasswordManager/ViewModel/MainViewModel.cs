@@ -1,6 +1,6 @@
 ﻿using PasswordManager.Core.Data;
 using PasswordManager.Core.Helpers;
-using PasswordManager.View;
+using PasswordManager.Windows;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;

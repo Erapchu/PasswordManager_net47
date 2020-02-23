@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace PasswordManager.View
+namespace PasswordManager.Windows
 {
     /// <summary>
     /// Interaction logic for MainView.xaml
