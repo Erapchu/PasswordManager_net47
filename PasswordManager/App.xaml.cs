@@ -19,7 +19,7 @@ namespace PasswordManager
             //Start reading file
 
             //Start Views
-            StartupUri = new Uri("View/MainWindow.xaml", UriKind.RelativeOrAbsolute);
+            StartupUri = new Uri("Windows/MainWindow.xaml", UriKind.RelativeOrAbsolute);
         }
 
         private void CreateIoC()
