@@ -1,11 +1,11 @@
-﻿using PasswordManager.Core.Data;
+﻿using GalaSoft.MvvmLight;
+using PasswordManager.Core.Data;
 using PasswordManager.Core.Helpers;
 using PasswordManager.Windows;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -19,7 +19,7 @@ namespace PasswordManager.ViewModel
         ChangePassword
     }
 
-    class MainViewModel : INotifyPropertyChanged
+    class MainViewModel : ViewModelBase
     {
         public ICollectionView FilteringCollection { get; private set; }
         public EditMode IsEditMode { get; set; }
@@ -35,7 +35,7 @@ namespace PasswordManager.ViewModel
             set
             {
                 _ChangableAcount = value;
-                OnPropertyChanged();
+                RaisePropertyChanged();
             }
         }
 
@@ -49,7 +49,7 @@ namespace PasswordManager.ViewModel
             set
             {
                 _SelectedAccount = value;
-                OnPropertyChanged();
+                RaisePropertyChanged();
             }
         }
 
@@ -64,7 +64,7 @@ namespace PasswordManager.ViewModel
             {
                 _FilterText = value;
                 FilteringCollection.Refresh();
-                OnPropertyChanged();
+                RaisePropertyChanged();
             }
         }
 
@@ -253,14 +253,6 @@ namespace PasswordManager.ViewModel
         public ICommand AcceptEditCommand { get; private set; }
 
         public ICommand DeclineEditCommand { get; private set; }
-        #endregion
-
-        #region MVVM Pattern
-        public event PropertyChangedEventHandler PropertyChanged;
-        void OnPropertyChanged([CallerMemberName]string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
         #endregion
     }
 }

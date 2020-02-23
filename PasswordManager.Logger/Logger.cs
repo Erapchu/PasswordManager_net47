@@ -11,7 +11,7 @@ namespace PasswordManager
     public static class Logger
     {
         internal static string PathToLogger => Pri.LongPath.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), nameOfLoggerFile);
-        private static string nameOfLoggerFile = @"PasswordManager\PasswordManager.log";
+        private static readonly string nameOfLoggerFile = @"PasswordManager\PasswordManager.log";
 
         static Logger()
         {

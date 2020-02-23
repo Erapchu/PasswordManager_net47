@@ -1,4 +1,6 @@
-﻿using PasswordManager.Core.Helpers;
+﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.CommandWpf;
+using PasswordManager.Core.Helpers;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -11,7 +13,7 @@ using System.Windows.Input;
 
 namespace PasswordManager.ViewModel
 {
-    internal class InputPassViewModel : INotifyPropertyChanged
+    internal class InputPassViewModel : ViewModelBase
     {
         #region Fields
         private string password;
@@ -21,7 +23,7 @@ namespace PasswordManager.ViewModel
             set
             {
                 password = value;
-                OnPropertyChanged();
+                RaisePropertyChanged();
             }
         }
 
@@ -38,7 +40,7 @@ namespace PasswordManager.ViewModel
             private set
             {
                 status = value;
-                OnPropertyChanged();
+                RaisePropertyChanged();
             } 
         }
 
@@ -52,7 +54,7 @@ namespace PasswordManager.ViewModel
             set 
             {
                 statusVisibility = value;
-                OnPropertyChanged();
+                RaisePropertyChanged();
             } 
         }
         #endregion
@@ -60,8 +62,6 @@ namespace PasswordManager.ViewModel
         #region Constructors
         public InputPassViewModel()
         {
-            ContinueCommand = new DelegateCommand(Continue, CanContinue);
-            ExitCommand = new DelegateCommand(Exit);
             statusVisibility = Visibility.Collapsed;
         }
 
@@ -73,19 +73,13 @@ namespace PasswordManager.ViewModel
         #endregion
 
         #region Implements of commands
-        private void Exit(object obj)
+        private void Exit()
         {
             Environment.Exit(0);
         }
 
-        private bool CanContinue(object arg)
+        private void Continue(Window window)
         {
-            return !string.IsNullOrWhiteSpace(Password);
-        }
-
-        private void Continue(object obj)
-        {
-            Window window = obj as Window;
             if (window == null) return;
 
             switch (this.Operation)
@@ -117,16 +111,13 @@ namespace PasswordManager.ViewModel
         #endregion
 
         #region Commands
-        public ICommand ContinueCommand { get; private set; }
-        public ICommand ExitCommand { get; private set; }
-        #endregion
+        private RelayCommand<Window> continueCommand;
+        public RelayCommand<Window> ContinueCommand => continueCommand
+            ?? (continueCommand = new RelayCommand<Window>(Continue));
 
-        #region MVVM Pattern
-        public event PropertyChangedEventHandler PropertyChanged;
-        void OnPropertyChanged([CallerMemberName]string propertyName = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-        }
+        private RelayCommand exitCommand;
+        public RelayCommand ExitCommand => exitCommand
+            ?? (exitCommand = new RelayCommand(Exit));
         #endregion
     }
 }
