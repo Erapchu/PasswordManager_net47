@@ -18,6 +18,10 @@ namespace PasswordManager
             InitializeComponent();
             //Start reading file
 
+            Logger.Info("Log session started!");
+
+            //TODO: Create IoC here
+
             //Start Views
             StartupUri = new Uri("Windows/MainWindow.xaml", UriKind.RelativeOrAbsolute);
         }

@@ -17,7 +17,7 @@ namespace PasswordManager
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.File(PathToLogger, rollingInterval: RollingInterval.Day)
+                .WriteTo.File(PathToLogger, rollingInterval: RollingInterval.Month)
                 .CreateLogger();
         }
 
