@@ -1,4 +1,6 @@
-﻿using System;
+﻿using PasswordManager.Core.Data;
+using PasswordManager.Windows;
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
@@ -13,22 +15,26 @@ namespace PasswordManager
     /// </summary>
     public partial class App : Application
     {
+        ContainerBuildHelper _buildHelper;
+        InputPassWindow _inputPassWindow;
+        MainWindow _mainWindow;
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             InitializeComponent();
-            //Start reading file
 
             Logger.Info("Log session started!");
 
-            //TODO: Create IoC here
+            //Start reading file
+            var config = Configuration.Instance;
 
-            //Start Views
-            StartupUri = new Uri("Windows/MainWindow.xaml", UriKind.RelativeOrAbsolute);
-        }
+            //Create IoC here
+            _buildHelper = new ContainerBuildHelper();
+            _inputPassWindow = _buildHelper.Resolve<InputPassWindow>();
+            _inputPassWindow.Show();
 
-        private void CreateIoC()
-        {
-
+            _mainWindow = _buildHelper.Resolve<MainWindow>();
+            _mainWindow.Show();
         }
     }
 }

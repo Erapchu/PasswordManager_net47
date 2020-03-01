@@ -1,4 +1,5 @@
-﻿using PasswordManager.ViewModel;
+﻿using Autofac;
+using PasswordManager.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,11 +22,24 @@ namespace PasswordManager.Windows
     public partial class MainWindow : Window
     {
         private readonly MainViewModel viewModel;
-        public MainWindow()
+        ILifetimeScope _lifetimeScope;
+        public MainWindow(ILifetimeScope lifetimeScope)
         {
             InitializeComponent();
-            viewModel = new MainViewModel();
+            _lifetimeScope = lifetimeScope.BeginLifetimeScope();
+            viewModel = _lifetimeScope.Resolve<MainViewModel>();
             DataContext = viewModel;
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            //TODO Start reading file
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            _lifetimeScope.Dispose();
+            _lifetimeScope = null;
         }
     }
 }

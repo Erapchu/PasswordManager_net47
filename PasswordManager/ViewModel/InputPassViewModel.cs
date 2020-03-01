@@ -62,27 +62,21 @@ namespace PasswordManager.ViewModel
         #region Constructors
         public InputPassViewModel()
         {
-            statusVisibility = Visibility.Collapsed;
-        }
-
-        public InputPassViewModel(string pass, PassOperation op): this()
-        {
-            this.Operation = op;
-            this.CorrectPassword = pass;
+            //statusVisibility = Visibility.Collapsed;
         }
         #endregion
 
         #region Implements of commands
         private void Exit()
         {
-            Environment.Exit(0);
+            //Environment.Exit(0);
         }
 
         private void Continue(Window window)
         {
             if (window == null) return;
 
-            switch (this.Operation)
+            /*switch (this.Operation)
             {
                 case PassOperation.DefaultUser:
                     if (!string.IsNullOrWhiteSpace(CorrectPassword) && CorrectPassword == Password)
@@ -106,7 +100,7 @@ namespace PasswordManager.ViewModel
                     CorrectPassword = Password;
                     window.DialogResult = true;
                     break;
-            }
+            }*/
         }
         #endregion
 

@@ -68,42 +68,10 @@ namespace PasswordManager.ViewModel
             }
         }
 
-        public Account ThisAccount { get; set; }
+        public Account ThisAccount => Configuration.Instance.Account;
 
         public MainViewModel()
         {
-            //Get data from file
-            ThisAccount = FileWorker.ReadFile();
-            if (ThisAccount == null)
-            {
-                ThisAccount = new Account();
-            }
-
-            //Try to do multi accounts?
-
-            InputPassWindow inputPassView;
-            if (ThisAccount.CorrectPassword == null)
-            {
-                //Новый пользователь
-                inputPassView = new InputPassWindow(string.Empty, PassOperation.NewUser);
-                if (inputPassView.ShowDialog() == true)
-                {
-                    ThisAccount.Data = new ObservableCollection<AccountData>();
-                    ThisAccount.CorrectPassword = inputPassView.inputPassViewModel.CorrectPassword;
-                    FileWorker.WriteFile(ThisAccount);
-                }
-                else
-                {
-                    Environment.Exit(0);
-                }
-            }
-            else
-            {
-                //Already with password
-                inputPassView = new InputPassWindow(ThisAccount.CorrectPassword, PassOperation.DefaultUser);
-                if (inputPassView.ShowDialog() == false) Environment.Exit(0);
-            }
-
             //Init
             AddCommand = new DelegateCommand(AddAccountData);
             RemoveCommand = new DelegateCommand(RemoveAccountData, CanRemoveAccountData);
@@ -116,7 +84,6 @@ namespace PasswordManager.ViewModel
             FilteringCollection = CollectionViewSource.GetDefaultView(ThisAccount.Data);
             FilteringCollection.Filter = FilterAccountDatas;
             IsSaved = true;
-
         }
 
         private bool FilterAccountDatas(object obj)
@@ -194,12 +161,12 @@ namespace PasswordManager.ViewModel
         {
             if (!string.IsNullOrWhiteSpace(ThisAccount.CorrectPassword))
                 FileWorker.WriteFile(ThisAccount);
-            else
+            /*else
             {
                 //If new user
                 if (new InputPassWindow().ShowDialog() == true)
                     FileWorker.WriteFile(ThisAccount);
-            }
+            }*/
             IsSaved = true;
         }
 

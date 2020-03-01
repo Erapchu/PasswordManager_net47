@@ -1,4 +1,5 @@
-﻿using PasswordManager.ViewModel;
+﻿using Autofac;
+using PasswordManager.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -20,16 +21,15 @@ namespace PasswordManager.Windows
     /// </summary>
     public partial class InputPassWindow : Window
     {
-        internal InputPassViewModel inputPassViewModel; 
-        public InputPassWindow()
+        private InputPassViewModel viewModel;
+        private ILifetimeScope _lifetimeScope;
+        public InputPassWindow(ILifetimeScope lifetimeScope)
         {
             InitializeComponent();
-        }
 
-        public InputPassWindow(string password, PassOperation operation): this()
-        {
-            inputPassViewModel = new InputPassViewModel(password, operation);
-            this.DataContext = inputPassViewModel;
+            _lifetimeScope = lifetimeScope.BeginLifetimeScope();
+            viewModel = _lifetimeScope.Resolve<InputPassViewModel>();
+            DataContext = viewModel;
         }
     }
 }
