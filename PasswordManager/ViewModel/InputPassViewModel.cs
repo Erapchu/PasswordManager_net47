@@ -34,7 +34,16 @@ namespace PasswordManager.ViewModel
             }
         }
 
-        public string CorrectPassword { get; private set; }
+        private string _correctPassword;
+        public string CorrectPassword
+        {
+            get => _correctPassword;
+            set
+            {
+                _correctPassword = value;
+                RaisePropertyChanged();
+            }
+        }
         public PassOperation Operation { get; private set; }
 
         private string statusText;

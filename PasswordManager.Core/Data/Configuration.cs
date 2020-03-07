@@ -14,7 +14,10 @@ namespace PasswordManager.Core.Data
 
         public Configuration()
         {
-            Account = FileWorker.ReadFile();
+            Task.Run(async () =>
+            {
+                Account = await FileWorker.ReadFileAsync();
+            });
         }
 
         public Account Account { get; set; }

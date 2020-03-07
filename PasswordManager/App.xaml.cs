@@ -30,11 +30,17 @@ namespace PasswordManager
 
             //Create IoC here
             _buildHelper = new ContainerBuildHelper();
+
+            //Create login window
+            Logger.Info("Initialize login window...");
             _inputPassWindow = _buildHelper.Resolve<InputPassWindow>();
             _inputPassWindow.ShowDialog();
 
-            //_mainWindow = _buildHelper.Resolve<MainWindow>();
-            //_mainWindow.Show();
+            if (_inputPassWindow.DialogResult == true)
+            {
+                _mainWindow = _buildHelper.Resolve<MainWindow>();
+                _mainWindow.Show();
+            }
         }
     }
 }

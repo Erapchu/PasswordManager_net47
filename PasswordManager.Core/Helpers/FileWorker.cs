@@ -2,6 +2,7 @@
 using PasswordManager.Core.Data;
 using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 
 namespace PasswordManager.Core.Helpers
@@ -41,7 +42,7 @@ namespace PasswordManager.Core.Helpers
         /// Read file data
         /// </summary>
         /// <returns></returns>
-        public static Account ReadFile()
+        public static async Task<Account> ReadFileAsync()
         {
             try
             {
