@@ -15,14 +15,21 @@ namespace PasswordManager.ViewModel
 {
     internal class InputPassViewModel : ViewModelBase
     {
-        #region Fields
-        private string password;
-        public string Password
+        #region Design Time Instance
+        private static Lazy<InputPassViewModel> _lazy = new Lazy<InputPassViewModel>(() => new InputPassViewModel());
+        public static InputPassViewModel DesignTimeInstance => _lazy.Value;
+        #endregion
+
+        #region Properties
+        public event Action ContinueAuthorization;
+
+        private string currentPassword;
+        public string CurrentPassword
         {
-            get { return password; }
+            get => currentPassword;
             set
             {
-                password = value;
+                currentPassword = value;
                 RaisePropertyChanged();
             }
         }
@@ -30,30 +37,24 @@ namespace PasswordManager.ViewModel
         public string CorrectPassword { get; private set; }
         public PassOperation Operation { get; private set; }
 
-        private string status;
-        public string Status 
-        { 
-            get
-            {
-                return status;
-            }
+        private string statusText;
+        public string StatusText
+        {
+            get => statusText;
             private set
             {
-                status = value;
+                statusText = value;
                 RaisePropertyChanged();
             } 
         }
 
-        private Visibility statusVisibility;
-        public Visibility StatusVisibility 
-        { 
-            get 
-            { 
-                return statusVisibility; 
-            }
+        private bool isStatusShowed;
+        public bool IsStatusShowed
+        {
+            get => isStatusShowed;
             set 
             {
-                statusVisibility = value;
+                isStatusShowed = value;
                 RaisePropertyChanged();
             } 
         }
@@ -62,56 +63,34 @@ namespace PasswordManager.ViewModel
         #region Constructors
         public InputPassViewModel()
         {
-            //statusVisibility = Visibility.Collapsed;
+
         }
         #endregion
 
         #region Implements of commands
-        private void Exit()
+        private void Continue()
         {
-            //Environment.Exit(0);
-        }
-
-        private void Continue(Window window)
-        {
-            if (window == null) return;
-
-            /*switch (this.Operation)
+            if (CorrectPassword is null)
             {
-                case PassOperation.DefaultUser:
-                    if (!string.IsNullOrWhiteSpace(CorrectPassword) && CorrectPassword == Password)
-                        window.DialogResult = true;
-                    else
-                    {
-                        StatusVisibility = Visibility.Visible;
-                        Status = "Password is incorrect";
-                    }
-                    break;
-                case PassOperation.ChangePassword:
-                    if (CorrectPassword != Password)
-                    {
-                        CorrectPassword = Password;
-                        window.DialogResult = true;
-                    }
-                    else 
-                        MessageBox.Show("New password is equivalent old password", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                    break;
-                case PassOperation.NewUser:
-                    CorrectPassword = Password;
-                    window.DialogResult = true;
-                    break;
-            }*/
+                StatusText = "Can't load correct password";
+                IsStatusShowed = true;
+                return;
+            }
+
+            if (CurrentPassword.Equals(CorrectPassword))
+                ContinueAuthorization?.Invoke();
+            else
+            {
+                StatusText = "Password is incorrect";
+                IsStatusShowed = true;
+            }
         }
         #endregion
 
         #region Commands
-        private RelayCommand<Window> continueCommand;
-        public RelayCommand<Window> ContinueCommand => continueCommand
-            ?? (continueCommand = new RelayCommand<Window>(Continue));
-
-        private RelayCommand exitCommand;
-        public RelayCommand ExitCommand => exitCommand
-            ?? (exitCommand = new RelayCommand(Exit));
+        private RelayCommand continueCommand;
+        public RelayCommand ContinueCommand => continueCommand
+            ?? (continueCommand = new RelayCommand(Continue));
         #endregion
     }
 }

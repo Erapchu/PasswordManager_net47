@@ -29,7 +29,19 @@ namespace PasswordManager.Windows
 
             _lifetimeScope = lifetimeScope.BeginLifetimeScope();
             viewModel = _lifetimeScope.Resolve<InputPassViewModel>();
+            viewModel.ContinueAuthorization += ViewModel_ContinueAuthorization;
             DataContext = viewModel;
+        }
+
+        private void ViewModel_ContinueAuthorization()
+        {
+            DialogResult = true;
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            _lifetimeScope.Dispose();
+            _lifetimeScope = null;
         }
     }
 }
