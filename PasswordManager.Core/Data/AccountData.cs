@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace PasswordManager.Core.Data
 {
+    [DebuggerDisplay("Name = {Name}, Login = {Login}, Password = {Password}")]
     public class AccountData : INotifyPropertyChanged
     {
         private string _name;

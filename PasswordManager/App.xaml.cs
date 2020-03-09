@@ -1,4 +1,5 @@
-﻿using PasswordManager.Core.Data;
+﻿using PasswordManager.Core;
+using PasswordManager.Core.Data;
 using PasswordManager.Windows;
 using System;
 using System.Collections.Generic;
@@ -23,16 +24,17 @@ namespace PasswordManager
         {
             InitializeComponent();
 
-            Logger.Info("Log session started!");
+            Logger.SetPathToLogger(Constants.PathToLogger);
+            Logger.Instance.Info("Log session started!");
 
-            //Start reading file
-            var config = Configuration.Instance;
+            Logger.Instance.Info("Start reading configuration...");
+            Task.Run(() => Configuration.Instance);
 
             //Create IoC here
             _buildHelper = new ContainerBuildHelper();
 
             //Create login window
-            Logger.Info("Initialize login window...");
+            Logger.Instance.Info("Initialize login window...");
             _inputPassWindow = _buildHelper.Resolve<InputPassWindow>();
             _inputPassWindow.ShowDialog();
 

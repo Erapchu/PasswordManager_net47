@@ -68,7 +68,7 @@ namespace PasswordManager.ViewModel
             }
         }
 
-        public Account ThisAccount => Configuration.Instance.Account;
+        public Account ThisAccount => Configuration.Instance.CurrentAccount;
 
         public MainViewModel()
         {
@@ -160,7 +160,7 @@ namespace PasswordManager.ViewModel
         private void SaveAll(object obj)
         {
             if (!string.IsNullOrWhiteSpace(ThisAccount.CorrectPassword))
-                FileWorker.WriteFile(ThisAccount);
+                Configuration.Instance.SaveData();
             /*else
             {
                 //If new user

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -9,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace PasswordManager.Core.Data
 {
+    [DebuggerDisplay("User password = {CorrectPassword}, Count of passwords = {Data.Count}")]
     public class Account : INotifyPropertyChanged
     {
         public ObservableCollection<AccountData> Data { get; set; }
