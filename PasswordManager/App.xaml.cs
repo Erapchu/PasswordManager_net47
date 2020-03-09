@@ -28,6 +28,8 @@ namespace PasswordManager
             Logger.Instance.Info("Log session started!");
 
             Logger.Instance.Info("Start reading configuration...");
+            var intro = new IntroWindow();
+            intro.Show();
             Task.Run(() => Configuration.Instance);
 
             //Create IoC here

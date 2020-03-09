@@ -8,6 +8,7 @@
              Startup="Application_Startup">
   <Application.Resources>
         <ResourceDictionary>
+            <BitmapImage x:Key="IntroImage" UriSource="/PasswordManager.Core;component/Resources/IntroOld.png"/>
         </ResourceDictionary>
   </Application.Resources>
 </Application>
