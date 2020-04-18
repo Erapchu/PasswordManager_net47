@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PasswordManager.Windows"
         xmlns:vm="clr-namespace:PasswordManager.ViewModel"
+        xmlns:conv="clr-namespace:PasswordManager.Core.Converters;assembly=PasswordManager.Core"
         mc:Ignorable="d"
         d:DataContext="{x:Static vm:MainViewModel.DesignTimeInstance}"
         Title="Password Manager"
@@ -14,6 +15,9 @@
         ResizeMode="CanMinimize" 
         Loaded="Window_Loaded"
         Closed="Window_Closed">
+    <Window.Resources>
+        <conv:InvertBooleanConverter x:Key="InvertBooleanConv"/>
+    </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
@@ -37,7 +41,8 @@
                           Command="{Binding RemoveCommand}"/>
             </MenuItem>
         </Menu>
-        <Grid Grid.Row="1">
+        <Grid Grid.Row="1"
+              IsEnabled="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
@@ -71,15 +76,6 @@
                     </ContextMenu>
                 </ListBox.ContextMenu>
             </ListBox>
-            <Grid.Style>
-                <Style TargetType="Grid">
-                    <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsEditMode}" Value="True">
-                            <Setter Property="IsEnabled" Value="False"/>
-                        </DataTrigger>
-                    </Style.Triggers>
-                </Style>
-            </Grid.Style>
         </Grid>
         <Grid Grid.Column="1"
               Grid.Row="1">
@@ -96,7 +92,7 @@
                                  Width="250" 
                                  MaxHeight="36" 
                                  Margin="5" 
-                                 IsReadOnly="{Binding IsEditMode}" 
+                                 IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
                                  Text="{Binding Path=SelectedAccount.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  ScrollViewer.CanContentScroll="True"/>
@@ -109,7 +105,7 @@
                                  Width="250" 
                                  MaxHeight="36" 
                                  Margin="5" 
-                                 IsReadOnly="{Binding IsEditMode}" 
+                                 IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
                                  Text="{Binding Path=SelectedAccount.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  ScrollViewer.CanContentScroll="True"/>
@@ -122,7 +118,7 @@
                                  Width="250" 
                                  MaxHeight="36" 
                                  Margin="5" 
-                                 IsReadOnly="{Binding IsEditMode}" 
+                                 IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
                                  Text="{Binding Path=SelectedAccount.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  ScrollViewer.CanContentScroll="True"/>
@@ -134,7 +130,7 @@
                         <TextBox Name="OtherTextBox"
                                  Width="250" 
                                  Margin="5" 
-                                 IsReadOnly="{Binding IsEditMode}" 
+                                 IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
                                  Text="{Binding Path=SelectedAccount.Other, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  AcceptsReturn="True" 

@@ -43,5 +43,15 @@ namespace PasswordManager
         {
             return _lifetimeScope.Resolve<T>();
         }
+
+        public T Resolve<T>(params AutofacNamedParameter[] parameters)
+        {
+            return _lifetimeScope.Resolve<T>(parameters.Select(p => p.Parameter));
+        }
+    }
+    public class AutofacNamedParameter
+    {
+        public NamedParameter Parameter { get; }
+        public AutofacNamedParameter(string name, object value) => Parameter = new NamedParameter(name, value);
     }
 }

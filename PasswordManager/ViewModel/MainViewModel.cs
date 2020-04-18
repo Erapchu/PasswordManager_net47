@@ -24,7 +24,7 @@ namespace PasswordManager.ViewModel
     class MainViewModel : ViewModelBase
     {
         #region Design Time
-        private static Lazy<MainViewModel> _lazy = new Lazy<MainViewModel>(() => new MainViewModel());
+        private static Lazy<MainViewModel> _lazy = new Lazy<MainViewModel>(() => new MainViewModel(IntPtr.Zero));
         public static MainViewModel DesignTimeInstance => _lazy.Value;
 
         private void LoadOnDesignTime()
@@ -35,6 +35,8 @@ namespace PasswordManager.ViewModel
             SelectedAccount = accountDataList.First();
         }
         #endregion
+
+        public IntPtr _windowHandle;
 
         public ICollectionView AllAccountsCollectionView { get; private set; }
 
@@ -95,8 +97,10 @@ namespace PasswordManager.ViewModel
 
         public Account ThisAccount { get; private set; }
 
-        public MainViewModel()
+        public MainViewModel(IntPtr windowHandle)
         {
+            this._windowHandle = windowHandle;
+
             if (this.IsInDesignMode)
                 LoadOnDesignTime();
             else
@@ -198,19 +202,17 @@ namespace PasswordManager.ViewModel
         private void RemoveAccountData()
         {
             //Do you really want to delete it?
-            var result = MessageBox.Show("Do you really want to delete this item?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            switch (result)
+            var result = System.Windows.Forms.MessageBox.Show(
+                new HwndWrapper(_windowHandle),
+                "Do you really want to delete this item?", 
+                "Question",
+                System.Windows.Forms.MessageBoxButtons.YesNo,
+                System.Windows.Forms.MessageBoxIcon.Question,
+                System.Windows.Forms.MessageBoxDefaultButton.Button1);
+            if (result == System.Windows.Forms.DialogResult.Yes)
             {
-                case MessageBoxResult.Yes:
-                    {
-                        ThisAccount.Data.Remove(SelectedAccount);
-                        IsSaved = false;
-                        break;
-                    }
-                case MessageBoxResult.No:
-                    {
-                        break;
-                    }
+                ThisAccount.Data.Remove(SelectedAccount);
+                IsSaved = false;
             }
         }
 
