@@ -27,7 +27,7 @@ namespace PasswordManager.Core.Data
 
         private Configuration()
         {
-            Logger.Instance.Info("Init or create file with data...");
+            Logger.Instance.Info("Init file with data...");
             CurrentAccount = InitOrCreateDataFile();
         }
 
@@ -55,7 +55,7 @@ namespace PasswordManager.Core.Data
             }
             catch
             {
-                Logger.Instance.Error("Can't save data");
+                Logger.Instance.Error("Can't save data.");
                 return false;
             }
         }
@@ -89,7 +89,7 @@ namespace PasswordManager.Core.Data
             }
             catch (FileNotFoundException)
             {
-                Logger.Instance.Warn("No file exist. New file will be created");
+                Logger.Instance.Warn("No file exist. New file will be created.");
                 Pri.LongPath.File.Create(Constants.PathToMainFile);
             }
             catch (Exception ex)

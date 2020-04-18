@@ -65,6 +65,13 @@ namespace PasswordManager
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
+
+                _introWindow.Close();
+                _introWindow = null;
+                _mainWindow.Close();
+                _mainWindow = null;
+                _inputPassWindow.Close();
+                _inputPassWindow = null;
             }
         }
     }
