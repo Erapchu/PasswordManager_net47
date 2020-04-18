@@ -72,7 +72,7 @@ namespace PasswordManager.ViewModel
             var correctPassword = Configuration.Instance?.CurrentAccount?.CorrectPassword;
             if (correctPassword is null)
             {
-                StatusText = "Please wait while reading file...";
+                StatusText = "File with data is corrupted";
                 IsStatusShowed = true;
                 return;
             }

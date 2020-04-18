@@ -1,8 +1,10 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using PasswordManager.Core.Data;
 using PasswordManager.Core.Helpers;
 using PasswordManager.Windows;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
@@ -21,8 +23,30 @@ namespace PasswordManager.ViewModel
 
     class MainViewModel : ViewModelBase
     {
+        #region Design Time
+        private static Lazy<MainViewModel> _lazy = new Lazy<MainViewModel>(() => new MainViewModel());
+        public static MainViewModel DesignTimeInstance => _lazy.Value;
+
+        private void LoadOnDesignTime()
+        {
+            var accountDataList = new List<AccountData>() { new AccountData("name", "login", "password", "other") };
+            ThisAccount = new Account() { Data = new ObservableCollection<AccountData>(accountDataList) };
+            SelectedAccount = accountDataList.First();
+        }
+        #endregion
+
         public ICollectionView FilteringCollection { get; private set; }
-        public EditMode IsEditMode { get; set; }
+
+        private bool _isEditMode;
+        public bool IsEditMode 
+        {
+            get => _isEditMode;
+            set
+            {
+                _isEditMode = value;
+                RaisePropertyChanged();
+            }
+        }
         private bool IsSaved { get; set; }
 
         private AccountData _ChangableAcount;
@@ -68,22 +92,19 @@ namespace PasswordManager.ViewModel
             }
         }
 
-        public Account ThisAccount => Configuration.Instance.CurrentAccount;
+        public Account ThisAccount { get; private set; }
 
         public MainViewModel()
         {
-            //Init
-            AddCommand = new DelegateCommand(AddAccountData);
-            RemoveCommand = new DelegateCommand(RemoveAccountData, CanRemoveAccountData);
-            ChangeCommand = new DelegateCommand(ChangeAccountData, CanChangeAccountData);
-            SaveCommand = new DelegateCommand(SaveAll, CanSaveAll);
-            AcceptEditCommand = new DelegateCommand(AcceptEdits);
-            DeclineEditCommand = new DelegateCommand(DeclineEdits);
-
-            IsEditMode = new EditMode(false, false);
-            FilteringCollection = CollectionViewSource.GetDefaultView(ThisAccount.Data);
-            FilteringCollection.Filter = FilterAccountDatas;
-            IsSaved = true;
+            if (this.IsInDesignMode)
+                LoadOnDesignTime();
+            else
+            {
+                ThisAccount = Configuration.Instance.CurrentAccount;
+                FilteringCollection = CollectionViewSource.GetDefaultView(ThisAccount.Data);
+                FilteringCollection.Filter = FilterAccountDatas;
+                IsSaved = true;
+            }
         }
 
         private bool FilterAccountDatas(object obj)
@@ -102,62 +123,52 @@ namespace PasswordManager.ViewModel
 
         #region Delegate commands
 
-        private bool CanSaveAll(object arg)
+        private bool CanSaveAll()
         {
             return !IsSaved;
         }
 
-        private bool CanChangeAccountData(object arg)
+        private bool CanEditAccountData()
         {
-            return (arg as AccountData) != null;
+            return SelectedAccount != null;
         }
 
-        private bool CanRemoveAccountData(object arg)
+        private bool CanRemoveAccountData()
         {
-            return (arg as AccountData) != null;
+            return SelectedAccount != null;
         }
 
-        private void DeclineEdits(object obj)
+        private void DeclineEdits()
         {
-            if (IsEditMode.DoesAccountChange)
+            if (IsEditMode)
             {
                 ThisAccount.Data[ThisAccount.Data.IndexOf(SelectedAccount)] = ChangableAccount;
                 SelectedAccount = ChangableAccount;
-                IsEditMode.Switch(false, false);
             }
             else
             {
                 SelectedAccount = null;
-                IsEditMode.Switch(false);
             }
+            IsEditMode = false;
         }
 
-        private void AcceptEdits(object obj)
+        private void AcceptEdits()
         {
             if (CheckEmptyInput())
             {
-                if (IsEditMode.DoesAccountChange)
-                {
-                    IsEditMode.Switch(false, false);
-                }
-                else
-                {
-                    ThisAccount.Data.Add(new AccountData
-                    {
-                        Login = SelectedAccount.Login,
-                        Name = SelectedAccount.Name,
-                        Other = SelectedAccount.Other == null ? string.Empty : SelectedAccount.Other,
-                        Password = SelectedAccount.Password
-                    });
-                    SelectedAccount = ThisAccount.Data.Last();
-                    IsEditMode.Switch(false);
-                }
+                ThisAccount.Data.Add(new AccountData(
+                    SelectedAccount.Name,
+                    SelectedAccount.Login,
+                    SelectedAccount.Password,
+                    SelectedAccount.Other == null ? string.Empty : SelectedAccount.Other));
+                SelectedAccount = ThisAccount.Data.Last();
+                IsEditMode = false;
                 IsSaved = false;
             }
             else MessageBox.Show("Please, fill this data: Name, Login, Password", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
         }
 
-        private void SaveAll(object obj)
+        private void SaveAll()
         {
             if (!string.IsNullOrWhiteSpace(ThisAccount.CorrectPassword))
                 Configuration.Instance.SaveData();
@@ -170,19 +181,17 @@ namespace PasswordManager.ViewModel
             IsSaved = true;
         }
 
-        private void ChangeAccountData(object obj)
+        private void ChangeAccountData()
         {
-            ChangableAccount = new AccountData
-            {
-                Login = SelectedAccount.Login,
-                Name = SelectedAccount.Name,
-                Other = SelectedAccount.Other,
-                Password = SelectedAccount.Password
-            };
-            IsEditMode.Switch(true, true);
+            ChangableAccount = new AccountData(
+                    SelectedAccount.Name,
+                    SelectedAccount.Login,
+                    SelectedAccount.Password,
+                    SelectedAccount.Other == null ? string.Empty : SelectedAccount.Other);
+            IsEditMode = true;
         }
 
-        private void RemoveAccountData(object obj)
+        private void RemoveAccountData()
         {
             //Do you really want to delete it?
             var result = MessageBox.Show("Do you really want to delete this item?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question);
@@ -201,25 +210,73 @@ namespace PasswordManager.ViewModel
             }
         }
 
-        private void AddAccountData(object obj)
+        private void AddAccountData()
         {
             SelectedAccount = new AccountData();
-            IsEditMode.Switch(true);
+            IsEditMode = true;
         }
         #endregion
 
         #region Commands of buttons
-        public ICommand AddCommand { get; private set; }
+        private RelayCommand _addCommand;
+        public RelayCommand AddCommand
+        {
+            get
+            {
+                return _addCommand
+                    ?? (_addCommand = new RelayCommand(AddAccountData));
+            }
+        }
 
-        public ICommand RemoveCommand { get; private set; }
+        private RelayCommand _removeCommand;
+        public RelayCommand RemoveCommand
+        {
+            get
+            {
+                return _removeCommand
+                    ?? (_removeCommand = new RelayCommand(RemoveAccountData));
+            }
+        }
 
-        public ICommand ChangeCommand { get; private set; }
+        private RelayCommand _changeCommand;
+        public RelayCommand ChangeCommand
+        {
+            get
+            {
+                return _changeCommand
+                    ?? (_changeCommand = new RelayCommand(ChangeAccountData));
+            }
+        }
 
-        public ICommand SaveCommand { get; private set; }
+        private RelayCommand _saveCommand;
+        public RelayCommand SaveCommand
+        {
+            get
+            {
+                return _saveCommand
+                    ?? (_saveCommand = new RelayCommand(SaveAll, CanSaveAll));
+            }
+        }
 
-        public ICommand AcceptEditCommand { get; private set; }
+        private RelayCommand _acceptEditCommand;
+        public RelayCommand AcceptEditCommand
+        {
+            get
+            {
+                return _acceptEditCommand
+                    ?? (_acceptEditCommand = new RelayCommand(AcceptEdits, CanEditAccountData));
+            }
+        }
 
-        public ICommand DeclineEditCommand { get; private set; }
+        private RelayCommand _declineEditCommand;
+        public RelayCommand DeclineEditCommand
+        {
+            get
+            {
+                return _declineEditCommand
+                    ?? (_declineEditCommand = new RelayCommand(DeclineEdits, CanRemoveAccountData));
+            }
+        }
         #endregion
     }
 }

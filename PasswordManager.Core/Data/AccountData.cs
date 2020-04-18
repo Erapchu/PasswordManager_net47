@@ -13,6 +13,19 @@ namespace PasswordManager.Core.Data
     [DebuggerDisplay("Name = {Name}, Login = {Login}, Password = {Password}")]
     public class AccountData : INotifyPropertyChanged
     {
+        public AccountData(string name, string login, string password, string other)
+        {
+            Name = name;
+            Login = login;
+            Password = password;
+            Other = other;
+        }
+
+        public AccountData()
+        {
+
+        }
+
         private string _name;
         public string Name
         {
