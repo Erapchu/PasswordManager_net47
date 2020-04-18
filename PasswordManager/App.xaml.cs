@@ -42,7 +42,10 @@ namespace PasswordManager
                 await Task.Run(() => Configuration.InitializeConfiguration());
                 _inputPassWindow = _buildHelper.Resolve<InputPassWindow>();
                 _mainWindow = _buildHelper.Resolve<MainWindow>();
+
                 _introWindow.Close();
+                _introWindow = null;
+
                 Logger.Instance.Info("Initialize login window...");
                 _inputPassWindow.ShowDialog();
 
@@ -50,6 +53,13 @@ namespace PasswordManager
                 {
                     _mainWindow.Show();
                 }
+                else
+                {
+                    _mainWindow.Close();
+                    _mainWindow = null;
+                }
+                _inputPassWindow.Close();
+                _inputPassWindow = null;
 
             }
             catch (Exception ex)
