@@ -31,11 +31,12 @@ namespace PasswordManager.ViewModel
         {
             var accountDataList = new List<AccountData>() { new AccountData("name", "login", "password", "other") };
             ThisAccount = new Account() { Data = new ObservableCollection<AccountData>(accountDataList) };
+            AllAccountsCollectionView = new ListCollectionView(ThisAccount.Data) { Filter = FilterAccountDatas };
             SelectedAccount = accountDataList.First();
         }
         #endregion
 
-        public ICollectionView FilteringCollection { get; private set; }
+        public ICollectionView AllAccountsCollectionView { get; private set; }
 
         private bool _isEditMode;
         public bool IsEditMode 
@@ -87,7 +88,7 @@ namespace PasswordManager.ViewModel
             set
             {
                 _FilterText = value;
-                FilteringCollection.Refresh();
+                AllAccountsCollectionView.Refresh();
                 RaisePropertyChanged();
             }
         }
@@ -101,8 +102,11 @@ namespace PasswordManager.ViewModel
             else
             {
                 ThisAccount = Configuration.Instance.CurrentAccount;
-                FilteringCollection = CollectionViewSource.GetDefaultView(ThisAccount.Data);
-                FilteringCollection.Filter = FilterAccountDatas;
+                AllAccountsCollectionView = new ListCollectionView(ThisAccount.Data) { Filter = FilterAccountDatas };
+
+                //Or just CollectionViewSource
+                //FilteringCollection = CollectionViewSource.GetDefaultView(ThisAccount.Data);
+                //FilteringCollection.Filter = FilterAccountDatas;
                 IsSaved = true;
             }
         }
