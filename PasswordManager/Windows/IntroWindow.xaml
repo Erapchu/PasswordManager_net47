@@ -14,7 +14,8 @@
         WindowStyle="None"
         Cursor="Wait"
         AllowsTransparency="True"
-        Background="Transparent">
+        Background="Transparent"
+        Closed="Window_Closed">
     <Grid>
         <Image Source="{StaticResource IntroImage}"/>
     </Grid>

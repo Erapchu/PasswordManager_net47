@@ -14,8 +14,14 @@ namespace PasswordManager.Core.Data
 {
     public class Configuration
     {
-        private static Lazy<Configuration> _lazy = new Lazy<Configuration>(() => new Configuration());
+        private static Lazy<Configuration> _lazy = new Lazy<Configuration>(() => null);
         public static Configuration Instance => _lazy.Value;
+
+        public static void InitializeConfiguration()
+        {
+            _lazy = new Lazy<Configuration>(() => new Configuration());
+            var instance = Instance;
+        }
 
         public Account CurrentAccount { get; set; }
 

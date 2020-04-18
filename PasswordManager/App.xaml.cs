@@ -17,33 +17,44 @@ namespace PasswordManager
     public partial class App : Application
     {
         ContainerBuildHelper _buildHelper;
+
+        IntroWindow _introWindow;
         InputPassWindow _inputPassWindow;
         MainWindow _mainWindow;
 
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private async void Application_Startup(object sender, StartupEventArgs e)
         {
             InitializeComponent();
 
             Logger.SetPathToLogger(Constants.PathToLogger);
             Logger.Instance.Info("Log session started!");
 
-            Logger.Instance.Info("Start reading configuration...");
-            var intro = new IntroWindow();
-            intro.Show();
-            Task.Run(() => Configuration.Instance);
-
             //Create IoC here
-            _buildHelper = new ContainerBuildHelper();
-
-            //Create login window
-            Logger.Instance.Info("Initialize login window...");
-            _inputPassWindow = _buildHelper.Resolve<InputPassWindow>();
-            _inputPassWindow.ShowDialog();
-
-            if (_inputPassWindow.DialogResult == true)
+            try
             {
+                _buildHelper = new ContainerBuildHelper();
+
+                Logger.Instance.Info("Start reading configuration...");
+
+                _introWindow = _buildHelper.Resolve<IntroWindow>();
+                _introWindow.Show();
+
+                await Task.Run(() => Configuration.InitializeConfiguration());
+                _inputPassWindow = _buildHelper.Resolve<InputPassWindow>();
                 _mainWindow = _buildHelper.Resolve<MainWindow>();
-                _mainWindow.Show();
+                _introWindow.Close();
+                Logger.Instance.Info("Initialize login window...");
+                _inputPassWindow.ShowDialog();
+
+                if (_inputPassWindow.DialogResult == true)
+                {
+                    _mainWindow.Show();
+                }
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
             }
         }
     }

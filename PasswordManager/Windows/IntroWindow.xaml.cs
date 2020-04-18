@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Autofac;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,9 +20,18 @@ namespace PasswordManager.Windows
     /// </summary>
     public partial class IntroWindow : Window
     {
-        public IntroWindow()
+        private ILifetimeScope _lifetimeScope;
+        public IntroWindow(ILifetimeScope lifetimeScope)
         {
+            _lifetimeScope = lifetimeScope.BeginLifetimeScope();
+
             InitializeComponent();
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            _lifetimeScope.Dispose();
+            _lifetimeScope = null;
         }
     }
 }

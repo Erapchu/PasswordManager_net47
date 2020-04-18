@@ -19,6 +19,7 @@ namespace PasswordManager
 
             builder.RegisterType<MainWindow>();
             builder.RegisterType<InputPassWindow>();
+            builder.RegisterType<IntroWindow>();
 
             builder.RegisterType<MainViewModel>().InstancePerLifetimeScope();
             builder.RegisterType<InputPassViewModel>().InstancePerLifetimeScope();
