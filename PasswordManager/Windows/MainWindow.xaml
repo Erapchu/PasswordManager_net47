@@ -17,6 +17,7 @@
         Closed="Window_Closed">
     <Window.Resources>
         <conv:InvertBooleanConverter x:Key="InvertBooleanConv"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConv"/>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -143,7 +144,7 @@
                                 Height="32" 
                                 Width="50" 
                                 Command="{Binding AcceptEditCommand}" 
-                                IsEnabled="{Binding IsEditMode}"/>
+                                Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConv}}"/>
                         <Button Name="CancelButton" 
                                 Content="Cancel" 
                                 Margin="5 0 0 0" 
@@ -151,7 +152,7 @@
                                 Padding="4" 
                                 Width="50" 
                                 Command="{Binding DeclineEditCommand}" 
-                                IsEnabled="{Binding IsEditMode}"/>
+                                Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConv}}"/>
                     </StackPanel>
             </StackPanel>
             <StackPanel Grid.Row="1"

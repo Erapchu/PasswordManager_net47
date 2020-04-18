@@ -32,7 +32,7 @@ namespace PasswordManager.ViewModel
             var accountDataList = new List<AccountData>() { new AccountData("name", "login", "password", "other") };
             ThisAccount = new Account() { Data = new ObservableCollection<AccountData>(accountDataList) };
             AllAccountsCollectionView = new ListCollectionView(ThisAccount.Data) { Filter = FilterAccountDatas };
-            SelectedAccount = accountDataList.First();
+            SelectedAccountData = accountDataList.First();
         }
         #endregion
 
@@ -52,30 +52,30 @@ namespace PasswordManager.ViewModel
         }
         private bool IsSaved { get; set; }
 
-        private AccountData _ChangableAcount;
-        public AccountData ChangableAccount
+        private AccountData _changableAcountData;
+        public AccountData ChangableAccountData
         {
             get
             {
-                return _ChangableAcount;
+                return _changableAcountData;
             }
             set
             {
-                _ChangableAcount = value;
+                _changableAcountData = value;
                 RaisePropertyChanged();
             }
         }
 
-        private AccountData _SelectedAccount;
-        public AccountData SelectedAccount
+        private AccountData _selectedAccountData;
+        public AccountData SelectedAccountData
         {
             get
             {
-                return _SelectedAccount;
+                return _selectedAccountData;
             }
             set
             {
-                _SelectedAccount = value;
+                _selectedAccountData = value;
                 RaisePropertyChanged();
             }
         }
@@ -125,7 +125,7 @@ namespace PasswordManager.ViewModel
 
         private bool CheckEmptyInput()
         {
-            if (string.IsNullOrEmpty(SelectedAccount.Login) || string.IsNullOrEmpty(SelectedAccount.Name) || string.IsNullOrEmpty(SelectedAccount.Password)) return false;
+            if (string.IsNullOrEmpty(SelectedAccountData.Login) || string.IsNullOrEmpty(SelectedAccountData.Name) || string.IsNullOrEmpty(SelectedAccountData.Password)) return false;
             else return true;
         }
 
@@ -138,25 +138,18 @@ namespace PasswordManager.ViewModel
 
         private bool CanEditAccountData()
         {
-            return SelectedAccount != null;
+            return SelectedAccountData != null;
         }
 
         private bool CanRemoveAccountData()
         {
-            return SelectedAccount != null;
+            return SelectedAccountData != null;
         }
 
         private void DeclineEdits()
         {
-            if (IsEditMode)
-            {
-                ThisAccount.Data[ThisAccount.Data.IndexOf(SelectedAccount)] = ChangableAccount;
-                SelectedAccount = ChangableAccount;
-            }
-            else
-            {
-                SelectedAccount = null;
-            }
+            ThisAccount.Data[ThisAccount.Data.IndexOf(SelectedAccountData)] = ChangableAccountData;
+            SelectedAccountData = ChangableAccountData;
             IsEditMode = false;
         }
 
@@ -165,11 +158,11 @@ namespace PasswordManager.ViewModel
             if (CheckEmptyInput())
             {
                 ThisAccount.Data.Add(new AccountData(
-                    SelectedAccount.Name,
-                    SelectedAccount.Login,
-                    SelectedAccount.Password,
-                    SelectedAccount.Other == null ? string.Empty : SelectedAccount.Other));
-                SelectedAccount = ThisAccount.Data.Last();
+                    SelectedAccountData.Name,
+                    SelectedAccountData.Login,
+                    SelectedAccountData.Password,
+                    SelectedAccountData.Other == null ? string.Empty : SelectedAccountData.Other));
+                SelectedAccountData = ThisAccount.Data.Last();
                 IsEditMode = false;
                 IsSaved = false;
             }
@@ -191,11 +184,14 @@ namespace PasswordManager.ViewModel
 
         private void ChangeAccountData()
         {
-            ChangableAccount = new AccountData(
-                    SelectedAccount.Name,
-                    SelectedAccount.Login,
-                    SelectedAccount.Password,
-                    SelectedAccount.Other == null ? string.Empty : SelectedAccount.Other);
+            AcceptEditCommand.RaiseCanExecuteChanged();
+            DeclineEditCommand.RaiseCanExecuteChanged();
+
+            ChangableAccountData = new AccountData(
+                    SelectedAccountData.Name,
+                    SelectedAccountData.Login,
+                    SelectedAccountData.Password,
+                    SelectedAccountData.Other == null ? string.Empty : SelectedAccountData.Other);
             IsEditMode = true;
         }
 
@@ -211,14 +207,16 @@ namespace PasswordManager.ViewModel
                 System.Windows.Forms.MessageBoxDefaultButton.Button1);
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
-                ThisAccount.Data.Remove(SelectedAccount);
+                ThisAccount.Data.Remove(SelectedAccountData);
                 IsSaved = false;
             }
         }
 
         private void AddAccountData()
         {
-            SelectedAccount = new AccountData();
+            SelectedAccountData = new AccountData();
+            AcceptEditCommand.RaiseCanExecuteChanged();
+            DeclineEditCommand.RaiseCanExecuteChanged();
             IsEditMode = true;
         }
         #endregion
