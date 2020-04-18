@@ -16,8 +16,6 @@ namespace PasswordManager
     /// </summary>
     public partial class App : Application
     {
-        ContainerBuildHelper _buildHelper;
-
         IntroWindow _introWindow;
         InputPassWindow _inputPassWindow;
         MainWindow _mainWindow;
@@ -29,19 +27,19 @@ namespace PasswordManager
             Logger.SetPathToLogger(Constants.PathToLogger);
             Logger.Instance.Info("Log session started!");
 
-            //Create IoC here
             try
             {
-                _buildHelper = new ContainerBuildHelper();
+                //Create IoC here
+                ContainerBuildHelper.InitializeInstance();
 
                 Logger.Instance.Info("Start reading configuration...");
 
-                _introWindow = _buildHelper.Resolve<IntroWindow>();
+                _introWindow = ContainerBuildHelper.Instance.Resolve<IntroWindow>();
                 _introWindow.Show();
 
                 await Task.Run(() => Configuration.InitializeConfiguration());
-                _inputPassWindow = _buildHelper.Resolve<InputPassWindow>();
-                _mainWindow = _buildHelper.Resolve<MainWindow>();
+                _inputPassWindow = ContainerBuildHelper.Instance.Resolve<InputPassWindow>();
+                _mainWindow = ContainerBuildHelper.Instance.Resolve<MainWindow>();
 
                 _introWindow.Close();
                 _introWindow = null;
@@ -65,13 +63,7 @@ namespace PasswordManager
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-
-                _introWindow.Close();
-                _introWindow = null;
-                _mainWindow.Close();
-                _mainWindow = null;
-                _inputPassWindow.Close();
-                _inputPassWindow = null;
+                Current.Shutdown();
             }
         }
     }

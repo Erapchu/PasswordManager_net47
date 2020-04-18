@@ -11,9 +11,20 @@ namespace PasswordManager
 {
     public class ContainerBuildHelper
     {
-        ILifetimeScope _lifetimeScope;
+        #region Singleton
+        private static Lazy<ContainerBuildHelper> _lazy = new Lazy<ContainerBuildHelper>(() => null);
+        public static ContainerBuildHelper Instance => _lazy.Value;
+        #endregion
 
-        public ContainerBuildHelper()
+        public static bool IsInstanceInitialized { get; private set; }
+
+        public static void InitializeInstance()
+        {
+            _lazy = new Lazy<ContainerBuildHelper>(() => new ContainerBuildHelper());
+            IsInstanceInitialized = true;
+        }
+
+        private ContainerBuildHelper()
         {
             ContainerBuilder builder = new ContainerBuilder();
 
@@ -25,6 +36,8 @@ namespace PasswordManager
             builder.RegisterType<InputPassViewModel>().InstancePerLifetimeScope();
             _lifetimeScope = builder.Build();
         }
+
+        private readonly ILifetimeScope _lifetimeScope;
 
         public T Resolve<T>()
         {
