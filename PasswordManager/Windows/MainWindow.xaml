@@ -58,7 +58,7 @@
                      x:Name="AccountsList" 
                      Margin="10" 
                      ItemsSource="{Binding AllAccountsCollectionView}" 
-                     SelectedItem="{Binding SelectedAccount, Mode=TwoWay}">
+                     SelectedItem="{Binding SelectedAccountData, Mode=TwoWay}">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <TextBlock Text="{Binding Name}"/>
@@ -69,11 +69,9 @@
                         <MenuItem Header="Add"
                                   Command="{Binding AddCommand}"/>
                         <MenuItem Header="Change"
-                                  Command="{Binding ChangeCommand}"
-                                  CommandParameter="{Binding SelectedAccount}"/>
+                                  Command="{Binding ChangeCommand}"/>
                         <MenuItem Header="Remove"
-                                  Command="{Binding RemoveCommand}"
-                                  CommandParameter="{Binding SelectedAccount}"/>
+                                  Command="{Binding RemoveCommand}"/>
                     </ContextMenu>
                 </ListBox.ContextMenu>
             </ListBox>
@@ -94,7 +92,7 @@
                                  MaxHeight="36" 
                                  Margin="5" 
                                  IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
-                                 Text="{Binding Path=SelectedAccount.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                 Text="{Binding Path=SelectedAccountData.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  ScrollViewer.CanContentScroll="True"/>
                     </StackPanel>
@@ -107,7 +105,7 @@
                                  MaxHeight="36" 
                                  Margin="5" 
                                  IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
-                                 Text="{Binding Path=SelectedAccount.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                 Text="{Binding Path=SelectedAccountData.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  ScrollViewer.CanContentScroll="True"/>
                     </StackPanel>
@@ -120,7 +118,7 @@
                                  MaxHeight="36" 
                                  Margin="5" 
                                  IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
-                                 Text="{Binding Path=SelectedAccount.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                 Text="{Binding Path=SelectedAccountData.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  ScrollViewer.CanContentScroll="True"/>
                     </StackPanel>
@@ -132,7 +130,7 @@
                                  Width="250" 
                                  Margin="5" 
                                  IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
-                                 Text="{Binding Path=SelectedAccount.Other, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                 Text="{Binding Path=SelectedAccountData.Other, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  AcceptsReturn="True" 
                                  MaxHeight="72" />

@@ -11,6 +11,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Interop;
 
 namespace PasswordManager.ViewModel
 {
@@ -136,16 +137,6 @@ namespace PasswordManager.ViewModel
             return !IsSaved;
         }
 
-        private bool CanEditAccountData()
-        {
-            return SelectedAccountData != null;
-        }
-
-        private bool CanRemoveAccountData()
-        {
-            return SelectedAccountData != null;
-        }
-
         private void DeclineEdits()
         {
             ThisAccount.Data[ThisAccount.Data.IndexOf(SelectedAccountData)] = ChangableAccountData;
@@ -184,9 +175,6 @@ namespace PasswordManager.ViewModel
 
         private void ChangeAccountData()
         {
-            AcceptEditCommand.RaiseCanExecuteChanged();
-            DeclineEditCommand.RaiseCanExecuteChanged();
-
             ChangableAccountData = new AccountData(
                     SelectedAccountData.Name,
                     SelectedAccountData.Login,
@@ -215,8 +203,6 @@ namespace PasswordManager.ViewModel
         private void AddAccountData()
         {
             SelectedAccountData = new AccountData();
-            AcceptEditCommand.RaiseCanExecuteChanged();
-            DeclineEditCommand.RaiseCanExecuteChanged();
             IsEditMode = true;
         }
         #endregion
@@ -268,7 +254,7 @@ namespace PasswordManager.ViewModel
             get
             {
                 return _acceptEditCommand
-                    ?? (_acceptEditCommand = new RelayCommand(AcceptEdits, CanEditAccountData));
+                    ?? (_acceptEditCommand = new RelayCommand(AcceptEdits));
             }
         }
 
@@ -278,7 +264,7 @@ namespace PasswordManager.ViewModel
             get
             {
                 return _declineEditCommand
-                    ?? (_declineEditCommand = new RelayCommand(DeclineEdits, CanRemoveAccountData));
+                    ?? (_declineEditCommand = new RelayCommand(DeclineEdits));
             }
         }
         #endregion

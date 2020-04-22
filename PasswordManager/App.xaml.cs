@@ -23,6 +23,7 @@ namespace PasswordManager
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
             InitializeComponent();
+            System.Windows.Forms.Application.EnableVisualStyles();
 
             Logger.SetPathToLogger(Constants.PathToLogger);
             Logger.Instance.Info("Log session started!");
