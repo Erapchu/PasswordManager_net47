@@ -11,9 +11,11 @@ using System.Threading.Tasks;
 namespace PasswordManager.Core.Data
 {
     [DebuggerDisplay("Name = {Name}, Login = {Login}, Password = {Password}")]
-    public class AccountData : INotifyPropertyChanged
+    [Serializable]
+    public class Credentials : INotifyPropertyChanged, ICloneable
     {
-        public AccountData(string name, string login, string password, string other)
+
+        public Credentials(string name, string login, string password, string other) : this()
         {
             Name = name;
             Login = login;
@@ -21,10 +23,12 @@ namespace PasswordManager.Core.Data
             Other = other;
         }
 
-        public AccountData()
+        public Credentials()
         {
-
+            ID = Guid.NewGuid();
         }
+
+        public Guid ID { get; private set; }
 
         private string _name;
         public string Name
@@ -80,6 +84,17 @@ namespace PasswordManager.Core.Data
                 _other = value;
                 OnPropertyChanged();
             }
+        }
+
+        public object Clone()
+        {
+            Credentials clone = new Credentials();
+            clone.ID = this.ID;
+            clone.Login = this.Login;
+            clone.Name = this.Name;
+            clone.Other = this.Other;
+            clone.Password = this.Password;
+            return clone;
         }
 
         #region MVVM Pattern

@@ -30,10 +30,10 @@ namespace PasswordManager.ViewModel
 
         private void LoadOnDesignTime()
         {
-            var accountDataList = new List<AccountData>() { new AccountData("name", "login", "password", "other") };
-            ThisAccount = new Account() { Data = new ObservableCollection<AccountData>(accountDataList) };
+            var credentialsList = new List<Credentials>() { new Credentials("name", "login", "password", "other") };
+            ThisAccount = new Account() { Data = new CredentialsCollection(credentialsList) };
             AllAccountsCollectionView = new ListCollectionView(ThisAccount.Data) { Filter = FilterAccountDatas };
-            SelectedAccountData = accountDataList.First();
+            SelectedCredentials = credentialsList.First();
         }
         #endregion
 
@@ -56,8 +56,8 @@ namespace PasswordManager.ViewModel
             }
         }
 
-        private AccountData _changableAcountData;
-        public AccountData ChangableAccountData
+        private Credentials _changableAcountData;
+        public Credentials ChangableCredentials
         {
             get
             {
@@ -70,30 +70,30 @@ namespace PasswordManager.ViewModel
             }
         }
 
-        private AccountData _selectedAccountData;
-        public AccountData SelectedAccountData
+        private Credentials _selectedCredentials;
+        public Credentials SelectedCredentials
         {
             get
             {
-                return _selectedAccountData;
+                return _selectedCredentials;
             }
             set
             {
-                _selectedAccountData = value;
+                _selectedCredentials = value;
                 RaisePropertyChanged();
             }
         }
 
-        private string _FilterText;
+        private string _filterText;
         public string FilterText
         {
             get
             {
-                return _FilterText;
+                return _filterText;
             }
             set
             {
-                _FilterText = value;
+                _filterText = value;
                 AllAccountsCollectionView.Refresh();
                 RaisePropertyChanged();
             }
@@ -111,21 +111,21 @@ namespace PasswordManager.ViewModel
             {
                 ThisAccount = Configuration.Instance.CurrentAccount;
                 AllAccountsCollectionView = new ListCollectionView(ThisAccount.Data) { Filter = FilterAccountDatas };
-                SelectedAccountData = ThisAccount.Data.FirstOrDefault();
+                SelectedCredentials = ThisAccount.Data.FirstOrDefault();
             }
         }
 
         private bool FilterAccountDatas(object obj)
         {
             bool result = true;
-            AccountData data = obj as AccountData;
+            Credentials data = obj as Credentials;
             if (data != null && !string.IsNullOrWhiteSpace(FilterText) && !data.Name.Contains(FilterText)) return false;
             return result;
         }
 
         private bool CheckEmptyInput()
         {
-            if (string.IsNullOrEmpty(SelectedAccountData.Login) || string.IsNullOrEmpty(SelectedAccountData.Name) || string.IsNullOrEmpty(SelectedAccountData.Password)) return false;
+            if (string.IsNullOrEmpty(SelectedCredentials.Login) || string.IsNullOrEmpty(SelectedCredentials.Name) || string.IsNullOrEmpty(SelectedCredentials.Password)) return false;
             else return true;
         }
 
@@ -133,34 +133,44 @@ namespace PasswordManager.ViewModel
 
         private void DeclineEdits()
         {
-            ThisAccount.Data[ThisAccount.Data.IndexOf(SelectedAccountData)] = ChangableAccountData;
-            SelectedAccountData = ChangableAccountData;
+            if (ChangableCredentials is null)
+            {
+                SelectedCredentials = ThisAccount.Data.FirstOrDefault();
+            }
+            else
+            {
+                SelectedCredentials = ChangableCredentials;
+                ThisAccount.Data[SelectedCredentials.ID] = ChangableCredentials;
+            }
             IsEditMode = false;
+            ChangableCredentials = null;
         }
 
         private void AcceptEdits()
         {
             if (CheckEmptyInput())
             {
-                ThisAccount.Data.Add(new AccountData(
-                    SelectedAccountData.Name,
-                    SelectedAccountData.Login,
-                    SelectedAccountData.Password,
-                    SelectedAccountData.Other ?? string.Empty));
-                SelectedAccountData = ThisAccount.Data.Last();
+                //If add new account
+                if (ChangableCredentials is null)
+                    ThisAccount.Data.Add(SelectedCredentials);
+
+                //Clear changable account
+                ChangableCredentials = null;
                 IsEditMode = false;
                 Configuration.Instance.SaveData();
             }
-            else MessageBox.Show("Please, fill this data: Name, Login, Password", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            else 
+                MessageBox.Show(
+                    "Please, fill this data: Name, Login, Password", 
+                    "Information", 
+                    MessageBoxButton.OK, 
+                    MessageBoxImage.Information,
+                    MessageBoxResult.OK);
         }
 
         private void ChangeAccountData()
         {
-            ChangableAccountData = new AccountData(
-                    SelectedAccountData.Name,
-                    SelectedAccountData.Login,
-                    SelectedAccountData.Password,
-                    SelectedAccountData.Other ?? string.Empty);
+            ChangableCredentials = SelectedCredentials.Clone() as Credentials;
             IsEditMode = true;
         }
 
@@ -176,14 +186,14 @@ namespace PasswordManager.ViewModel
                 System.Windows.Forms.MessageBoxDefaultButton.Button1);
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
-                ThisAccount.Data.Remove(SelectedAccountData);
+                ThisAccount.Data.Remove(SelectedCredentials);
                 Configuration.Instance.SaveData();
             }
         }
 
         private void AddAccountData()
         {
-            SelectedAccountData = new AccountData();
+            SelectedCredentials = new Credentials();
             IsEditMode = true;
         }
         #endregion
