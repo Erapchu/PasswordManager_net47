@@ -21,7 +21,7 @@ namespace PasswordManager.Windows
     /// </summary>
     public partial class InputPassWindow : Window
     {
-        private InputPassViewModel viewModel;
+        private readonly InputPassViewModel viewModel;
         private ILifetimeScope _lifetimeScope;
         public InputPassWindow(ILifetimeScope lifetimeScope)
         {
@@ -31,6 +31,8 @@ namespace PasswordManager.Windows
             viewModel = _lifetimeScope.Resolve<InputPassViewModel>();
             viewModel.ContinueAuthorization += ViewModel_ContinueAuthorization;
             DataContext = viewModel;
+
+            InputTextBox.Focus();
         }
 
         private void ViewModel_ContinueAuthorization()

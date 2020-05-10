@@ -17,10 +17,16 @@ namespace PasswordManager.Core.Data
         private static Lazy<Configuration> _lazy = new Lazy<Configuration>(() => null);
         public static Configuration Instance => _lazy.Value;
 
+        public static bool InstanceInitialized { get; private set; }
+
         public static void InitializeConfiguration()
         {
+            if (InstanceInitialized)
+                return;
+
             _lazy = new Lazy<Configuration>(() => new Configuration());
             var instance = Instance;
+            InstanceInitialized = true;
         }
 
         public Account CurrentAccount { get; set; }

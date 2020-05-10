@@ -44,5 +44,10 @@ namespace PasswordManager.Windows
             _lifetimeScope.Dispose();
             _lifetimeScope = null;
         }
+
+        private void ExitItem_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
+        }
     }
 }

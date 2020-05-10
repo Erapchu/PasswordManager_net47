@@ -49,9 +49,12 @@ namespace PasswordManager.ViewModel
             {
                 _isEditMode = value;
                 RaisePropertyChanged();
+
+                AddCommand.RaiseCanExecuteChanged();
+                ChangeCommand.RaiseCanExecuteChanged();
+                RemoveCommand.RaiseCanExecuteChanged();
             }
         }
-        private bool IsSaved { get; set; }
 
         private AccountData _changableAcountData;
         public AccountData ChangableAccountData
@@ -108,11 +111,7 @@ namespace PasswordManager.ViewModel
             {
                 ThisAccount = Configuration.Instance.CurrentAccount;
                 AllAccountsCollectionView = new ListCollectionView(ThisAccount.Data) { Filter = FilterAccountDatas };
-
-                //Or just CollectionViewSource
-                //FilteringCollection = CollectionViewSource.GetDefaultView(ThisAccount.Data);
-                //FilteringCollection.Filter = FilterAccountDatas;
-                IsSaved = true;
+                SelectedAccountData = ThisAccount.Data.FirstOrDefault();
             }
         }
 
@@ -132,11 +131,6 @@ namespace PasswordManager.ViewModel
 
         #region Delegate commands
 
-        private bool CanSaveAll()
-        {
-            return !IsSaved;
-        }
-
         private void DeclineEdits()
         {
             ThisAccount.Data[ThisAccount.Data.IndexOf(SelectedAccountData)] = ChangableAccountData;
@@ -152,25 +146,12 @@ namespace PasswordManager.ViewModel
                     SelectedAccountData.Name,
                     SelectedAccountData.Login,
                     SelectedAccountData.Password,
-                    SelectedAccountData.Other == null ? string.Empty : SelectedAccountData.Other));
+                    SelectedAccountData.Other ?? string.Empty));
                 SelectedAccountData = ThisAccount.Data.Last();
                 IsEditMode = false;
-                IsSaved = false;
+                Configuration.Instance.SaveData();
             }
             else MessageBox.Show("Please, fill this data: Name, Login, Password", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-        }
-
-        private void SaveAll()
-        {
-            if (!string.IsNullOrWhiteSpace(ThisAccount.CorrectPassword))
-                Configuration.Instance.SaveData();
-            /*else
-            {
-                //If new user
-                if (new InputPassWindow().ShowDialog() == true)
-                    FileWorker.WriteFile(ThisAccount);
-            }*/
-            IsSaved = true;
         }
 
         private void ChangeAccountData()
@@ -179,7 +160,7 @@ namespace PasswordManager.ViewModel
                     SelectedAccountData.Name,
                     SelectedAccountData.Login,
                     SelectedAccountData.Password,
-                    SelectedAccountData.Other == null ? string.Empty : SelectedAccountData.Other);
+                    SelectedAccountData.Other ?? string.Empty);
             IsEditMode = true;
         }
 
@@ -196,7 +177,7 @@ namespace PasswordManager.ViewModel
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
                 ThisAccount.Data.Remove(SelectedAccountData);
-                IsSaved = false;
+                Configuration.Instance.SaveData();
             }
         }
 
@@ -214,7 +195,7 @@ namespace PasswordManager.ViewModel
             get
             {
                 return _addCommand
-                    ?? (_addCommand = new RelayCommand(AddAccountData));
+                    ?? (_addCommand = new RelayCommand(AddAccountData, () => !IsEditMode));
             }
         }
 
@@ -224,7 +205,7 @@ namespace PasswordManager.ViewModel
             get
             {
                 return _removeCommand
-                    ?? (_removeCommand = new RelayCommand(RemoveAccountData));
+                    ?? (_removeCommand = new RelayCommand(RemoveAccountData, () => !IsEditMode));
             }
         }
 
@@ -234,17 +215,7 @@ namespace PasswordManager.ViewModel
             get
             {
                 return _changeCommand
-                    ?? (_changeCommand = new RelayCommand(ChangeAccountData));
-            }
-        }
-
-        private RelayCommand _saveCommand;
-        public RelayCommand SaveCommand
-        {
-            get
-            {
-                return _saveCommand
-                    ?? (_saveCommand = new RelayCommand(SaveAll, CanSaveAll));
+                    ?? (_changeCommand = new RelayCommand(ChangeAccountData, () => !IsEditMode));
             }
         }
 

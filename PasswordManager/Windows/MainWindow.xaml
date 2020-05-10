@@ -30,8 +30,8 @@
         </Grid.ColumnDefinitions>
         <Menu Grid.ColumnSpan="2">
             <MenuItem Header="File">
-                <MenuItem Header="Save"
-                          Command="{Binding SaveCommand}"/>
+                <MenuItem Header="Exit"
+                          Click="ExitItem_Click"/>
             </MenuItem>
             <MenuItem Header="Account">
                 <MenuItem Header="Add new credentials"
