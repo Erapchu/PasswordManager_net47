@@ -18,6 +18,35 @@
     <Window.Resources>
         <conv:InvertBooleanConverter x:Key="InvertBooleanConv"/>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConv"/>
+        <Style x:Key="HintTextBoxStyle" TargetType="TextBox">
+            <Style.Triggers>
+                <MultiTrigger>
+                    <MultiTrigger.Conditions>
+                        <Condition Property="IsKeyboardFocused" Value="false"/>
+                    </MultiTrigger.Conditions>
+                    <Setter Property="Background">
+                        <Setter.Value>
+                            <VisualBrush TileMode="None"
+                                     Stretch="None" 
+                                     AlignmentX="Left">
+                                <VisualBrush.Transform>
+                                    <TranslateTransform X="5" Y="0" />
+                                </VisualBrush.Transform>
+                                <VisualBrush.Visual>
+                                    <Grid>
+                                        <TextBlock FontStyle="Italic" 
+                                               Foreground="Black" 
+                                               Opacity="0.5" 
+                                               FontSize="12"
+                                               Text="Filter credentials"/>
+                                    </Grid>
+                                </VisualBrush.Visual>
+                            </VisualBrush>
+                        </Setter.Value>
+                    </Setter>
+                </MultiTrigger>
+            </Style.Triggers>
+        </Style>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -50,6 +79,7 @@
             </Grid.RowDefinitions>
             <TextBox
                 Grid.Row="0"
+                Style="{StaticResource HintTextBoxStyle}"
                 Name="SearchTextBox" 
                 Margin="10" 
                 HorizontalAlignment="Stretch"
