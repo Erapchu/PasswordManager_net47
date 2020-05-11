@@ -15,13 +15,6 @@ using System.Windows.Interop;
 
 namespace PasswordManager.ViewModel
 {
-    public enum PassOperation
-    {
-        NewUser,
-        DefaultUser,
-        ChangePassword
-    }
-
     class MainViewModel : ViewModelBase
     {
         #region Design Time
@@ -30,7 +23,7 @@ namespace PasswordManager.ViewModel
 
         private void LoadOnDesignTime()
         {
-            var credentialsList = new List<Credentials>() { new Credentials("name", "login", "password", "other") };
+            var credentialsList = new List<Credentials>() { new Credentials("name", "login", "password", "other") { LastDateUsage = DateTime.Now } };
             ThisAccount = new Account() { Data = new CredentialsCollection(credentialsList) };
             AllAccountsCollectionView = new ListCollectionView(ThisAccount.Data) { Filter = FilterAccountDatas };
             SelectedCredentials = credentialsList.First();
@@ -40,6 +33,20 @@ namespace PasswordManager.ViewModel
         public IntPtr _windowHandle;
 
         public ICollectionView AllAccountsCollectionView { get; private set; }
+
+        public List<SortMode> SortModes { get; private set; }
+
+        private SortMode _currentSortMode;
+        public SortMode CurrentSortMode
+        {
+            get => _currentSortMode;
+            set
+            {
+                _currentSortMode = value;
+                RaisePropertyChanged();
+                UpdateSorting();
+            }
+        }
 
         private bool _isEditMode;
         public bool IsEditMode 
@@ -90,7 +97,7 @@ namespace PasswordManager.ViewModel
             set
             {
                 _filterText = value;
-                AllAccountsCollectionView.Refresh();
+                AllAccountsCollectionView?.Refresh();
                 RaisePropertyChanged();
             }
         }
@@ -109,13 +116,24 @@ namespace PasswordManager.ViewModel
                 AllAccountsCollectionView = new ListCollectionView(ThisAccount.Data) { Filter = FilterAccountDatas };
                 SelectedCredentials = ThisAccount.Data.FirstOrDefault();
             }
+
+            SortModes = new List<SortMode>
+            {
+                new SortMode(SortType.NameAscending),
+                new SortMode(SortType.NameDescending),
+                new SortMode(SortType.DateAscending),
+                new SortMode(SortType.DateDescending),
+            };
+            CurrentSortMode = SortModes.FirstOrDefault();
         }
 
         private bool FilterAccountDatas(object obj)
         {
             bool result = true;
-            Credentials data = obj as Credentials;
-            if (data != null && !string.IsNullOrWhiteSpace(FilterText) && !data.Name.Contains(FilterText)) return false;
+            if (obj is Credentials data && 
+                !string.IsNullOrWhiteSpace(FilterText) && 
+                !data.Name.Contains(FilterText)) 
+                return false;
             return result;
         }
 
@@ -123,6 +141,25 @@ namespace PasswordManager.ViewModel
         {
             if (string.IsNullOrEmpty(SelectedCredentials.Login) || string.IsNullOrEmpty(SelectedCredentials.Name) || string.IsNullOrEmpty(SelectedCredentials.Password)) return false;
             else return true;
+        }
+
+        private void UpdateSorting()
+        {
+            switch (_currentSortMode.SortType)
+            {
+                case SortType.NameAscending:
+                    ThisAccount.Data.Sort(i => i.Name);
+                    break;
+                case SortType.DateAscending:
+                    ThisAccount.Data.Sort(i => i.LastDateUsage);
+                    break;
+                case SortType.NameDescending:
+                    ThisAccount.Data.SortDescending(i => i.Name);
+                    break;
+                case SortType.DateDescending:
+                    ThisAccount.Data.SortDescending(i => i.LastDateUsage);
+                    break;
+            }
         }
 
         #region Delegate commands
@@ -147,15 +184,19 @@ namespace PasswordManager.ViewModel
         {
             if (CheckEmptyInput())
             {
+                SelectedCredentials.LastDateUsage = DateTime.Now;
                 //If add new account
                 if (ChangableCredentials is null)
+                {
                     ThisAccount.Data.Add(SelectedCredentials);
+                }
 
                 //Clear changable account
                 ChangableCredentials = null;
                 IsEditMode = false;
                 Configuration.Instance.SaveData();
                 UpdateCommandState();
+                UpdateSorting();
             }
             else
                 System.Windows.Forms.MessageBox.Show(
