@@ -33,6 +33,7 @@
                    Grid.Row="0"
                    Margin="10"/>
         <TextBox Grid.Row="1"
+                 Name="InputTextBox"
                  Margin="10" 
                  Text="{Binding CurrentPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         <TextBlock Grid.Row="2"

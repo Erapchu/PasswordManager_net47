@@ -10,6 +10,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
@@ -27,7 +28,9 @@ namespace PasswordManager.Windows
         {
             InitializeComponent();
             _lifetimeScope = lifetimeScope.BeginLifetimeScope();
-            viewModel = _lifetimeScope.Resolve<MainViewModel>();
+            var wih = new WindowInteropHelper(this);
+            var windowHandle = wih.EnsureHandle();
+            viewModel = _lifetimeScope.Resolve<MainViewModel>(new NamedParameter("windowHandle", windowHandle));
             DataContext = viewModel;
         }
 
@@ -40,6 +43,11 @@ namespace PasswordManager.Windows
         {
             _lifetimeScope.Dispose();
             _lifetimeScope = null;
+        }
+
+        private void ExitItem_Click(object sender, RoutedEventArgs e)
+        {
+            this.Close();
         }
     }
 }

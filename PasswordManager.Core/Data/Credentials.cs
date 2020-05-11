@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -9,8 +10,26 @@ using System.Threading.Tasks;
 
 namespace PasswordManager.Core.Data
 {
-    public class AccountData : INotifyPropertyChanged
+    [DebuggerDisplay("Name = {Name}, Login = {Login}, Password = {Password}")]
+    [Serializable]
+    public class Credentials : INotifyPropertyChanged, ICloneable
     {
+
+        public Credentials(string name, string login, string password, string other) : this()
+        {
+            Name = name;
+            Login = login;
+            Password = password;
+            Other = other;
+        }
+
+        public Credentials()
+        {
+            ID = Guid.NewGuid();
+        }
+
+        public Guid ID { get; private set; }
+
         private string _name;
         public string Name
         {
@@ -65,6 +84,17 @@ namespace PasswordManager.Core.Data
                 _other = value;
                 OnPropertyChanged();
             }
+        }
+
+        public object Clone()
+        {
+            Credentials clone = new Credentials();
+            clone.ID = this.ID;
+            clone.Login = this.Login;
+            clone.Name = this.Name;
+            clone.Other = this.Other;
+            clone.Password = this.Password;
+            return clone;
         }
 
         #region MVVM Pattern

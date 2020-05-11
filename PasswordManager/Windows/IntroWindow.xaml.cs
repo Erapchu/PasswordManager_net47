@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using PasswordManager.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,27 +16,16 @@ using System.Windows.Shapes;
 namespace PasswordManager.Windows
 {
     /// <summary>
-    /// Interaction logic for PasswordView.xaml
+    /// Interaction logic for IntroWindow.xaml
     /// </summary>
-    public partial class InputPassWindow : Window
+    public partial class IntroWindow : Window
     {
-        private readonly InputPassViewModel viewModel;
         private ILifetimeScope _lifetimeScope;
-        public InputPassWindow(ILifetimeScope lifetimeScope)
+        public IntroWindow(ILifetimeScope lifetimeScope)
         {
-            InitializeComponent();
-
             _lifetimeScope = lifetimeScope.BeginLifetimeScope();
-            viewModel = _lifetimeScope.Resolve<InputPassViewModel>();
-            viewModel.ContinueAuthorization += ViewModel_ContinueAuthorization;
-            DataContext = viewModel;
 
-            InputTextBox.Focus();
-        }
-
-        private void ViewModel_ContinueAuthorization()
-        {
-            DialogResult = true;
+            InitializeComponent();
         }
 
         private void Window_Closed(object sender, EventArgs e)

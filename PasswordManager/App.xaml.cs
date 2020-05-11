@@ -1,4 +1,5 @@
-﻿using PasswordManager.Core.Data;
+﻿using PasswordManager.Core;
+using PasswordManager.Core.Data;
 using PasswordManager.Windows;
 using System;
 using System.Collections.Generic;
@@ -15,26 +16,56 @@ namespace PasswordManager
     /// </summary>
     public partial class App : Application
     {
-        ContainerBuildHelper _buildHelper;
+        IntroWindow _introWindow;
         InputPassWindow _inputPassWindow;
         MainWindow _mainWindow;
 
-        private void Application_Startup(object sender, StartupEventArgs e)
+        private async void Application_Startup(object sender, StartupEventArgs e)
         {
             InitializeComponent();
+            System.Windows.Forms.Application.EnableVisualStyles();
 
-            Logger.Info("Log session started!");
+            Logger.SetPathToLogger(Constants.PathToLogger);
+            Logger.Instance.Info("Log session started!");
 
-            //Start reading file
-            var config = Configuration.Instance;
+            try
+            {
+                //Create IoC here
+                ContainerBuildHelper.InitializeInstance();
 
-            //Create IoC here
-            _buildHelper = new ContainerBuildHelper();
-            _inputPassWindow = _buildHelper.Resolve<InputPassWindow>();
-            _inputPassWindow.ShowDialog();
+                Logger.Instance.Info("Start reading configuration...");
 
-            //_mainWindow = _buildHelper.Resolve<MainWindow>();
-            //_mainWindow.Show();
+                _introWindow = ContainerBuildHelper.Instance.Resolve<IntroWindow>();
+                _introWindow.Show();
+
+                await Task.Run(() => Configuration.InitializeConfiguration());
+                _inputPassWindow = ContainerBuildHelper.Instance.Resolve<InputPassWindow>();
+                _mainWindow = ContainerBuildHelper.Instance.Resolve<MainWindow>();
+
+                _introWindow.Close();
+                _introWindow = null;
+
+                Logger.Instance.Info("Initialize login window...");
+                _inputPassWindow.ShowDialog();
+
+                if (_inputPassWindow.DialogResult == true)
+                {
+                    _mainWindow.Show();
+                }
+                else
+                {
+                    _mainWindow.Close();
+                    _mainWindow = null;
+                }
+                _inputPassWindow.Close();
+                _inputPassWindow = null;
+
+            }
+            catch (Exception ex)
+            {
+                Logger.Instance.Error(ex.Message);
+                Current.Shutdown();
+            }
         }
     }
 }

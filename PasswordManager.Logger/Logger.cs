@@ -8,21 +8,27 @@ using System.Threading.Tasks;
 
 namespace PasswordManager
 {
-    public static class Logger
+    public class Logger
     {
-        internal static string PathToLogger => Pri.LongPath.Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), nameOfLoggerFile);
-        private static readonly string nameOfLoggerFile = @"PasswordManager\PasswordManager.log";
+        private static Lazy<Logger> _lazy = new Lazy<Logger>(() => new Logger());
+        public static Logger Instance => _lazy.Value;
 
-        static Logger()
+        private static string _pathToLog;
+        public static void SetPathToLogger(string pathTolog)
+        {
+            _pathToLog = pathTolog;
+        }
+
+        private Logger()
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.File(PathToLogger, rollingInterval: RollingInterval.Month)
+                .WriteTo.File(_pathToLog, rollingInterval: RollingInterval.Month)
                 .CreateLogger();
         }
 
-        public static void Info(string message) => Log.Information(message);
-        public static void Error(string message) => Log.Error(message);
-        public static void Warn(string message) => Log.Warning(message);
+        public void Info(string message) => Log.Information(message);
+        public void Error(string message) => Log.Error(message);
+        public void Warn(string message) => Log.Warning(message);
     }
 }

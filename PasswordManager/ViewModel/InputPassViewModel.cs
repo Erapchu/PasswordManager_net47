@@ -1,5 +1,6 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
+using PasswordManager.Core.Data;
 using PasswordManager.Core.Helpers;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace PasswordManager.ViewModel
         #region Properties
         public event Action ContinueAuthorization;
 
-        private string currentPassword;
+        private string currentPassword = "";
         public string CurrentPassword
         {
             get => currentPassword;
@@ -33,8 +34,6 @@ namespace PasswordManager.ViewModel
                 RaisePropertyChanged();
             }
         }
-
-        public string CorrectPassword { get; private set; }
         public PassOperation Operation { get; private set; }
 
         private string statusText;
@@ -70,14 +69,15 @@ namespace PasswordManager.ViewModel
         #region Implements of commands
         private void Continue()
         {
-            if (CorrectPassword is null)
+            var correctPassword = Configuration.Instance?.CurrentAccount?.CorrectPassword;
+            if (correctPassword is null)
             {
-                StatusText = "Can't load correct password";
+                StatusText = "File with data is corrupted";
                 IsStatusShowed = true;
                 return;
             }
 
-            if (CurrentPassword.Equals(CorrectPassword))
+            if (CurrentPassword.Equals(correctPassword))
                 ContinueAuthorization?.Invoke();
             else
             {

@@ -1,14 +1,17 @@
 ﻿using GalaSoft.MvvmLight;
+using GalaSoft.MvvmLight.Command;
 using PasswordManager.Core.Data;
 using PasswordManager.Core.Helpers;
 using PasswordManager.Windows;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
+using System.Windows.Interop;
 
 namespace PasswordManager.ViewModel
 {
@@ -21,205 +24,249 @@ namespace PasswordManager.ViewModel
 
     class MainViewModel : ViewModelBase
     {
-        public ICollectionView FilteringCollection { get; private set; }
-        public EditMode IsEditMode { get; set; }
-        private bool IsSaved { get; set; }
+        #region Design Time
+        private static Lazy<MainViewModel> _lazy = new Lazy<MainViewModel>(() => new MainViewModel(IntPtr.Zero));
+        public static MainViewModel DesignTimeInstance => _lazy.Value;
 
-        private AccountData _ChangableAcount;
-        public AccountData ChangableAccount
+        private void LoadOnDesignTime()
         {
-            get
-            {
-                return _ChangableAcount;
-            }
+            var credentialsList = new List<Credentials>() { new Credentials("name", "login", "password", "other") };
+            ThisAccount = new Account() { Data = new CredentialsCollection(credentialsList) };
+            AllAccountsCollectionView = new ListCollectionView(ThisAccount.Data) { Filter = FilterAccountDatas };
+            SelectedCredentials = credentialsList.First();
+        }
+        #endregion
+
+        public IntPtr _windowHandle;
+
+        public ICollectionView AllAccountsCollectionView { get; private set; }
+
+        private bool _isEditMode;
+        public bool IsEditMode 
+        {
+            get => _isEditMode;
             set
             {
-                _ChangableAcount = value;
+                _isEditMode = value;
                 RaisePropertyChanged();
             }
         }
 
-        private AccountData _SelectedAccount;
-        public AccountData SelectedAccount
+        private Credentials _changableAcountData;
+        public Credentials ChangableCredentials
         {
             get
             {
-                return _SelectedAccount;
+                return _changableAcountData;
             }
             set
             {
-                _SelectedAccount = value;
+                _changableAcountData = value;
                 RaisePropertyChanged();
             }
         }
 
-        private string _FilterText;
+        private Credentials _selectedCredentials;
+        public Credentials SelectedCredentials
+        {
+            get
+            {
+                return _selectedCredentials;
+            }
+            set
+            {
+                _selectedCredentials = value;
+                RaisePropertyChanged();
+            }
+        }
+
+        private string _filterText;
         public string FilterText
         {
             get
             {
-                return _FilterText;
+                return _filterText;
             }
             set
             {
-                _FilterText = value;
-                FilteringCollection.Refresh();
+                _filterText = value;
+                AllAccountsCollectionView.Refresh();
                 RaisePropertyChanged();
             }
         }
 
-        public Account ThisAccount => Configuration.Instance.Account;
+        public Account ThisAccount { get; private set; }
 
-        public MainViewModel()
+        public MainViewModel(IntPtr windowHandle)
         {
-            //Init
-            AddCommand = new DelegateCommand(AddAccountData);
-            RemoveCommand = new DelegateCommand(RemoveAccountData, CanRemoveAccountData);
-            ChangeCommand = new DelegateCommand(ChangeAccountData, CanChangeAccountData);
-            SaveCommand = new DelegateCommand(SaveAll, CanSaveAll);
-            AcceptEditCommand = new DelegateCommand(AcceptEdits);
-            DeclineEditCommand = new DelegateCommand(DeclineEdits);
+            this._windowHandle = windowHandle;
 
-            IsEditMode = new EditMode(false, false);
-            FilteringCollection = CollectionViewSource.GetDefaultView(ThisAccount.Data);
-            FilteringCollection.Filter = FilterAccountDatas;
-            IsSaved = true;
+            if (this.IsInDesignMode)
+                LoadOnDesignTime();
+            else
+            {
+                ThisAccount = Configuration.Instance.CurrentAccount;
+                AllAccountsCollectionView = new ListCollectionView(ThisAccount.Data) { Filter = FilterAccountDatas };
+                SelectedCredentials = ThisAccount.Data.FirstOrDefault();
+            }
         }
 
         private bool FilterAccountDatas(object obj)
         {
             bool result = true;
-            AccountData data = obj as AccountData;
+            Credentials data = obj as Credentials;
             if (data != null && !string.IsNullOrWhiteSpace(FilterText) && !data.Name.Contains(FilterText)) return false;
             return result;
         }
 
         private bool CheckEmptyInput()
         {
-            if (string.IsNullOrEmpty(SelectedAccount.Login) || string.IsNullOrEmpty(SelectedAccount.Name) || string.IsNullOrEmpty(SelectedAccount.Password)) return false;
+            if (string.IsNullOrEmpty(SelectedCredentials.Login) || string.IsNullOrEmpty(SelectedCredentials.Name) || string.IsNullOrEmpty(SelectedCredentials.Password)) return false;
             else return true;
         }
 
         #region Delegate commands
 
-        private bool CanSaveAll(object arg)
+        private void DeclineEdits()
         {
-            return !IsSaved;
-        }
-
-        private bool CanChangeAccountData(object arg)
-        {
-            return (arg as AccountData) != null;
-        }
-
-        private bool CanRemoveAccountData(object arg)
-        {
-            return (arg as AccountData) != null;
-        }
-
-        private void DeclineEdits(object obj)
-        {
-            if (IsEditMode.DoesAccountChange)
+            if (ChangableCredentials is null)
             {
-                ThisAccount.Data[ThisAccount.Data.IndexOf(SelectedAccount)] = ChangableAccount;
-                SelectedAccount = ChangableAccount;
-                IsEditMode.Switch(false, false);
+                SelectedCredentials = ThisAccount.Data.FirstOrDefault();
             }
             else
             {
-                SelectedAccount = null;
-                IsEditMode.Switch(false);
+                SelectedCredentials = ChangableCredentials;
+                ThisAccount.Data[SelectedCredentials.ID] = ChangableCredentials;
             }
+            IsEditMode = false;
+            ChangableCredentials = null;
+            UpdateCommandState();
         }
 
-        private void AcceptEdits(object obj)
+        private void AcceptEdits()
         {
             if (CheckEmptyInput())
             {
-                if (IsEditMode.DoesAccountChange)
-                {
-                    IsEditMode.Switch(false, false);
-                }
-                else
-                {
-                    ThisAccount.Data.Add(new AccountData
-                    {
-                        Login = SelectedAccount.Login,
-                        Name = SelectedAccount.Name,
-                        Other = SelectedAccount.Other == null ? string.Empty : SelectedAccount.Other,
-                        Password = SelectedAccount.Password
-                    });
-                    SelectedAccount = ThisAccount.Data.Last();
-                    IsEditMode.Switch(false);
-                }
-                IsSaved = false;
+                //If add new account
+                if (ChangableCredentials is null)
+                    ThisAccount.Data.Add(SelectedCredentials);
+
+                //Clear changable account
+                ChangableCredentials = null;
+                IsEditMode = false;
+                Configuration.Instance.SaveData();
+                UpdateCommandState();
             }
-            else MessageBox.Show("Please, fill this data: Name, Login, Password", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+            else
+                System.Windows.Forms.MessageBox.Show(
+                    "Please, fill this data: Name, Login, Password", 
+                    "Information",
+                    System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Information,
+                    System.Windows.Forms.MessageBoxDefaultButton.Button1);
         }
 
-        private void SaveAll(object obj)
+        private void ChangeAccountData()
         {
-            if (!string.IsNullOrWhiteSpace(ThisAccount.CorrectPassword))
-                FileWorker.WriteFile(ThisAccount);
-            /*else
-            {
-                //If new user
-                if (new InputPassWindow().ShowDialog() == true)
-                    FileWorker.WriteFile(ThisAccount);
-            }*/
-            IsSaved = true;
+            ChangableCredentials = SelectedCredentials.Clone() as Credentials;
+            IsEditMode = true;
+            UpdateCommandState();
         }
 
-        private void ChangeAccountData(object obj)
-        {
-            ChangableAccount = new AccountData
-            {
-                Login = SelectedAccount.Login,
-                Name = SelectedAccount.Name,
-                Other = SelectedAccount.Other,
-                Password = SelectedAccount.Password
-            };
-            IsEditMode.Switch(true, true);
-        }
-
-        private void RemoveAccountData(object obj)
+        private void RemoveAccountData()
         {
             //Do you really want to delete it?
-            var result = MessageBox.Show("Do you really want to delete this item?", "Question", MessageBoxButton.YesNo, MessageBoxImage.Question);
-            switch (result)
+            var result = System.Windows.Forms.MessageBox.Show(
+                new HwndWrapper(_windowHandle),
+                "Do you really want to delete this item?", 
+                "Question",
+                System.Windows.Forms.MessageBoxButtons.YesNo,
+                System.Windows.Forms.MessageBoxIcon.Question,
+                System.Windows.Forms.MessageBoxDefaultButton.Button1);
+            if (result == System.Windows.Forms.DialogResult.Yes)
             {
-                case MessageBoxResult.Yes:
-                    {
-                        ThisAccount.Data.Remove(SelectedAccount);
-                        IsSaved = false;
-                        break;
-                    }
-                case MessageBoxResult.No:
-                    {
-                        break;
-                    }
+                ThisAccount.Data.Remove(SelectedCredentials);
+                Configuration.Instance.SaveData();
             }
+            UpdateCommandState();
         }
 
-        private void AddAccountData(object obj)
+        private void AddAccountData()
         {
-            SelectedAccount = new AccountData();
-            IsEditMode.Switch(true);
+            SelectedCredentials = new Credentials();
+            IsEditMode = true;
+            UpdateCommandState();
+        }
+
+        private void UpdateCommandState()
+        {
+            AddCommand.RaiseCanExecuteChanged();
+            ChangeCommand.RaiseCanExecuteChanged();
+            RemoveCommand.RaiseCanExecuteChanged();
+        }
+
+        private bool CanManipulateWithCredentials()
+        {
+            if (IsEditMode)
+                return false;
+
+            if (ThisAccount.Data.Count == 0)
+                return false;
+
+            return true;
         }
         #endregion
 
         #region Commands of buttons
-        public ICommand AddCommand { get; private set; }
+        private RelayCommand _addCommand;
+        public RelayCommand AddCommand
+        {
+            get
+            {
+                return _addCommand
+                    ?? (_addCommand = new RelayCommand(AddAccountData, () => !IsEditMode));
+            }
+        }
 
-        public ICommand RemoveCommand { get; private set; }
+        private RelayCommand _removeCommand;
+        public RelayCommand RemoveCommand
+        {
+            get
+            {
+                return _removeCommand
+                    ?? (_removeCommand = new RelayCommand(RemoveAccountData, CanManipulateWithCredentials));
+            }
+        }
 
-        public ICommand ChangeCommand { get; private set; }
+        private RelayCommand _changeCommand;
+        public RelayCommand ChangeCommand
+        {
+            get
+            {
+                return _changeCommand
+                    ?? (_changeCommand = new RelayCommand(ChangeAccountData, CanManipulateWithCredentials));
+            }
+        }
 
-        public ICommand SaveCommand { get; private set; }
+        private RelayCommand _acceptEditCommand;
+        public RelayCommand AcceptEditCommand
+        {
+            get
+            {
+                return _acceptEditCommand
+                    ?? (_acceptEditCommand = new RelayCommand(AcceptEdits));
+            }
+        }
 
-        public ICommand AcceptEditCommand { get; private set; }
-
-        public ICommand DeclineEditCommand { get; private set; }
+        private RelayCommand _declineEditCommand;
+        public RelayCommand DeclineEditCommand
+        {
+            get
+            {
+                return _declineEditCommand
+                    ?? (_declineEditCommand = new RelayCommand(DeclineEdits));
+            }
+        }
         #endregion
     }
 }
