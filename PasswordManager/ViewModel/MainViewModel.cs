@@ -49,10 +49,6 @@ namespace PasswordManager.ViewModel
             {
                 _isEditMode = value;
                 RaisePropertyChanged();
-
-                AddCommand.RaiseCanExecuteChanged();
-                ChangeCommand.RaiseCanExecuteChanged();
-                RemoveCommand.RaiseCanExecuteChanged();
             }
         }
 
@@ -144,6 +140,7 @@ namespace PasswordManager.ViewModel
             }
             IsEditMode = false;
             ChangableCredentials = null;
+            UpdateCommandState();
         }
 
         private void AcceptEdits()
@@ -158,20 +155,22 @@ namespace PasswordManager.ViewModel
                 ChangableCredentials = null;
                 IsEditMode = false;
                 Configuration.Instance.SaveData();
+                UpdateCommandState();
             }
-            else 
-                MessageBox.Show(
+            else
+                System.Windows.Forms.MessageBox.Show(
                     "Please, fill this data: Name, Login, Password", 
-                    "Information", 
-                    MessageBoxButton.OK, 
-                    MessageBoxImage.Information,
-                    MessageBoxResult.OK);
+                    "Information",
+                    System.Windows.Forms.MessageBoxButtons.OK,
+                    System.Windows.Forms.MessageBoxIcon.Information,
+                    System.Windows.Forms.MessageBoxDefaultButton.Button1);
         }
 
         private void ChangeAccountData()
         {
             ChangableCredentials = SelectedCredentials.Clone() as Credentials;
             IsEditMode = true;
+            UpdateCommandState();
         }
 
         private void RemoveAccountData()
@@ -189,12 +188,32 @@ namespace PasswordManager.ViewModel
                 ThisAccount.Data.Remove(SelectedCredentials);
                 Configuration.Instance.SaveData();
             }
+            UpdateCommandState();
         }
 
         private void AddAccountData()
         {
             SelectedCredentials = new Credentials();
             IsEditMode = true;
+            UpdateCommandState();
+        }
+
+        private void UpdateCommandState()
+        {
+            AddCommand.RaiseCanExecuteChanged();
+            ChangeCommand.RaiseCanExecuteChanged();
+            RemoveCommand.RaiseCanExecuteChanged();
+        }
+
+        private bool CanManipulateWithCredentials()
+        {
+            if (IsEditMode)
+                return false;
+
+            if (ThisAccount.Data.Count == 0)
+                return false;
+
+            return true;
         }
         #endregion
 
@@ -215,7 +234,7 @@ namespace PasswordManager.ViewModel
             get
             {
                 return _removeCommand
-                    ?? (_removeCommand = new RelayCommand(RemoveAccountData, () => !IsEditMode));
+                    ?? (_removeCommand = new RelayCommand(RemoveAccountData, CanManipulateWithCredentials));
             }
         }
 
@@ -225,7 +244,7 @@ namespace PasswordManager.ViewModel
             get
             {
                 return _changeCommand
-                    ?? (_changeCommand = new RelayCommand(ChangeAccountData, () => !IsEditMode));
+                    ?? (_changeCommand = new RelayCommand(ChangeAccountData, CanManipulateWithCredentials));
             }
         }
 
