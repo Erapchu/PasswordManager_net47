@@ -26,6 +26,7 @@ namespace PasswordManager.Core.Data
 
         #region Fields
         private int _defaultRandomSize = 20;
+        private readonly object _lockerSave = new object();
         #endregion
 
         #region Constructors
@@ -67,24 +68,27 @@ namespace PasswordManager.Core.Data
         /// <returns></returns>
         public bool SaveData()
         {
-            Logger.Instance.Info("Save data to file");
-            try
+            lock (_lockerSave)
             {
-                string forFile = JsonConvert.SerializeObject(CurrentAccount);
-                int keyEncrypt = new Random().Next(1, _defaultRandomSize);
-                string encryptedForFile = Encryption.Process(forFile, keyEncrypt);
-
-                using (BinaryWriter bw = new BinaryWriter(Pri.LongPath.File.Open(Constants.PathToMainFile, FileMode.Create)))
+                Logger.Instance.Info("Save data to file");
+                try
                 {
-                    bw.Write(keyEncrypt);
-                    bw.Write(encryptedForFile);
+                    string forFile = JsonConvert.SerializeObject(CurrentAccount);
+                    int keyEncrypt = new Random().Next(1, _defaultRandomSize);
+                    string encryptedForFile = Encryption.Process(forFile, keyEncrypt);
+
+                    using (BinaryWriter bw = new BinaryWriter(Pri.LongPath.File.Open(Constants.PathToMainFile, FileMode.Create)))
+                    {
+                        bw.Write(keyEncrypt);
+                        bw.Write(encryptedForFile);
+                    }
+                    return true;
                 }
-                return true;
-            }
-            catch
-            {
-                Logger.Instance.Error("Can't save data.");
-                return false;
+                catch
+                {
+                    Logger.Instance.Error("Can't save data.");
+                    return false;
+                }
             }
         }
 

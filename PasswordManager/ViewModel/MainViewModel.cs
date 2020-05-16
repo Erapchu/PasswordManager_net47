@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Input;
@@ -23,7 +24,14 @@ namespace PasswordManager.ViewModel
 
         private void LoadOnDesignTime()
         {
-            var credentialsList = new List<Credentials>() { new Credentials("name", "login", "password", "other") { LastDateUsage = DateTime.Now } };
+            var credentialsList = new List<Credentials>() 
+            { 
+                new Credentials("name", "login", "password", "other") 
+                { 
+                    LastTimeUsage = DateTime.Now,
+                    CreationTime = DateTime.Today
+                } 
+            };
             CurrentAccount = new Account() { Credentials = new CredentialsCollection(credentialsList) };
             AllAccountsCollectionView = new ListCollectionView(CurrentAccount.Credentials) { Filter = FilterAccountDatas };
             SelectedCredentials = credentialsList.First();
@@ -46,6 +54,11 @@ namespace PasswordManager.ViewModel
                 _currentSortMode = value;
                 RaisePropertyChanged();
                 UpdateSorting();
+                Task.Run(() =>
+                {
+                    Configuration.Instance.CurrentAccount.CredentialsSort = _currentSortMode.SortType;
+                    Configuration.Instance.SaveData();
+                });
             }
         }
 
@@ -120,9 +133,10 @@ namespace PasswordManager.ViewModel
                 var savedSorting = Configuration.Instance.CurrentAccount.CredentialsSort;
                 var sortMode = SortModes.FirstOrDefault(s => s.SortType.Equals(savedSorting));
                 if (sortMode is null)
-                    CurrentSortMode = SortModes.FirstOrDefault();
+                    _currentSortMode = SortModes.FirstOrDefault();
                 else
-                    CurrentSortMode = sortMode;
+                    _currentSortMode = sortMode;
+                UpdateSorting();
             }
         }
 
@@ -144,19 +158,19 @@ namespace PasswordManager.ViewModel
 
         private void UpdateSorting()
         {
-            switch (_currentSortMode.SortType)
+            switch (CurrentSortMode.SortType)
             {
                 case SortType.NameAscending:
                     CurrentAccount.Credentials.Sort(i => i.Name);
                     break;
                 case SortType.DateAscending:
-                    CurrentAccount.Credentials.Sort(i => i.LastDateUsage);
+                    CurrentAccount.Credentials.Sort(i => i.LastTimeUsage);
                     break;
                 case SortType.NameDescending:
                     CurrentAccount.Credentials.SortDescending(i => i.Name);
                     break;
                 case SortType.DateDescending:
-                    CurrentAccount.Credentials.SortDescending(i => i.LastDateUsage);
+                    CurrentAccount.Credentials.SortDescending(i => i.LastTimeUsage);
                     break;
             }
         }
@@ -183,7 +197,7 @@ namespace PasswordManager.ViewModel
         {
             if (CheckEmptyInput())
             {
-                SelectedCredentials.LastDateUsage = DateTime.Now;
+                SelectedCredentials.LastTimeUsage = DateTime.Now;
                 //If add new account
                 if (ChangableCredentials is null)
                 {
@@ -193,9 +207,10 @@ namespace PasswordManager.ViewModel
                 //Clear changable account
                 ChangableCredentials = null;
                 IsEditMode = false;
-                Configuration.Instance.SaveData();
-                UpdateCommandState();
                 UpdateSorting();
+                Configuration.Instance.SaveData();
+
+                UpdateCommandState();
             }
             else
                 System.Windows.Forms.MessageBox.Show(
@@ -233,7 +248,7 @@ namespace PasswordManager.ViewModel
 
         private void AddAccountData()
         {
-            SelectedCredentials = new Credentials();
+            SelectedCredentials = new Credentials() { CreationTime = DateTime.Now };
             IsEditMode = true;
             UpdateCommandState();
         }

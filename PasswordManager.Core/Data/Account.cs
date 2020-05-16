@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace PasswordManager.Core.Data
 {
-    [DebuggerDisplay("User password = {CorrectPassword}, Count of passwords = {Data.Count}")]
+    [DebuggerDisplay("User password = {CorrectPassword}, Count of credentials = {Credentials.Count}")]
     [Serializable]
     public class Account : INotifyPropertyChanged
     {

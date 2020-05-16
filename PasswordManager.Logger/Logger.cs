@@ -1,4 +1,5 @@
 ﻿using Serilog;
+using Serilog.Configuration;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -23,7 +24,10 @@ namespace PasswordManager
         {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
-                .WriteTo.File(_pathToLog, rollingInterval: RollingInterval.Month)
+                .WriteTo.File(
+                path: _pathToLog, 
+                outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] TID:#{ThreadId}> {Message:lj} {NewLine}{Exception}")
+                .Enrich.WithThreadId()
                 .CreateLogger();
         }
 

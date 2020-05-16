@@ -16,15 +16,20 @@ namespace PasswordManager
     /// </summary>
     public partial class App : Application
     {
+        #region Private fields
         IntroWindow _introWindow;
         InputPassWindow _inputPassWindow;
         MainWindow _mainWindow;
+        #endregion
 
+        #region Constructors
         public App()
         {
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
         }
+        #endregion
 
+        #region Events
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             var exception = e.ExceptionObject as Exception;
@@ -87,5 +92,6 @@ namespace PasswordManager
                 this.Shutdown();
             }
         }
+        #endregion
     }
 }

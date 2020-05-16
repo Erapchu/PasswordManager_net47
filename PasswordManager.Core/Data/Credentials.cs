@@ -86,13 +86,24 @@ namespace PasswordManager.Core.Data
             }
         }
 
-        private DateTime _lastDateUsage;
-        public DateTime LastDateUsage
+        private DateTime _lastTimeUsage;
+        public DateTime LastTimeUsage
         {
-            get => _lastDateUsage;
+            get => _lastTimeUsage;
             set
             {
-                _lastDateUsage = value;
+                _lastTimeUsage = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private DateTime _creationTime;
+        public DateTime CreationTime
+        {
+            get => _creationTime;
+            set
+            {
+                _creationTime = value;
                 OnPropertyChanged();
             }
         }
@@ -105,7 +116,7 @@ namespace PasswordManager.Core.Data
             clone.Name = this.Name;
             clone.Other = this.Other;
             clone.Password = this.Password;
-            clone.LastDateUsage = this.LastDateUsage;
+            clone.LastTimeUsage = this.LastTimeUsage;
             return clone;
         }
 
