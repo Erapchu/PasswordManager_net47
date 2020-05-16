@@ -9,6 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using PasswordManager.Core.Encryption;
 
 namespace PasswordManager.Core.Data
 {
@@ -25,7 +26,6 @@ namespace PasswordManager.Core.Data
         #endregion
 
         #region Fields
-        private int _defaultRandomSize = 20;
         private readonly object _lockerSave = new object();
         #endregion
 
@@ -76,12 +76,10 @@ namespace PasswordManager.Core.Data
                 try
                 {
                     string forFile = JsonConvert.SerializeObject(CurrentAccount);
-                    int keyEncrypt = new Random().Next(1, _defaultRandomSize);
-                    string encryptedForFile = Encryption.Process(forFile, keyEncrypt);
+                    string encryptedForFile = TripleDESHelper.EncryptString(forFile);
 
                     using (BinaryWriter bw = new BinaryWriter(Pri.LongPath.File.Open(Constants.PathToMainFile, FileMode.Create)))
                     {
-                        bw.Write(keyEncrypt);
                         bw.Write(encryptedForFile);
                     }
                     return true;
@@ -106,7 +104,6 @@ namespace PasswordManager.Core.Data
             {
                 account = new Account();
 
-                int keyDecrypt;
                 string encryptedFromFile;
                 string fromFile;
 
@@ -114,12 +111,11 @@ namespace PasswordManager.Core.Data
                 {
                     using (BinaryReader br = new BinaryReader(fileStream))
                     {
-                        keyDecrypt = br.ReadInt32();
                         encryptedFromFile = br.ReadString();
                     }
                 }
 
-                fromFile = Encryption.Process(encryptedFromFile, keyDecrypt);
+                fromFile = TripleDESHelper.DecryptString(encryptedFromFile);
                 account = JsonConvert.DeserializeObject<Account>(fromFile);
             }
             catch (FileNotFoundException)
