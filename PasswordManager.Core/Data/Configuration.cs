@@ -134,8 +134,6 @@ namespace PasswordManager.Core.Data
         #region Private methods
         private void CheckAccountInstance()
         {
-            if (string.IsNullOrWhiteSpace(CurrentAccount.CorrectPassword))
-                Logger.Instance.Warn("Saved password is corrupted");
             if (CurrentAccount.Credentials is null)
                 CurrentAccount.Credentials = new CredentialsCollection();
         }

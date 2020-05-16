@@ -26,11 +26,10 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
-        <TextBlock Text="Enter your password"
+        <TextBlock Text="Enter password"
                    HorizontalAlignment="Center" 
                    VerticalAlignment="Center" 
                    FontSize="20" 
-                   Grid.Row="0"
                    Margin="10"/>
         <TextBox Grid.Row="1"
                  Name="InputTextBox"
