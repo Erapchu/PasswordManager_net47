@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -10,24 +11,23 @@ using System.Threading.Tasks;
 
 namespace PasswordManager.Core.Data
 {
-    [DebuggerDisplay("User password = {CorrectPassword}, Count of passwords = {Data.Count}")]
+    [DebuggerDisplay("User password = {CorrectPassword}, Count of credentials = {Credentials.Count}")]
     [Serializable]
     public class Account : INotifyPropertyChanged
     {
-        public CredentialsCollection Data { get; set; }
+        [JsonProperty]
+        public CredentialsCollection Credentials { get; set; }
 
-        private string _correctPassword;
-        public string CorrectPassword
+        [JsonProperty]
+        public SortType CredentialsSort { get; set; }
+
+        [JsonProperty]
+        public string CorrectPassword { get; private set; }
+
+        public bool SetNewPassword(string newPassword)
         {
-            get
-            {
-                return _correctPassword;
-            }
-            set
-            {
-                _correctPassword = value;
-                OnPropertyChanged();
-            }
+            CorrectPassword = newPassword;
+            return Configuration.Instance.SaveData("New password has been initialized");
         }
 
         #region MVVM Pattern

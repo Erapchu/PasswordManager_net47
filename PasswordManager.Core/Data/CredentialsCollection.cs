@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PasswordManager.Core.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 namespace PasswordManager.Core.Data
 {
     [Serializable]
-    public class CredentialsCollection : ObservableCollection<Credentials>
+    public class CredentialsCollection : ObservableCollectionEx<Credentials>
     {
         public CredentialsCollection(IEnumerable<Credentials> credentials) 
         {

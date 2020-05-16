@@ -59,28 +59,49 @@ namespace PasswordManager.ViewModel
         }
         #endregion
 
+        private void LoadOnDesignTime()
+        {
+            StatusText = "Design time";
+            IsStatusShowed = true;
+            CurrentPassword = "password";
+        }
+
         #region Constructors
         public InputPassViewModel()
         {
-
+            if (this.IsInDesignMode)
+                LoadOnDesignTime();
+            else
+            {
+                if (Configuration.Instance.CurrentAccount.CorrectPassword is null)
+                {
+                    StatusText = "Please, enter your new password";
+                    IsStatusShowed = true;
+                }
+            }
         }
         #endregion
 
         #region Implements of commands
         private void Continue()
         {
-            var correctPassword = Configuration.Instance?.CurrentAccount?.CorrectPassword;
+            var correctPassword = Configuration.Instance.CurrentAccount.CorrectPassword;
             if (correctPassword is null)
             {
-                StatusText = "File with data is corrupted";
-                IsStatusShowed = true;
+                Configuration.Instance.CurrentAccount.SetNewPassword(CurrentPassword);
+                ContinueAuthorization?.Invoke();
                 return;
             }
 
             if (CurrentPassword.Equals(correctPassword))
+            {
+                Logger.Instance.Warn("Passwords is equals");
                 ContinueAuthorization?.Invoke();
+                return;
+            }
             else
             {
+                Logger.Instance.Warn("Passwords is not equals");
                 StatusText = "Password is incorrect";
                 IsStatusShowed = true;
             }

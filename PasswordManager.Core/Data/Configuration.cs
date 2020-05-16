@@ -9,60 +9,86 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using PasswordManager.Core.Encryption;
 
 namespace PasswordManager.Core.Data
 {
     public class Configuration
     {
+        #region Singleton
         private static Lazy<Configuration> _lazy = new Lazy<Configuration>(() => null);
         public static Configuration Instance => _lazy.Value;
+        #endregion
 
+        #region Properties
         public static bool InstanceInitialized { get; private set; }
+        public Account CurrentAccount { get; set; }
+        #endregion
 
-        public static void InitializeConfiguration()
+        #region Fields
+        private readonly object _lockerSave = new object();
+        #endregion
+
+        #region Constructors
+        private Configuration()
+        {
+            CurrentAccount = InitOrCreateDataFile();
+            if (CurrentAccount is null)
+                Logger.Instance.Warn("Current account is \"null\"!");
+            else
+                CheckAccountInstance();
+
+            Logger.Instance.Info("Successfully read data file!");
+        }
+        #endregion
+
+        #region Public methods
+        /// <summary>
+        /// Initialize new <see cref="Configuration"/> instance.
+        /// </summary>
+        public static bool InitializeConfiguration()
         {
             if (InstanceInitialized)
-                return;
+                return true;
 
             _lazy = new Lazy<Configuration>(() => new Configuration());
             var instance = Instance;
+
+            if (Instance.CurrentAccount is null)
+                return false;
+
             InstanceInitialized = true;
+            return true;
         }
-
-        public Account CurrentAccount { get; set; }
-
-        private Configuration()
-        {
-            Logger.Instance.Info("Init file with data...");
-            CurrentAccount = InitOrCreateDataFile();
-        }
-
-        private int _defaultRandomSize = 20;
 
         /// <summary>
-        /// Save all data
+        /// Save all data.
         /// </summary>
-        /// <param name="account">Account, that contains list of instances AccountData</param>
+        /// <param name="saveReason">Reason why should save</param>
         /// <returns></returns>
-        public bool SaveData()
+        public bool SaveData(string saveReason = null)
         {
-            try
+            lock (_lockerSave)
             {
-                string forFile = JsonConvert.SerializeObject(CurrentAccount);
-                int keyEncrypt = new Random().Next(1, _defaultRandomSize);
-                string encryptedForFile = Encryption.Process(forFile, keyEncrypt);
-
-                using (BinaryWriter bw = new BinaryWriter(Pri.LongPath.File.Open(Constants.PathToMainFile, FileMode.Create)))
+                Logger.Instance.Info(saveReason is null ? 
+                    "Save data to file" : 
+                    $"Save data to file: \"{saveReason}\"");
+                try
                 {
-                    bw.Write(keyEncrypt);
-                    bw.Write(encryptedForFile);
+                    string forFile = JsonConvert.SerializeObject(CurrentAccount);
+                    string encryptedForFile = TripleDESHelper.EncryptString(forFile);
+
+                    using (BinaryWriter bw = new BinaryWriter(Pri.LongPath.File.Open(Constants.PathToMainFile, FileMode.Create)))
+                    {
+                        bw.Write(encryptedForFile);
+                    }
+                    return true;
                 }
-                return true;
-            }
-            catch
-            {
-                Logger.Instance.Error("Can't save data.");
-                return false;
+                catch
+                {
+                    Logger.Instance.Error("Can't save data.");
+                    return false;
+                }
             }
         }
 
@@ -72,12 +98,12 @@ namespace PasswordManager.Core.Data
         /// <returns></returns>
         private Account InitOrCreateDataFile()
         {
+            Logger.Instance.Info("Init file with data...");
             Account account = null;
             try
             {
                 account = new Account();
 
-                int keyDecrypt;
                 string encryptedFromFile;
                 string fromFile;
 
@@ -85,12 +111,11 @@ namespace PasswordManager.Core.Data
                 {
                     using (BinaryReader br = new BinaryReader(fileStream))
                     {
-                        keyDecrypt = br.ReadInt32();
                         encryptedFromFile = br.ReadString();
                     }
                 }
 
-                fromFile = Encryption.Process(encryptedFromFile, keyDecrypt);
+                fromFile = TripleDESHelper.DecryptString(encryptedFromFile);
                 account = JsonConvert.DeserializeObject<Account>(fromFile);
             }
             catch (FileNotFoundException)
@@ -104,5 +129,14 @@ namespace PasswordManager.Core.Data
             }
             return account;
         }
+        #endregion
+
+        #region Private methods
+        private void CheckAccountInstance()
+        {
+            if (CurrentAccount.Credentials is null)
+                CurrentAccount.Credentials = new CredentialsCollection();
+        }
+        #endregion
     }
 }

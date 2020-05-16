@@ -23,6 +23,7 @@
                 <MultiTrigger>
                     <MultiTrigger.Conditions>
                         <Condition Property="IsKeyboardFocused" Value="false"/>
+                        <Condition Property="Text" Value=""/>
                     </MultiTrigger.Conditions>
                     <Setter Property="Background">
                         <Setter.Value>
@@ -75,6 +76,7 @@
               IsEnabled="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"/>
+                <RowDefinition Height="auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             <TextBox
@@ -84,7 +86,18 @@
                 Margin="10" 
                 HorizontalAlignment="Stretch"
                 Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"/>
-            <ListBox Grid.Row="1"
+            <StackPanel Grid.Row="1"
+                        Grid.Column="0"
+                        Orientation="Horizontal"
+                        Margin="10 0">
+                <TextBlock Text="Sort by"
+                           Margin="0 0 10 0"
+                           VerticalAlignment="Center"/>
+                <ComboBox ItemsSource="{Binding SortModes}"
+                          SelectedItem="{Binding CurrentSortMode}"
+                          VerticalAlignment="Center"/>
+            </StackPanel>
+            <ListBox Grid.Row="2"
                      x:Name="AccountsList" 
                      Margin="10" 
                      ItemsSource="{Binding AllAccountsCollectionView}" 
@@ -122,7 +135,7 @@
                                  MaxHeight="36" 
                                  Margin="5" 
                                  IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
-                                 Text="{Binding Path=SelectedCredentials.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                 Text="{Binding SelectedCredentials.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  ScrollViewer.CanContentScroll="True"/>
                     </StackPanel>
@@ -135,7 +148,7 @@
                                  MaxHeight="36" 
                                  Margin="5" 
                                  IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
-                                 Text="{Binding Path=SelectedCredentials.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                 Text="{Binding SelectedCredentials.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  ScrollViewer.CanContentScroll="True"/>
                     </StackPanel>
@@ -148,24 +161,40 @@
                                  MaxHeight="36" 
                                  Margin="5" 
                                  IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
-                                 Text="{Binding Path=SelectedCredentials.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                 Text="{Binding SelectedCredentials.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  ScrollViewer.CanContentScroll="True"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" 
+                <StackPanel Orientation="Horizontal" 
                                 HorizontalAlignment="Right">
-                        <TextBlock Text="Other" 
+                    <TextBlock Text="Other" 
                                    VerticalAlignment="Center"></TextBlock>
-                        <TextBox Name="OtherTextBox"
+                    <TextBox Name="OtherTextBox"
                                  Width="250" 
                                  Margin="5" 
                                  IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
-                                 Text="{Binding Path=SelectedCredentials.Other, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                 Text="{Binding SelectedCredentials.Other, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  AcceptsReturn="True" 
                                  MaxHeight="72" />
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" 
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" 
+                            HorizontalAlignment="Left">
+                    <TextBlock Text="Last time usage:"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding SelectedCredentials.LastTimeUsage}"
+                               Margin="5"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" 
+                            HorizontalAlignment="Left">
+                    <TextBlock Text="Creation time:"
+                               VerticalAlignment="Center"/>
+                    <TextBlock Text="{Binding SelectedCredentials.CreationTime}"
+                               Margin="5"
+                               VerticalAlignment="Center"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" 
                                 Margin="5" HorizontalAlignment="Right">
                         <Button Name="OKButton" 
                                 Content="OK" 
