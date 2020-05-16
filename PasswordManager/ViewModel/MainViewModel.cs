@@ -27,6 +27,7 @@ namespace PasswordManager.ViewModel
             CurrentAccount = new Account() { Credentials = new CredentialsCollection(credentialsList) };
             AllAccountsCollectionView = new ListCollectionView(CurrentAccount.Credentials) { Filter = FilterAccountDatas };
             SelectedCredentials = credentialsList.First();
+            CurrentSortMode = SortModes.FirstOrDefault();
         }
         #endregion
 
@@ -34,7 +35,7 @@ namespace PasswordManager.ViewModel
 
         public ICollectionView AllAccountsCollectionView { get; private set; }
 
-        public List<SortMode> SortModes { get; private set; }
+        public SortModes SortModes { get; } = new SortModes();
 
         private SortMode _currentSortMode;
         public SortMode CurrentSortMode
@@ -115,16 +116,14 @@ namespace PasswordManager.ViewModel
                 CurrentAccount = Configuration.Instance.CurrentAccount;
                 AllAccountsCollectionView = new ListCollectionView(CurrentAccount.Credentials) { Filter = FilterAccountDatas };
                 SelectedCredentials = CurrentAccount.Credentials.FirstOrDefault();
-            }
 
-            SortModes = new List<SortMode>
-            {
-                new SortMode(SortType.NameAscending),
-                new SortMode(SortType.NameDescending),
-                new SortMode(SortType.DateAscending),
-                new SortMode(SortType.DateDescending),
-            };
-            CurrentSortMode = SortModes.FirstOrDefault();
+                var savedSorting = Configuration.Instance.CurrentAccount.CredentialsSort;
+                var sortMode = SortModes.FirstOrDefault(s => s.SortType.Equals(savedSorting));
+                if (sortMode is null)
+                    CurrentSortMode = SortModes.FirstOrDefault();
+                else
+                    CurrentSortMode = sortMode;
+            }
         }
 
         private bool FilterAccountDatas(object obj)

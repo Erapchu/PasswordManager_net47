@@ -20,6 +20,22 @@ namespace PasswordManager
         InputPassWindow _inputPassWindow;
         MainWindow _mainWindow;
 
+        public App()
+        {
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+        }
+
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            var exception = e.ExceptionObject as Exception;
+            Logger.Instance.Error($"[Unhandled] {exception}");
+        }
+
+        void CurrentDomain_ProcessExit(object sender, EventArgs e)
+        {
+            Logger.Instance.Info("Leaving application\r\n");
+        }
+
         private async void Application_Startup(object sender, StartupEventArgs e)
         {
             InitializeComponent();
@@ -38,14 +54,19 @@ namespace PasswordManager
                 _introWindow = ContainerBuildHelper.Instance.Resolve<IntroWindow>();
                 _introWindow.Show();
 
-                await Task.Run(() => Configuration.InitializeConfiguration());
+                var readConfigurationTaskResult = await Task.Run(() => Configuration.InitializeConfiguration());
+                if (!readConfigurationTaskResult)
+                {
+                    Logger.Instance.Warn("Can't initialize Configuration instance.");
+                    this.Shutdown();
+                }
+
                 _inputPassWindow = ContainerBuildHelper.Instance.Resolve<InputPassWindow>();
                 _mainWindow = ContainerBuildHelper.Instance.Resolve<MainWindow>();
 
                 _introWindow.Close();
                 _introWindow = null;
 
-                Logger.Instance.Info("Initialize login window...");
                 _inputPassWindow.ShowDialog();
 
                 if (_inputPassWindow.DialogResult == true)
@@ -59,12 +80,11 @@ namespace PasswordManager
                 }
                 _inputPassWindow.Close();
                 _inputPassWindow = null;
-
             }
             catch (Exception ex)
             {
                 Logger.Instance.Error(ex.Message);
-                Current.Shutdown();
+                this.Shutdown();
             }
         }
     }

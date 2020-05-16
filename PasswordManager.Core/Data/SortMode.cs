@@ -5,25 +5,20 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
 
 namespace PasswordManager.Core.Data
 {
-    public enum SortType
-    {
-        NameAscending,
-        NameDescending,
-        DateAscending,
-        DateDescending
-    }
 
     public class SortMode : INotifyPropertyChanged
     {
+        #region Constructors
         public SortMode(SortType type)
         {
             this.SortType = type;
         }
+        #endregion
 
+        #region Properties
         public string Name
         {
             get
@@ -43,17 +38,6 @@ namespace PasswordManager.Core.Data
             }
         }
 
-        private BitmapImage _image;
-        public BitmapImage Image
-        {
-            get => _image;
-            private set
-            {
-                _image = value;
-                OnPropertyChanged();
-            }
-        }
-
         private SortType _sortType;
         public SortType SortType
         {
@@ -64,12 +48,15 @@ namespace PasswordManager.Core.Data
                 OnPropertyChanged();
             }
         }
+        #endregion
 
+        #region Overrides
         public override string ToString()
         {
             string output = this.Name;
             return output;
         }
+        #endregion
 
         #region MVVM Pattern
         public event PropertyChangedEventHandler PropertyChanged;

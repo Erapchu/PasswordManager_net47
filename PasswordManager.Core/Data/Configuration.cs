@@ -14,30 +14,51 @@ namespace PasswordManager.Core.Data
 {
     public class Configuration
     {
+        #region Singleton
         private static Lazy<Configuration> _lazy = new Lazy<Configuration>(() => null);
         public static Configuration Instance => _lazy.Value;
+        #endregion
 
+        #region Properties
         public static bool InstanceInitialized { get; private set; }
+        public Account CurrentAccount { get; set; }
+        #endregion
 
-        public static void InitializeConfiguration()
+        #region Fields
+        private int _defaultRandomSize = 20;
+        #endregion
+
+        #region Constructors
+        private Configuration()
+        {
+            CurrentAccount = InitOrCreateDataFile();
+            if (CurrentAccount is null)
+                Logger.Instance.Warn("Current account is \"null\"!");
+            else
+                CheckAccountInstance();
+
+            Logger.Instance.Info("Successfully read data file!");
+        }
+        #endregion
+
+        #region Public methods
+        /// <summary>
+        /// Initialize new <see cref="Configuration"/> instance.
+        /// </summary>
+        public static bool InitializeConfiguration()
         {
             if (InstanceInitialized)
-                return;
+                return true;
 
             _lazy = new Lazy<Configuration>(() => new Configuration());
             var instance = Instance;
+
+            if (Instance.CurrentAccount is null)
+                return false;
+
             InstanceInitialized = true;
+            return true;
         }
-
-        public Account CurrentAccount { get; set; }
-
-        private Configuration()
-        {
-            Logger.Instance.Info("Init file with data...");
-            CurrentAccount = InitOrCreateDataFile();
-        }
-
-        private int _defaultRandomSize = 20;
 
         /// <summary>
         /// Save all data
@@ -46,6 +67,7 @@ namespace PasswordManager.Core.Data
         /// <returns></returns>
         public bool SaveData()
         {
+            Logger.Instance.Info("Save data to file");
             try
             {
                 string forFile = JsonConvert.SerializeObject(CurrentAccount);
@@ -72,6 +94,7 @@ namespace PasswordManager.Core.Data
         /// <returns></returns>
         private Account InitOrCreateDataFile()
         {
+            Logger.Instance.Info("Init file with data...");
             Account account = null;
             try
             {
@@ -104,5 +127,16 @@ namespace PasswordManager.Core.Data
             }
             return account;
         }
+        #endregion
+
+        #region Private methods
+        private void CheckAccountInstance()
+        {
+            if (string.IsNullOrWhiteSpace(CurrentAccount.CorrectPassword))
+                Logger.Instance.Warn("Saved password is corrupted");
+            if (CurrentAccount.Credentials is null)
+                CurrentAccount.Credentials = new CredentialsCollection();
+        }
+        #endregion
     }
 }

@@ -16,6 +16,8 @@ namespace PasswordManager.Core.Data
     {
         public CredentialsCollection Credentials { get; set; }
 
+        public SortType CredentialsSort { get; set; }
+
         private string _correctPassword;
         public string CorrectPassword
         {
