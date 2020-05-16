@@ -48,6 +48,9 @@ namespace PasswordManager.ViewModel
 
         public SortModes SortModes { get; } = new SortModes();
 
+        public Account CurrentAccount { get; private set; }
+
+        #region CurrentSortMode
         private SortMode _currentSortMode;
         public SortMode CurrentSortMode
         {
@@ -60,11 +63,13 @@ namespace PasswordManager.ViewModel
                 Task.Run(() =>
                 {
                     Configuration.Instance.CurrentAccount.CredentialsSort = _currentSortMode.SortType;
-                    Configuration.Instance.SaveData();
+                    Configuration.Instance.SaveData("Change sorting");
                 });
             }
         }
+        #endregion
 
+        #region IsEditMode
         private bool _isEditMode;
         public bool IsEditMode 
         {
@@ -75,7 +80,9 @@ namespace PasswordManager.ViewModel
                 RaisePropertyChanged();
             }
         }
+        #endregion
 
+        #region ChangableCredentials
         private Credentials _changableAcountData;
         public Credentials ChangableCredentials
         {
@@ -89,7 +96,9 @@ namespace PasswordManager.ViewModel
                 RaisePropertyChanged();
             }
         }
+        #endregion
 
+        #region SelectedCredentials
         private Credentials _selectedCredentials;
         public Credentials SelectedCredentials
         {
@@ -103,7 +112,9 @@ namespace PasswordManager.ViewModel
                 RaisePropertyChanged();
             }
         }
+        #endregion
 
+        #region FilterText
         private string _filterText;
         public string FilterText
         {
@@ -118,8 +129,7 @@ namespace PasswordManager.ViewModel
                 RaisePropertyChanged();
             }
         }
-
-        public Account CurrentAccount { get; private set; }
+        #endregion
         #endregion
 
         #region Constructors
@@ -213,11 +223,8 @@ namespace PasswordManager.ViewModel
                 ChangableCredentials = null;
                 IsEditMode = false;
                 UpdateSorting();
-                Configuration.Instance.SaveData();
-
+                Configuration.Instance.SaveData("Credentials was add/changed");
                 UpdateCommandState();
-
-                Logger.Instance.Info("Credentials was add/changed");
             }
             else
                 System.Windows.Forms.MessageBox.Show(
@@ -248,16 +255,18 @@ namespace PasswordManager.ViewModel
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
                 CurrentAccount.Credentials.Remove(SelectedCredentials);
-                Configuration.Instance.SaveData();
-
-                Logger.Instance.Info("Credential was deleted");
+                Configuration.Instance.SaveData("Credential was deleted");
             }
             UpdateCommandState();
         }
 
         private void AddAccountData()
         {
-            SelectedCredentials = new Credentials() { CreationTime = DateTime.Now };
+            SelectedCredentials = new Credentials() 
+            { 
+                CreationTime = DateTime.Now,
+                LastTimeUsage = DateTime.Now
+            };
             IsEditMode = true;
             UpdateCommandState();
         }

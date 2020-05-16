@@ -62,15 +62,17 @@ namespace PasswordManager.Core.Data
         }
 
         /// <summary>
-        /// Save all data
+        /// Save all data.
         /// </summary>
-        /// <param name="account">Account, that contains list of instances AccountData</param>
+        /// <param name="saveReason">Reason why should save</param>
         /// <returns></returns>
-        public bool SaveData()
+        public bool SaveData(string saveReason = null)
         {
             lock (_lockerSave)
             {
-                Logger.Instance.Info("Save data to file");
+                Logger.Instance.Info(saveReason is null ? 
+                    "Save data to file" : 
+                    $"Save data to file: \"{saveReason}\"");
                 try
                 {
                     string forFile = JsonConvert.SerializeObject(CurrentAccount);

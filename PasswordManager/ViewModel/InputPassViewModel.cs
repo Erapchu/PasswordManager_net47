@@ -73,14 +73,19 @@ namespace PasswordManager.ViewModel
             if (correctPassword is null)
             {
                 StatusText = "File with data is corrupted";
+                Logger.Instance.Warn("File with data is corrupted, please recreate you data file.");
                 IsStatusShowed = true;
                 return;
             }
 
             if (CurrentPassword.Equals(correctPassword))
+            {
+                Logger.Instance.Warn("Passwords is equals");
                 ContinueAuthorization?.Invoke();
+            }
             else
             {
+                Logger.Instance.Warn("Passwords is not equals");
                 StatusText = "Password is incorrect";
                 IsStatusShowed = true;
             }
