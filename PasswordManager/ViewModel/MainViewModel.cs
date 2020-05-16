@@ -39,8 +39,11 @@ namespace PasswordManager.ViewModel
         }
         #endregion
 
-        public IntPtr _windowHandle;
+        #region Fields
+        private readonly IntPtr _windowHandle;
+        #endregion
 
+        #region Properties
         public ICollectionView AllAccountsCollectionView { get; private set; }
 
         public SortModes SortModes { get; } = new SortModes();
@@ -117,7 +120,9 @@ namespace PasswordManager.ViewModel
         }
 
         public Account CurrentAccount { get; private set; }
+        #endregion
 
+        #region Constructors
         public MainViewModel(IntPtr windowHandle)
         {
             this._windowHandle = windowHandle;
@@ -139,7 +144,9 @@ namespace PasswordManager.ViewModel
                 UpdateSorting();
             }
         }
+        #endregion
 
+        #region Private methods
         private bool FilterAccountDatas(object obj)
         {
             bool result = true;
@@ -175,8 +182,6 @@ namespace PasswordManager.ViewModel
             }
         }
 
-        #region Delegate commands
-
         private void DeclineEdits()
         {
             if (ChangableCredentials is null)
@@ -211,6 +216,8 @@ namespace PasswordManager.ViewModel
                 Configuration.Instance.SaveData();
 
                 UpdateCommandState();
+
+                Logger.Instance.Info("Credentials was add/changed");
             }
             else
                 System.Windows.Forms.MessageBox.Show(
@@ -242,6 +249,8 @@ namespace PasswordManager.ViewModel
             {
                 CurrentAccount.Credentials.Remove(SelectedCredentials);
                 Configuration.Instance.SaveData();
+
+                Logger.Instance.Info("Credential was deleted");
             }
             UpdateCommandState();
         }
