@@ -24,8 +24,8 @@ namespace PasswordManager.ViewModel
         private void LoadOnDesignTime()
         {
             var credentialsList = new List<Credentials>() { new Credentials("name", "login", "password", "other") { LastDateUsage = DateTime.Now } };
-            ThisAccount = new Account() { Data = new CredentialsCollection(credentialsList) };
-            AllAccountsCollectionView = new ListCollectionView(ThisAccount.Data) { Filter = FilterAccountDatas };
+            CurrentAccount = new Account() { Credentials = new CredentialsCollection(credentialsList) };
+            AllAccountsCollectionView = new ListCollectionView(CurrentAccount.Credentials) { Filter = FilterAccountDatas };
             SelectedCredentials = credentialsList.First();
         }
         #endregion
@@ -102,7 +102,7 @@ namespace PasswordManager.ViewModel
             }
         }
 
-        public Account ThisAccount { get; private set; }
+        public Account CurrentAccount { get; private set; }
 
         public MainViewModel(IntPtr windowHandle)
         {
@@ -112,9 +112,9 @@ namespace PasswordManager.ViewModel
                 LoadOnDesignTime();
             else
             {
-                ThisAccount = Configuration.Instance.CurrentAccount;
-                AllAccountsCollectionView = new ListCollectionView(ThisAccount.Data) { Filter = FilterAccountDatas };
-                SelectedCredentials = ThisAccount.Data.FirstOrDefault();
+                CurrentAccount = Configuration.Instance.CurrentAccount;
+                AllAccountsCollectionView = new ListCollectionView(CurrentAccount.Credentials) { Filter = FilterAccountDatas };
+                SelectedCredentials = CurrentAccount.Credentials.FirstOrDefault();
             }
 
             SortModes = new List<SortMode>
@@ -148,16 +148,16 @@ namespace PasswordManager.ViewModel
             switch (_currentSortMode.SortType)
             {
                 case SortType.NameAscending:
-                    ThisAccount.Data.Sort(i => i.Name);
+                    CurrentAccount.Credentials.Sort(i => i.Name);
                     break;
                 case SortType.DateAscending:
-                    ThisAccount.Data.Sort(i => i.LastDateUsage);
+                    CurrentAccount.Credentials.Sort(i => i.LastDateUsage);
                     break;
                 case SortType.NameDescending:
-                    ThisAccount.Data.SortDescending(i => i.Name);
+                    CurrentAccount.Credentials.SortDescending(i => i.Name);
                     break;
                 case SortType.DateDescending:
-                    ThisAccount.Data.SortDescending(i => i.LastDateUsage);
+                    CurrentAccount.Credentials.SortDescending(i => i.LastDateUsage);
                     break;
             }
         }
@@ -168,12 +168,12 @@ namespace PasswordManager.ViewModel
         {
             if (ChangableCredentials is null)
             {
-                SelectedCredentials = ThisAccount.Data.FirstOrDefault();
+                SelectedCredentials = CurrentAccount.Credentials.FirstOrDefault();
             }
             else
             {
                 SelectedCredentials = ChangableCredentials;
-                ThisAccount.Data[SelectedCredentials.ID] = ChangableCredentials;
+                CurrentAccount.Credentials[SelectedCredentials.ID] = ChangableCredentials;
             }
             IsEditMode = false;
             ChangableCredentials = null;
@@ -188,7 +188,7 @@ namespace PasswordManager.ViewModel
                 //If add new account
                 if (ChangableCredentials is null)
                 {
-                    ThisAccount.Data.Add(SelectedCredentials);
+                    CurrentAccount.Credentials.Add(SelectedCredentials);
                 }
 
                 //Clear changable account
@@ -226,7 +226,7 @@ namespace PasswordManager.ViewModel
                 System.Windows.Forms.MessageBoxDefaultButton.Button1);
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
-                ThisAccount.Data.Remove(SelectedCredentials);
+                CurrentAccount.Credentials.Remove(SelectedCredentials);
                 Configuration.Instance.SaveData();
             }
             UpdateCommandState();
@@ -251,7 +251,7 @@ namespace PasswordManager.ViewModel
             if (IsEditMode)
                 return false;
 
-            if (ThisAccount.Data.Count == 0)
+            if (CurrentAccount.Credentials.Count == 0)
                 return false;
 
             return true;

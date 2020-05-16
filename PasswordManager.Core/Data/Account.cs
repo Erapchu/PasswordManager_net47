@@ -14,7 +14,7 @@ namespace PasswordManager.Core.Data
     [Serializable]
     public class Account : INotifyPropertyChanged
     {
-        public CredentialsCollection Data { get; set; }
+        public CredentialsCollection Credentials { get; set; }
 
         private string _correctPassword;
         public string CorrectPassword
