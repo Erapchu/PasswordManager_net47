@@ -1,6 +1,7 @@
 ﻿using GalaSoft.MvvmLight;
 using GalaSoft.MvvmLight.CommandWpf;
 using PasswordManager.Core.Data;
+using PasswordManager.Core.Encryption;
 using PasswordManager.Core.Helpers;
 using System;
 using System.Collections.Generic;
@@ -10,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace PasswordManager.ViewModel
@@ -23,17 +25,6 @@ namespace PasswordManager.ViewModel
 
         #region Properties
         public event Action ContinueAuthorization;
-
-        private string currentPassword = "";
-        public string CurrentPassword
-        {
-            get => currentPassword;
-            set
-            {
-                currentPassword = value;
-                RaisePropertyChanged();
-            }
-        }
         public PassOperation Operation { get; private set; }
 
         private string statusText;
@@ -63,7 +54,6 @@ namespace PasswordManager.ViewModel
         {
             StatusText = "Design time";
             IsStatusShowed = true;
-            CurrentPassword = "password";
         }
 
         #region Constructors
@@ -83,25 +73,28 @@ namespace PasswordManager.ViewModel
         #endregion
 
         #region Implements of commands
-        private void Continue()
+        private void Continue(object obj)
         {
+            PasswordBox passwordBox = obj as PasswordBox;
+            var encryptedInputedPassword = TripleDESHelper.EncryptString(passwordBox.Password);
+
             var correctPassword = Configuration.Instance.CurrentAccount.CorrectPassword;
             if (correctPassword is null)
             {
-                Configuration.Instance.CurrentAccount.SetNewPassword(CurrentPassword);
+                Configuration.Instance.CurrentAccount.SetNewPassword(encryptedInputedPassword);
                 ContinueAuthorization?.Invoke();
                 return;
             }
 
-            if (CurrentPassword.Equals(correctPassword))
+            if (encryptedInputedPassword.Equals(correctPassword))
             {
-                Logger.Instance.Warn("Passwords is equals");
+                Logger.Instance.Warn("Passwords are equals");
                 ContinueAuthorization?.Invoke();
                 return;
             }
             else
             {
-                Logger.Instance.Warn("Passwords is not equals");
+                Logger.Instance.Warn("Passwords are not equals");
                 StatusText = "Password is incorrect";
                 IsStatusShowed = true;
             }
@@ -109,9 +102,9 @@ namespace PasswordManager.ViewModel
         #endregion
 
         #region Commands
-        private RelayCommand continueCommand;
-        public RelayCommand ContinueCommand => continueCommand
-            ?? (continueCommand = new RelayCommand(Continue));
+        private RelayCommand<object> continueCommand;
+        public RelayCommand<object> ContinueCommand => continueCommand
+            ?? (continueCommand = new RelayCommand<object>(Continue));
         #endregion
     }
 }

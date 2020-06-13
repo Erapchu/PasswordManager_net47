@@ -31,10 +31,9 @@
                    VerticalAlignment="Center" 
                    FontSize="20" 
                    Margin="10"/>
-        <TextBox Grid.Row="1"
-                 Name="InputTextBox"
-                 Margin="10" 
-                 Text="{Binding CurrentPassword, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+        <PasswordBox Grid.Row="1"
+                     Margin="10"
+                     Name="PasswordBoxControl"/>
         <TextBlock Grid.Row="2"
                    Text="{Binding StatusText}" 
                    TextWrapping="Wrap" 
@@ -55,7 +54,9 @@
                     Width="70" 
                     Content="OK" 
                     Height="25" 
-                    Command="{Binding ContinueCommand}"/>
+                    Command="{Binding ContinueCommand}"
+                    CommandParameter="{Binding ElementName=PasswordBoxControl}"
+                    IsDefault="True"/>
             <Button VerticalAlignment="Center" 
                     Grid.Column="1"
                     Width="70" 

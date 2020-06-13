@@ -32,7 +32,7 @@ namespace PasswordManager.Windows
             viewModel.ContinueAuthorization += ViewModel_ContinueAuthorization;
             DataContext = viewModel;
 
-            InputTextBox.Focus();
+            PasswordBoxControl.Focus();
         }
 
         private void ViewModel_ContinueAuthorization()
