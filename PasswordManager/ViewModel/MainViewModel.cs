@@ -162,7 +162,7 @@ namespace PasswordManager.ViewModel
             bool result = true;
             if (obj is Credentials data && 
                 !string.IsNullOrWhiteSpace(FilterText) && 
-                !data.Name.Contains(FilterText)) 
+                !data.Name.ToLower().Contains(FilterText)) 
                 return false;
             return result;
         }
