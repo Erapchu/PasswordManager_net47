@@ -16,7 +16,7 @@ namespace PasswordManager.Core.Data
     public class Account : INotifyPropertyChanged
     {
         [JsonProperty]
-        public CredentialsCollection Credentials { get; set; }
+        public CredentialsCollection Credentials { get; set; } = new CredentialsCollection();
 
         [JsonProperty]
         public SortType CredentialsSort { get; set; }
@@ -27,7 +27,7 @@ namespace PasswordManager.Core.Data
         public bool SetNewPassword(string newPassword)
         {
             CorrectPassword = newPassword;
-            return Configuration.Instance.SaveData("New password has been initialized");
+            return Configuration.Instance.Save("New password has been initialized");
         }
 
         #region MVVM Pattern

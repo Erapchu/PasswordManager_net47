@@ -11,28 +11,22 @@ namespace PasswordManager
 {
     public class Logger
     {
-        private static Lazy<Logger> _lazy = new Lazy<Logger>(() => new Logger());
-        public static Logger Instance => _lazy.Value;
-
         private static string _pathToLog;
-        public static void SetPathToLogger(string pathTolog)
+        public static void InitLogger(string pathTolog)
         {
             _pathToLog = pathTolog;
-        }
-
-        private Logger()
-        {
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Debug()
                 .WriteTo.File(
-                path: _pathToLog, 
+                path: _pathToLog,
                 outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level:u3}] TID:#{ThreadId}> {Message:lj} {NewLine}{Exception}")
                 .Enrich.WithThreadId()
                 .CreateLogger();
         }
 
-        public void Info(string message) => Log.Information(message);
-        public void Error(string message) => Log.Error(message);
-        public void Warn(string message) => Log.Warning(message);
+        public static void Info(string message) => Log.Information(message);
+        public static void Error(string message) => Log.Error(message);
+        public static void Warn(string message) => Log.Warning(message);
+        public static void HandleException(Exception ex) => Log.Error(ex.ToString());
     }
 }

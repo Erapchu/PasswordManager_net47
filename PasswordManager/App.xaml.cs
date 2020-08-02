@@ -33,13 +33,13 @@ namespace PasswordManager
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             var exception = e.ExceptionObject as Exception;
-            Logger.Instance.Error($"[Unhandled] {exception}");
+            Logger.Error($"[Unhandled] {exception}");
         }
 
         void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
-            Configuration.Instance?.SaveData();
-            Logger.Instance.Info("Leaving application\r\n");
+            Configuration.Instance?.Save();
+            Logger.Info("Leaving application\r\n");
         }
 
         private async void Application_Startup(object sender, StartupEventArgs e)
@@ -47,15 +47,13 @@ namespace PasswordManager
             InitializeComponent();
             System.Windows.Forms.Application.EnableVisualStyles();
 
-            Logger.SetPathToLogger(Constants.PathToLogger);
-            Logger.Instance.Info("Log session started!");
+            Logger.InitLogger(Constants.PathToLoggerFile);
+            Logger.Info("Log session started!");
 
             try
             {
                 //Create IoC here
                 ContainerBuildHelper.InitializeInstance();
-
-                Logger.Instance.Info("Start reading configuration...");
 
                 _introWindow = ContainerBuildHelper.Instance.Resolve<IntroWindow>();
                 _introWindow.Show();
@@ -63,7 +61,7 @@ namespace PasswordManager
                 var readConfigurationTaskResult = await Task.Run(() => Configuration.InitializeConfiguration());
                 if (!readConfigurationTaskResult)
                 {
-                    Logger.Instance.Warn("Can't initialize Configuration instance.");
+                    Logger.Warn("Can't initialize Configuration instance.");
                     this.Shutdown();
                 }
 
@@ -89,7 +87,7 @@ namespace PasswordManager
             }
             catch (Exception ex)
             {
-                Logger.Instance.Error(ex.Message);
+                Logger.Error(ex.Message);
                 this.Shutdown();
             }
         }

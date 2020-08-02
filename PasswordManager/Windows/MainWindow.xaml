@@ -12,7 +12,7 @@
         Height="400" 
         Width="700" 
         WindowStartupLocation="CenterScreen" 
-        ResizeMode="CanMinimize" 
+        ResizeMode="CanResize" 
         Loaded="Window_Loaded"
         Closed="Window_Closed">
     <Window.Resources>
@@ -127,10 +127,10 @@
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0"
                         Grid.Column="0">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <TextBlock Text="Name" 
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <TextBlock Text="Name" 
                                    VerticalAlignment="Center"></TextBlock>
-                        <TextBox Name="NameTextBox" 
+                    <TextBox Name="NameTextBox" 
                                  Width="250" 
                                  MaxHeight="36" 
                                  Margin="5" 
@@ -138,12 +138,12 @@
                                  Text="{Binding SelectedCredentials.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  ScrollViewer.CanContentScroll="True"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" 
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" 
                                 HorizontalAlignment="Right">
-                        <TextBlock Text="Login" 
+                    <TextBlock Text="Login" 
                                    VerticalAlignment="Center"></TextBlock>
-                        <TextBox Name="LoginTextBox" 
+                    <TextBox Name="LoginTextBox" 
                                  Width="250" 
                                  MaxHeight="36" 
                                  Margin="5" 
@@ -151,12 +151,12 @@
                                  Text="{Binding SelectedCredentials.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  ScrollViewer.CanContentScroll="True"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" 
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" 
                                 HorizontalAlignment="Right">
-                        <TextBlock Text="Password" 
+                    <TextBlock Text="Password" 
                                    VerticalAlignment="Center"></TextBlock>
-                        <TextBox Name="PasswordTextBox" 
+                    <TextBox Name="PasswordTextBox" 
                                  Width="250" 
                                  MaxHeight="36" 
                                  Margin="5" 
@@ -164,7 +164,7 @@
                                  Text="{Binding SelectedCredentials.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                  TextWrapping="Wrap" 
                                  ScrollViewer.CanContentScroll="True"/>
-                    </StackPanel>
+                </StackPanel>
                 <StackPanel Orientation="Horizontal" 
                                 HorizontalAlignment="Right">
                     <TextBlock Text="Other" 
@@ -178,15 +178,17 @@
                                  AcceptsReturn="True" 
                                  MaxHeight="72" />
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" 
+                <Separator/>
+                <StackPanel Orientation="Vertical" 
                             HorizontalAlignment="Left">
                     <TextBlock Text="Last time usage:"
                                VerticalAlignment="Center"/>
                     <TextBlock Text="{Binding SelectedCredentials.LastTimeUsage}"
-                               Margin="5"
-                               VerticalAlignment="Center"/>
+                             Margin="5"
+                             VerticalAlignment="Center"/>
                 </StackPanel>
-                <StackPanel Orientation="Horizontal" 
+                <Separator/>
+                <StackPanel Orientation="Vertical" 
                             HorizontalAlignment="Left">
                     <TextBlock Text="Creation time:"
                                VerticalAlignment="Center"/>
@@ -196,13 +198,13 @@
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" 
                                 Margin="5" HorizontalAlignment="Right">
-                        <Button Name="OKButton" 
+                    <Button Name="OKButton" 
                                 Content="OK" 
                                 Height="32" 
                                 Width="50" 
                                 Command="{Binding AcceptEditCommand}" 
                                 Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConv}}"/>
-                        <Button Name="CancelButton" 
+                    <Button Name="CancelButton" 
                                 Content="Cancel" 
                                 Margin="5 0 0 0" 
                                 Height="32" 
@@ -210,14 +212,7 @@
                                 Width="50" 
                                 Command="{Binding DeclineEditCommand}" 
                                 Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConv}}"/>
-                    </StackPanel>
-            </StackPanel>
-            <StackPanel Grid.Row="1"
-                        Grid.Column="1">
-                <Button Content="Copy login" 
-                        Margin="10 10 10 5"/>
-                <Button Content="Copy password" 
-                        Margin="10 5 10 10"/>
+                </StackPanel>
             </StackPanel>
         </Grid>
     </Grid>

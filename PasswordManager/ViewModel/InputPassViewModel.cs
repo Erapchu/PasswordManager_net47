@@ -88,13 +88,13 @@ namespace PasswordManager.ViewModel
 
             if (encryptedInputedPassword.Equals(correctPassword))
             {
-                Logger.Instance.Warn("Passwords are equals");
+                Logger.Info("Password is correct.");
                 ContinueAuthorization?.Invoke();
                 return;
             }
             else
             {
-                Logger.Instance.Warn("Passwords are not equals");
+                Logger.Warn("Password is incorrect.");
                 StatusText = "Password is incorrect";
                 IsStatusShowed = true;
             }
