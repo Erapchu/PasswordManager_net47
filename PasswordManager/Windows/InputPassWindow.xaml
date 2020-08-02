@@ -9,10 +9,11 @@
         d:DataContext="{x:Static vm:InputPassViewModel.DesignTimeInstance}"
         Title="Login"
         WindowStartupLocation="CenterScreen" 
-        ResizeMode="CanMinimize"
+        ResizeMode="CanResize"
         Closed="Window_Closed"
-        Height="180"
-        Width="300">
+        SizeToContent="WidthAndHeight"
+        MinHeight="170"
+        MinWidth="300">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="boolToVisibility"/>
     </Window.Resources>
@@ -24,7 +25,7 @@
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="auto"/>
         </Grid.RowDefinitions>
         <TextBlock Text="Enter password"
                    HorizontalAlignment="Center" 
@@ -38,17 +39,12 @@
                    Text="{Binding StatusText}" 
                    TextWrapping="Wrap" 
                    HorizontalAlignment="Center"
+                   Margin="5"
                    Visibility="{Binding IsStatusShowed, Converter={StaticResource boolToVisibility}}"/>
-        <Grid Grid.Row="3" 
-              VerticalAlignment="Bottom" 
-              HorizontalAlignment="Right">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="auto"/>
-                <ColumnDefinition Width="auto"/>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
+        <StackPanel Grid.Row="3" 
+                    Orientation="Horizontal"
+                    VerticalAlignment="Center" 
+                    HorizontalAlignment="Right">
             <Button VerticalAlignment="Center"
                     Grid.Column="0"
                     Width="70" 
@@ -60,10 +56,10 @@
             <Button VerticalAlignment="Center" 
                     Grid.Column="1"
                     Width="70" 
-                    Margin="10" 
                     Content="Cancel" 
                     Height="25"
+                    Margin="10"
                     IsCancel="True"/>
-        </Grid>
+        </StackPanel>
     </Grid>
 </Window>

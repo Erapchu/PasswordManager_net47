@@ -34,11 +34,6 @@ namespace PasswordManager.Core.Data
         private Configuration()
         {
             LoadCurrentAccount();
-            /*if (CurrentAccount is null)
-                Logger.Warn("Current account is \"null\"!");
-            else
-                CheckAccountInstance();*/
-
             Logger.Info("Successfully read data file!");
         }
         #endregion
@@ -99,9 +94,9 @@ namespace PasswordManager.Core.Data
                 }
                 return true;
             }
-            catch
+            catch (Exception ex)
             {
-                Logger.Error("Can't save data.");
+                Logger.HandleException(ex);
                 return false;
             }
         }
