@@ -33,7 +33,7 @@ namespace PasswordManager.Core.Data
         #region Constructors
         private Configuration()
         {
-            LoadCurrentAccount();
+            ReloadAccount();
             Logger.Info("Successfully read data file!");
         }
         #endregion
@@ -60,11 +60,11 @@ namespace PasswordManager.Core.Data
         }
 
         /// <summary>
-        /// Save all data.
+        /// Save account data.
         /// </summary>
         /// <param name="saveReason">Reason why should save</param>
         /// <returns></returns>
-        public bool Save(string saveReason = null)
+        public bool SaveAccount(string saveReason = null)
         {
             Logger.Info(saveReason is null ? 
                 "Save data to file" : 
@@ -102,10 +102,10 @@ namespace PasswordManager.Core.Data
         }
 
         /// <summary>
-        /// Read file with all data.
+        /// Read file with account data.
         /// </summary>
         /// <returns><see cref="Account"/> instance.</returns>
-        private void LoadCurrentAccount()
+        private void ReloadAccount()
         {
             if (Pri.LongPath.File.Exists(Constants.PathToPasswordsFile))
             {

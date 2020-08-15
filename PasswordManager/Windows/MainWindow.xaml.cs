@@ -45,7 +45,7 @@ namespace PasswordManager.Windows
             }
             else
             {
-                MainWindowBorder.BorderThickness = new Thickness(0);
+                MainWindowBorder.BorderThickness = new Thickness(1);
                 RestoreButton.Visibility = Visibility.Collapsed;
                 MaximizeButton.Visibility = Visibility.Visible;
             }

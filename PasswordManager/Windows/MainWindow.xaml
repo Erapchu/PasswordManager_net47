@@ -8,7 +8,7 @@
         xmlns:conv="clr-namespace:PasswordManager.Core.Converters;assembly=PasswordManager.Core"
         mc:Ignorable="d"
         d:DataContext="{x:Static vm:MainViewModel.DesignTimeInstance}"
-        Title="Password Manager"
+        Title="Password manager"
         Height="400" 
         Width="700" 
         MinHeight="300"
@@ -17,7 +17,7 @@
         ResizeMode="CanResize"
         Closed="Window_Closed">
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="24" 
+        <WindowChrome CaptionHeight="26"
                       ResizeBorderThickness="5"/>
     </WindowChrome.WindowChrome>
 
@@ -138,7 +138,8 @@
     </Window.CommandBindings>
 
     <Border x:Name="MainWindowBorder" 
-            BorderThickness="0">
+            BorderThickness="1"
+            BorderBrush="#007ACC">
         <Grid x:Name="parentContainer">
             <Grid.RowDefinitions>
                 <RowDefinition Height ="Auto"/>
@@ -171,6 +172,11 @@
                         </MenuItem>
                     </Menu>
                 </StackPanel>
+
+                <TextBlock Text="Password manager"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"/>
+
                 <!--Caption buttons-->
                 <StackPanel Orientation="Horizontal" 
                             HorizontalAlignment="Right">

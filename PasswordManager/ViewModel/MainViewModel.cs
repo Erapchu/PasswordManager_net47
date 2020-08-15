@@ -63,7 +63,7 @@ namespace PasswordManager.ViewModel
                 Task.Run(() =>
                 {
                     Configuration.Instance.CurrentAccount.CredentialsSort = _currentSortMode.SortType;
-                    Configuration.Instance.Save("Change sorting");
+                    Configuration.Instance.SaveAccount("Change sorting");
                 });
             }
         }
@@ -223,7 +223,7 @@ namespace PasswordManager.ViewModel
                 ChangableCredentials = null;
                 IsEditMode = false;
                 UpdateSorting();
-                Configuration.Instance.Save("Credentials was add/changed");
+                Configuration.Instance.SaveAccount("Credentials was add/changed");
                 UpdateCommandState();
             }
             else
@@ -255,7 +255,7 @@ namespace PasswordManager.ViewModel
             if (result == System.Windows.Forms.DialogResult.Yes)
             {
                 CurrentAccount.Credentials.Remove(SelectedCredentials);
-                Configuration.Instance.Save("Credential was deleted");
+                Configuration.Instance.SaveAccount("Credential was deleted");
             }
             UpdateCommandState();
         }

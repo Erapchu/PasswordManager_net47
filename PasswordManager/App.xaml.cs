@@ -38,7 +38,7 @@ namespace PasswordManager
 
         void CurrentDomain_ProcessExit(object sender, EventArgs e)
         {
-            Configuration.Instance?.Save();
+            Configuration.Instance?.SaveAccount();
             Logger.Info("Leaving application\r\n");
         }
 

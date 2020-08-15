@@ -27,7 +27,7 @@ namespace PasswordManager.Core.Data
         public bool SetNewPassword(string newPassword)
         {
             CorrectPassword = newPassword;
-            return Configuration.Instance.Save("New password has been initialized");
+            return Configuration.Instance.SaveAccount("New password has been initialized");
         }
 
         #region MVVM Pattern
