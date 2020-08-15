@@ -117,6 +117,7 @@ namespace PasswordManager.Core.Data
             clone.Other = this.Other;
             clone.Password = this.Password;
             clone.LastTimeUsage = this.LastTimeUsage;
+            clone.CreationTime = this.CreationTime;
             return clone;
         }
 

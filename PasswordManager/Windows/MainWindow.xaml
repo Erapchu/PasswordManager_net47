@@ -8,16 +8,24 @@
         xmlns:conv="clr-namespace:PasswordManager.Core.Converters;assembly=PasswordManager.Core"
         mc:Ignorable="d"
         d:DataContext="{x:Static vm:MainViewModel.DesignTimeInstance}"
-        Title="Password Manager"
+        Title="Password manager"
         Height="400" 
         Width="700" 
+        MinHeight="300"
+        MinWidth="510"
         WindowStartupLocation="CenterScreen" 
-        ResizeMode="CanMinimize" 
-        Loaded="Window_Loaded"
+        ResizeMode="CanResize"
         Closed="Window_Closed">
+    <WindowChrome.WindowChrome>
+        <WindowChrome CaptionHeight="26"
+                      ResizeBorderThickness="5"/>
+    </WindowChrome.WindowChrome>
+
+    <!--Window resources-->
     <Window.Resources>
         <conv:InvertBooleanConverter x:Key="InvertBooleanConv"/>
         <BooleanToVisibilityConverter x:Key="BoolToVisibilityConv"/>
+        
         <Style x:Key="HintTextBoxStyle" TargetType="TextBox">
             <Style.Triggers>
                 <MultiTrigger>
@@ -48,177 +56,299 @@
                 </MultiTrigger>
             </Style.Triggers>
         </Style>
+
+        <!--Base style for title bar buttons-->
+        <Style x:Key="CaptionButtonStyle" TargetType="Button">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid x:Name="LayoutRoot" 
+                              Background="Transparent" 
+                              Width="44" 
+                              Height="30">
+                            <TextBlock x:Name="txt" 
+                                       Text="{TemplateBinding Content}" 
+                                       FontFamily="Segoe MDL2 Assets" 
+                                       FontSize="10" 
+                                       Foreground="Black" 
+                                       HorizontalAlignment="Center" 
+                                       VerticalAlignment="Center"
+                                       RenderOptions.ClearTypeHint="Auto" 
+                                       TextOptions.TextRenderingMode="Aliased"
+                                       TextOptions.TextFormattingMode="Display"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" 
+                                     Value="True">
+                                <Setter TargetName="LayoutRoot" 
+                                        Property="Background" 
+                                        Value="#E5E5E5"/>
+                                <Setter TargetName="txt" 
+                                        Property="Foreground"
+                                        Value="#000000"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseCaptured" 
+                                     Value="True">
+                                <Setter TargetName="LayoutRoot"
+                                        Property="Background"
+                                        Value="#959595"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!--Minimize-->
+        <Style x:Key="MinimizeButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Setter Property="Content" Value="&#xE949;"/>
+        </Style>
+
+        <!--Maximize-->
+        <Style x:Key="MaximizeButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Setter Property="Content" Value="&#xE739;"/>
+        </Style>
+
+        <!--Restore-->
+        <Style x:Key="RestoreButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Setter Property="Content" Value="&#xE923;"/>
+        </Style>
+
+        <!--Close-->
+        <Style x:Key="CloseButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
+            <Setter Property="Content" Value="&#xE106;"/>
+        </Style>
+
     </Window.Resources>
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="*"></ColumnDefinition>
-            <ColumnDefinition Width="auto"></ColumnDefinition>
-        </Grid.ColumnDefinitions>
-        <Menu Grid.ColumnSpan="2">
-            <MenuItem Header="File">
-                <MenuItem Header="Exit"
-                          Click="ExitItem_Click"/>
-            </MenuItem>
-            <MenuItem Header="Account">
-                <MenuItem Header="Add new credentials"
-                          Command="{Binding AddCommand}"/>
-                <MenuItem Header="Change selected credentials"
-                          Command="{Binding ChangeCommand}"/>
-                <MenuItem Header="Remove selected credentials"
-                          Command="{Binding RemoveCommand}"/>
-            </MenuItem>
-        </Menu>
-        <Grid Grid.Row="1"
-              IsEnabled="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}">
+
+    <!--Title bar button commands-->
+    <Window.CommandBindings>
+        <CommandBinding Command="{x:Static SystemCommands.CloseWindowCommand}" 
+                        CanExecute="CommandBinding_CanExecute" 
+                        Executed="CommandBinding_Executed_Close" />
+        <CommandBinding Command="{x:Static SystemCommands.MaximizeWindowCommand}" 
+                        CanExecute="CommandBinding_CanExecute" 
+                        Executed="CommandBinding_Executed_Maximize" />
+        <CommandBinding Command="{x:Static SystemCommands.MinimizeWindowCommand}" 
+                        CanExecute="CommandBinding_CanExecute" 
+                        Executed="CommandBinding_Executed_Minimize" />
+        <CommandBinding Command="{x:Static SystemCommands.RestoreWindowCommand}" 
+                        CanExecute="CommandBinding_CanExecute" 
+                        Executed="CommandBinding_Executed_Restore" />
+    </Window.CommandBindings>
+
+    <Border x:Name="MainWindowBorder" 
+            BorderThickness="1"
+            BorderBrush="#007ACC">
+        <Grid x:Name="parentContainer">
             <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="*"/>
+                <RowDefinition Height ="Auto"/>
+                <RowDefinition Height ="*"/>
             </Grid.RowDefinitions>
-            <TextBox
-                Grid.Row="0"
-                Style="{StaticResource HintTextBoxStyle}"
-                Name="SearchTextBox" 
-                Margin="10" 
-                HorizontalAlignment="Stretch"
-                Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"/>
-            <StackPanel Grid.Row="1"
-                        Grid.Column="0"
-                        Orientation="Horizontal"
-                        Margin="10 0">
-                <TextBlock Text="Sort by"
-                           Margin="0 0 10 0"
+            <!--Window chrome-->
+            <Grid Grid.Row="0" 
+                  Height="30" 
+                  Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
+                <StackPanel HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                    <Menu WindowChrome.IsHitTestVisibleInChrome="True"
+                          Background="Transparent"
+                          Height="30">
+                        <MenuItem Header="File"
+                                  Height="30">
+                            <MenuItem Header="Exit"
+                                      Click="ExitItem_Click"/>
+                        </MenuItem>
+                        <MenuItem Header="Account"
+                                  Height="30">
+                            <MenuItem Header="Add new credentials"
+                                      Command="{Binding AddCommand}"/>
+                            <MenuItem Header="Change selected credentials"
+                                      Command="{Binding ChangeCommand}"/>
+                            <MenuItem Header="Remove selected credentials"
+                                      Command="{Binding RemoveCommand}">
+                            </MenuItem>
+                        </MenuItem>
+                    </Menu>
+                </StackPanel>
+
+                <TextBlock Text="Password manager"
+                           HorizontalAlignment="Center"
                            VerticalAlignment="Center"/>
-                <ComboBox ItemsSource="{Binding SortModes}"
-                          SelectedItem="{Binding CurrentSortMode}"
-                          VerticalAlignment="Center"/>
-            </StackPanel>
-            <ListBox Grid.Row="2"
-                     x:Name="AccountsList" 
-                     Margin="10" 
-                     ItemsSource="{Binding AllAccountsCollectionView}" 
-                     SelectedItem="{Binding SelectedCredentials, Mode=TwoWay}">
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding Name}"/>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-                <ListBox.ContextMenu>
-                    <ContextMenu>
-                        <MenuItem Header="Add"
-                                  Command="{Binding AddCommand}"/>
-                        <MenuItem Header="Change"
-                                  Command="{Binding ChangeCommand}"/>
-                        <MenuItem Header="Remove"
-                                  Command="{Binding RemoveCommand}"/>
-                    </ContextMenu>
-                </ListBox.ContextMenu>
-            </ListBox>
+
+                <!--Caption buttons-->
+                <StackPanel Orientation="Horizontal" 
+                            HorizontalAlignment="Right">
+                    <Button Style="{StaticResource MinimizeButtonStyle}" 
+                            WindowChrome.IsHitTestVisibleInChrome="True"
+                            ToolTip="Minimize"
+                            Command="{x:Static SystemCommands.MinimizeWindowCommand}"/>
+                    <Button x:Name="RestoreButton" Visibility="Collapsed" 
+                            Style="{StaticResource RestoreButtonStyle}" 
+                            Command="{x:Static SystemCommands.RestoreWindowCommand}" 
+                            WindowChrome.IsHitTestVisibleInChrome="True" 
+                            ToolTip="Restore"/>
+                    <Button x:Name="MaximizeButton" 
+                            Visibility="Visible" 
+                            Style="{StaticResource MaximizeButtonStyle}" 
+                            Command="{x:Static SystemCommands.MaximizeWindowCommand}" 
+                            WindowChrome.IsHitTestVisibleInChrome="True" 
+                            ToolTip="Maximize" />
+                    <Button Style="{StaticResource CloseButtonStyle}" 
+                            WindowChrome.IsHitTestVisibleInChrome="True" 
+                            ToolTip="Close"
+                            Command="{x:Static SystemCommands.CloseWindowCommand}"/>
+                </StackPanel>
+            </Grid>
+
+            <!--Main content-->
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid IsEnabled="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <TextBox Grid.Row="0"
+                             Style="{StaticResource HintTextBoxStyle}"
+                             Name="SearchTextBox" 
+                             Margin="10" 
+                             HorizontalAlignment="Stretch"
+                             Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"/>
+                    <StackPanel Grid.Row="1"
+                                Grid.Column="0"
+                                Orientation="Horizontal"
+                                Margin="10 0">
+                        <TextBlock Text="Sort by"
+                                   Margin="0 0 10 0"
+                                   VerticalAlignment="Center"/>
+                        <ComboBox ItemsSource="{Binding SortModes}"
+                                  SelectedItem="{Binding CurrentSortMode}"
+                                  VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <ListBox Grid.Row="2"
+                             x:Name="AccountsList" 
+                             Margin="10" 
+                             ItemsSource="{Binding AllAccountsCollectionView}" 
+                             SelectedItem="{Binding SelectedCredentials, Mode=TwoWay}">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding Name}"/>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                        <ListBox.ContextMenu>
+                            <ContextMenu>
+                                <MenuItem Header="Add"
+                                          Command="{Binding AddCommand}"/>
+                                <MenuItem Header="Change"
+                                          Command="{Binding ChangeCommand}"/>
+                                <MenuItem Header="Remove"
+                                          Command="{Binding RemoveCommand}"/>
+                            </ContextMenu>
+                        </ListBox.ContextMenu>
+                    </ListBox>
+                </Grid>
+                <Grid Grid.Column="1">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="auto"/>
+                        <RowDefinition Height="auto"/>
+                    </Grid.RowDefinitions>
+                    <StackPanel Grid.Row="0"
+                                Grid.Column="0">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <TextBlock Text="Name" 
+                                       VerticalAlignment="Center"></TextBlock>
+                            <TextBox Name="NameTextBox" 
+                                     Width="250" 
+                                     MaxHeight="36" 
+                                     Margin="5" 
+                                     IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
+                                     Text="{Binding SelectedCredentials.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                     TextWrapping="Wrap" 
+                                     ScrollViewer.CanContentScroll="True"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" 
+                                    HorizontalAlignment="Right">
+                            <TextBlock Text="Login" 
+                                       VerticalAlignment="Center"></TextBlock>
+                            <TextBox Name="LoginTextBox" 
+                                     Width="250" 
+                                     MaxHeight="36" 
+                                     Margin="5" 
+                                     IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
+                                     Text="{Binding SelectedCredentials.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                     TextWrapping="Wrap" 
+                                     ScrollViewer.CanContentScroll="True"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" 
+                                    HorizontalAlignment="Right">
+                            <TextBlock Text="Password" 
+                                       VerticalAlignment="Center"></TextBlock>
+                            <TextBox Name="PasswordTextBox" 
+                                     Width="250" 
+                                     MaxHeight="36" 
+                                     Margin="5" 
+                                     IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
+                                     Text="{Binding SelectedCredentials.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                     TextWrapping="Wrap" 
+                                     ScrollViewer.CanContentScroll="True"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" 
+                                    HorizontalAlignment="Right">
+                            <TextBlock Text="Other" 
+                                       VerticalAlignment="Center"></TextBlock>
+                            <TextBox Name="OtherTextBox"
+                                     Width="250" 
+                                     Margin="5" 
+                                     IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
+                                     Text="{Binding SelectedCredentials.Other, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+                                     TextWrapping="Wrap" 
+                                     AcceptsReturn="True" 
+                                     MaxHeight="72" />
+                        </StackPanel>
+                        <Separator/>
+                        <StackPanel Orientation="Vertical" 
+                                    HorizontalAlignment="Left">
+                            <TextBlock Text="Last time usage:"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding SelectedCredentials.LastTimeUsage}"
+                                       Margin="5"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Separator/>
+                        <StackPanel Orientation="Vertical" 
+                                    HorizontalAlignment="Left">
+                            <TextBlock Text="Creation time:"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding SelectedCredentials.CreationTime}"
+                                       Margin="5"
+                                       VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" 
+                                    Margin="5" HorizontalAlignment="Right">
+                            <Button Name="OKButton" 
+                                    Content="OK" 
+                                    Height="32" 
+                                    Width="50" 
+                                    Command="{Binding AcceptEditCommand}" 
+                                    Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConv}}"/>
+                            <Button Name="CancelButton" 
+                                    Content="Cancel" 
+                                    Margin="5 0 0 0" 
+                                    Height="32" 
+                                    Padding="4" 
+                                    Width="50" 
+                                    Command="{Binding DeclineEditCommand}" 
+                                    Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConv}}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Grid>
+            </Grid>
         </Grid>
-        <Grid Grid.Column="1"
-              Grid.Row="1">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="auto"/>
-                <RowDefinition Height="auto"/>
-            </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0"
-                        Grid.Column="0">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <TextBlock Text="Name" 
-                                   VerticalAlignment="Center"></TextBlock>
-                        <TextBox Name="NameTextBox" 
-                                 Width="250" 
-                                 MaxHeight="36" 
-                                 Margin="5" 
-                                 IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
-                                 Text="{Binding SelectedCredentials.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                 TextWrapping="Wrap" 
-                                 ScrollViewer.CanContentScroll="True"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" 
-                                HorizontalAlignment="Right">
-                        <TextBlock Text="Login" 
-                                   VerticalAlignment="Center"></TextBlock>
-                        <TextBox Name="LoginTextBox" 
-                                 Width="250" 
-                                 MaxHeight="36" 
-                                 Margin="5" 
-                                 IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
-                                 Text="{Binding SelectedCredentials.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                 TextWrapping="Wrap" 
-                                 ScrollViewer.CanContentScroll="True"/>
-                    </StackPanel>
-                    <StackPanel Orientation="Horizontal" 
-                                HorizontalAlignment="Right">
-                        <TextBlock Text="Password" 
-                                   VerticalAlignment="Center"></TextBlock>
-                        <TextBox Name="PasswordTextBox" 
-                                 Width="250" 
-                                 MaxHeight="36" 
-                                 Margin="5" 
-                                 IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
-                                 Text="{Binding SelectedCredentials.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                 TextWrapping="Wrap" 
-                                 ScrollViewer.CanContentScroll="True"/>
-                    </StackPanel>
-                <StackPanel Orientation="Horizontal" 
-                                HorizontalAlignment="Right">
-                    <TextBlock Text="Other" 
-                                   VerticalAlignment="Center"></TextBlock>
-                    <TextBox Name="OtherTextBox"
-                                 Width="250" 
-                                 Margin="5" 
-                                 IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
-                                 Text="{Binding SelectedCredentials.Other, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                 TextWrapping="Wrap" 
-                                 AcceptsReturn="True" 
-                                 MaxHeight="72" />
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" 
-                            HorizontalAlignment="Left">
-                    <TextBlock Text="Last time usage:"
-                               VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding SelectedCredentials.LastTimeUsage}"
-                               Margin="5"
-                               VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" 
-                            HorizontalAlignment="Left">
-                    <TextBlock Text="Creation time:"
-                               VerticalAlignment="Center"/>
-                    <TextBlock Text="{Binding SelectedCredentials.CreationTime}"
-                               Margin="5"
-                               VerticalAlignment="Center"/>
-                </StackPanel>
-                <StackPanel Orientation="Horizontal" 
-                                Margin="5" HorizontalAlignment="Right">
-                        <Button Name="OKButton" 
-                                Content="OK" 
-                                Height="32" 
-                                Width="50" 
-                                Command="{Binding AcceptEditCommand}" 
-                                Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConv}}"/>
-                        <Button Name="CancelButton" 
-                                Content="Cancel" 
-                                Margin="5 0 0 0" 
-                                Height="32" 
-                                Padding="4" 
-                                Width="50" 
-                                Command="{Binding DeclineEditCommand}" 
-                                Visibility="{Binding IsEditMode, Converter={StaticResource BoolToVisibilityConv}}"/>
-                    </StackPanel>
-            </StackPanel>
-            <StackPanel Grid.Row="1"
-                        Grid.Column="1">
-                <Button Content="Copy login" 
-                        Margin="10 10 10 5"/>
-                <Button Content="Copy password" 
-                        Margin="10 5 10 10"/>
-            </StackPanel>
-        </Grid>
-    </Grid>
+    </Border>
 </Window>

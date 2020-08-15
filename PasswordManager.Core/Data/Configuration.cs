@@ -10,6 +10,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using PasswordManager.Core.Encryption;
+using PasswordManager.Core.Threading;
+using PasswordManager.Core.Extensions;
+using System.Security.Cryptography;
+using System.Threading;
+using Newtonsoft.Json.Linq;
 
 namespace PasswordManager.Core.Data
 {
@@ -22,23 +27,14 @@ namespace PasswordManager.Core.Data
 
         #region Properties
         public static bool InstanceInitialized { get; private set; }
-        public Account CurrentAccount { get; set; }
-        #endregion
-
-        #region Fields
-        private readonly object _lockerSave = new object();
+        public Account CurrentAccount { get; set; } = new Account();
         #endregion
 
         #region Constructors
         private Configuration()
         {
-            CurrentAccount = InitOrCreateDataFile();
-            if (CurrentAccount is null)
-                Logger.Instance.Warn("Current account is \"null\"!");
-            else
-                CheckAccountInstance();
-
-            Logger.Instance.Info("Successfully read data file!");
+            ReloadAccount();
+            Logger.Info("Successfully read data file!");
         }
         #endregion
 
@@ -51,6 +47,8 @@ namespace PasswordManager.Core.Data
             if (InstanceInitialized)
                 return true;
 
+            Logger.Info("Start reading configuration...");
+
             _lazy = new Lazy<Configuration>(() => new Configuration());
             var instance = Instance;
 
@@ -62,80 +60,85 @@ namespace PasswordManager.Core.Data
         }
 
         /// <summary>
-        /// Save all data.
+        /// Save account data.
         /// </summary>
         /// <param name="saveReason">Reason why should save</param>
         /// <returns></returns>
-        public bool SaveData(string saveReason = null)
+        public bool SaveAccount(string saveReason = null)
         {
-            lock (_lockerSave)
-            {
-                Logger.Instance.Info(saveReason is null ? 
-                    "Save data to file" : 
-                    $"Save data to file: \"{saveReason}\"");
-                try
-                {
-                    string forFile = JsonConvert.SerializeObject(CurrentAccount);
-                    string encryptedForFile = TripleDESHelper.EncryptString(forFile);
+            Logger.Info(saveReason is null ? 
+                "Save data to file" : 
+                $"Save data to file: \"{saveReason}\"");
 
-                    using (BinaryWriter bw = new BinaryWriter(Pri.LongPath.File.Open(Constants.PathToMainFile, FileMode.Create)))
-                    {
-                        bw.Write(encryptedForFile);
-                    }
-                    return true;
-                }
-                catch
+            var dirPath = Pri.LongPath.Path.GetDirectoryName(Constants.PathToPasswordsFile);
+            if (!Pri.LongPath.Directory.Exists(dirPath))
+            {
+                Pri.LongPath.Directory.CreateDirectory(dirPath);
+            }
+
+            try
+            {
+                string forFile = JsonConvert.SerializeObject(CurrentAccount);
+                string forFileEncrypted = TripleDESHelper.EncryptString(forFile);
+
+                var waitHandleName = Constants.PathToPasswordsFile.GetHashString<SHA256Managed>();
+                using (var waitHandleLocker = EventWaitHandleLocker.MakeWithEventHandle(true, EventResetMode.AutoReset, waitHandleName))
                 {
-                    Logger.Instance.Error("Can't save data.");
-                    return false;
+                    using (var fileStream = Pri.LongPath.File.Open(Constants.PathToPasswordsFile, FileMode.Create, FileAccess.Write, FileShare.Read))
+                    {
+                        using (var streamWriter = new StreamWriter(fileStream))
+                        {
+                            streamWriter.Write(forFileEncrypted);
+                        }
+                    }
                 }
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Logger.HandleException(ex);
+                return false;
             }
         }
 
         /// <summary>
-        /// Read file data
+        /// Read file with account data.
         /// </summary>
-        /// <returns></returns>
-        private Account InitOrCreateDataFile()
+        /// <returns><see cref="Account"/> instance.</returns>
+        private void ReloadAccount()
         {
-            Logger.Instance.Info("Init file with data...");
-            Account account = null;
-            try
+            if (Pri.LongPath.File.Exists(Constants.PathToPasswordsFile))
             {
-                account = new Account();
-
-                string encryptedFromFile;
-                string fromFile;
-
-                using (var fileStream = Pri.LongPath.File.Open(Constants.PathToMainFile, FileMode.Open))
+                try
                 {
-                    using (BinaryReader br = new BinaryReader(fileStream))
+                    var waitHandleName = Constants.PathToPasswordsFile.GetHashString<SHA256Managed>();
+                    using (var waitHandleLocker = EventWaitHandleLocker.MakeWithEventHandle(true, EventResetMode.AutoReset, waitHandleName))
                     {
-                        encryptedFromFile = br.ReadString();
+                        using (var fileStream = Pri.LongPath.File.Open(Constants.PathToPasswordsFile, FileMode.Open))
+                        {
+                            using (StreamReader streamReader = new StreamReader(fileStream))
+                            {
+                                try
+                                {
+                                    var fromFileEncrypted = streamReader.ReadToEnd();
+                                    var fromFileDecrypted = TripleDESHelper.DecryptString(fromFileEncrypted);
+                                    CurrentAccount = JsonConvert.DeserializeObject<Account>(fromFileDecrypted);
+                                }
+                                catch (Exception ex)
+                                {
+                                    Logger.HandleException(ex);
+                                    if (CurrentAccount is null)
+                                        CurrentAccount = new Account();
+                                }
+                            }
+                        }
                     }
                 }
-
-                fromFile = TripleDESHelper.DecryptString(encryptedFromFile);
-                account = JsonConvert.DeserializeObject<Account>(fromFile);
+                catch (Exception ex)
+                {
+                    Logger.Error(ex.ToString());
+                }
             }
-            catch (FileNotFoundException)
-            {
-                Logger.Instance.Warn("No file exist. New file will be created.");
-                Pri.LongPath.File.Create(Constants.PathToMainFile);
-            }
-            catch (Exception ex)
-            {
-                Logger.Instance.Error(ex.ToString());
-            }
-            return account;
-        }
-        #endregion
-
-        #region Private methods
-        private void CheckAccountInstance()
-        {
-            if (CurrentAccount.Credentials is null)
-                CurrentAccount.Credentials = new CredentialsCollection();
         }
         #endregion
     }
