@@ -41,6 +41,8 @@ namespace PasswordManager.ViewModel
 
         #region Fields
         private readonly IntPtr _windowHandle;
+        private Credentials _changableAccountData;
+        private Guid _lastSelectedCredential;
         #endregion
 
         #region Properties
@@ -77,22 +79,6 @@ namespace PasswordManager.ViewModel
             set
             {
                 _isEditMode = value;
-                RaisePropertyChanged();
-            }
-        }
-        #endregion
-
-        #region ChangableCredentials
-        private Credentials _changableAcountData;
-        public Credentials ChangableCredentials
-        {
-            get
-            {
-                return _changableAcountData;
-            }
-            set
-            {
-                _changableAcountData = value;
                 RaisePropertyChanged();
             }
         }
@@ -194,17 +180,19 @@ namespace PasswordManager.ViewModel
 
         private void DeclineEdits()
         {
-            if (ChangableCredentials is null)
+            if (_changableAccountData is null)
             {
-                SelectedCredentials = CurrentAccount.Credentials.FirstOrDefault();
+                //Add new and decline
+                SelectedCredentials = CurrentAccount.Credentials[_lastSelectedCredential];
             }
             else
             {
-                SelectedCredentials = ChangableCredentials;
-                CurrentAccount.Credentials[SelectedCredentials.ID] = ChangableCredentials;
+                //Change existed and decline
+                CurrentAccount.Credentials[SelectedCredentials.ID] = _changableAccountData;
+                SelectedCredentials = _changableAccountData;
             }
             IsEditMode = false;
-            ChangableCredentials = null;
+            _changableAccountData = null;
             UpdateCommandState();
         }
 
@@ -213,17 +201,16 @@ namespace PasswordManager.ViewModel
             if (CheckEmptyInput())
             {
                 SelectedCredentials.LastTimeUsage = DateTime.Now;
-                //If add new account
-                if (ChangableCredentials is null)
-                {
+
+                //If add new credentials
+                if (_changableAccountData is null)
                     CurrentAccount.Credentials.Add(SelectedCredentials);
-                }
 
                 //Clear changable account
-                ChangableCredentials = null;
+                _changableAccountData = null;
                 IsEditMode = false;
                 UpdateSorting();
-                Configuration.Instance.SaveAccount("Credentials was add/changed");
+                Configuration.Instance.SaveAccount("Update credentials");
                 UpdateCommandState();
             }
             else
@@ -237,7 +224,9 @@ namespace PasswordManager.ViewModel
 
         private void ChangeAccountData()
         {
-            ChangableCredentials = SelectedCredentials.Clone() as Credentials;
+            _lastSelectedCredential = SelectedCredentials.ID;
+
+            _changableAccountData = SelectedCredentials.Clone() as Credentials;
             IsEditMode = true;
             UpdateCommandState();
         }
@@ -247,7 +236,7 @@ namespace PasswordManager.ViewModel
             //Do you really want to delete it?
             var result = System.Windows.Forms.MessageBox.Show(
                 new HwndWrapper(_windowHandle),
-                "Do you really want to delete this item?", 
+                $"Do you really want to delete \"{SelectedCredentials.Name}\"?", 
                 "Question",
                 System.Windows.Forms.MessageBoxButtons.YesNo,
                 System.Windows.Forms.MessageBoxIcon.Question,
@@ -262,6 +251,8 @@ namespace PasswordManager.ViewModel
 
         private void AddAccountData()
         {
+            _lastSelectedCredential = SelectedCredentials.ID;
+
             SelectedCredentials = new Credentials() 
             { 
                 CreationTime = DateTime.Now,
