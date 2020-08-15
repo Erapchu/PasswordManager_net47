@@ -12,12 +12,12 @@
         Height="400" 
         Width="700" 
         MinHeight="300"
-        MinWidth="500"
+        MinWidth="510"
         WindowStartupLocation="CenterScreen" 
         ResizeMode="CanResize"
         Closed="Window_Closed">
     <WindowChrome.WindowChrome>
-        <WindowChrome CaptionHeight="20" 
+        <WindowChrome CaptionHeight="24" 
                       ResizeBorderThickness="5"/>
     </WindowChrome.WindowChrome>
 
@@ -149,14 +149,18 @@
                   Height="30" 
                   Background="{DynamicResource {x:Static SystemColors.ControlBrushKey}}">
                 <StackPanel HorizontalAlignment="Left"
+                            VerticalAlignment="Center"
                             Orientation="Horizontal">
                     <Menu WindowChrome.IsHitTestVisibleInChrome="True"
-                          Background="Transparent">
-                        <MenuItem Header="File">
+                          Background="Transparent"
+                          Height="30">
+                        <MenuItem Header="File"
+                                  Height="30">
                             <MenuItem Header="Exit"
                                       Click="ExitItem_Click"/>
                         </MenuItem>
-                        <MenuItem Header="Account">
+                        <MenuItem Header="Account"
+                                  Height="30">
                             <MenuItem Header="Add new credentials"
                                       Command="{Binding AddCommand}"/>
                             <MenuItem Header="Change selected credentials"
