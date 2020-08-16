@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PasswordManager.Windows"
         xmlns:vm="clr-namespace:PasswordManager.ViewModel"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:conv="clr-namespace:PasswordManager.Core.Converters;assembly=PasswordManager.Core"
         mc:Ignorable="d"
         d:DataContext="{x:Static vm:MainViewModel.DesignTimeInstance}"
@@ -23,102 +24,15 @@
 
     <!--Window resources-->
     <Window.Resources>
-        <conv:InvertBooleanConverter x:Key="InvertBooleanConv"/>
-        <BooleanToVisibilityConverter x:Key="BoolToVisibilityConv"/>
-        
-        <Style x:Key="HintTextBoxStyle" TargetType="TextBox">
-            <Style.Triggers>
-                <MultiTrigger>
-                    <MultiTrigger.Conditions>
-                        <Condition Property="IsKeyboardFocused" Value="false"/>
-                        <Condition Property="Text" Value=""/>
-                    </MultiTrigger.Conditions>
-                    <Setter Property="Background">
-                        <Setter.Value>
-                            <VisualBrush TileMode="None"
-                                     Stretch="None" 
-                                     AlignmentX="Left">
-                                <VisualBrush.Transform>
-                                    <TranslateTransform X="5" Y="0" />
-                                </VisualBrush.Transform>
-                                <VisualBrush.Visual>
-                                    <Grid>
-                                        <TextBlock FontStyle="Italic" 
-                                               Foreground="Black" 
-                                               Opacity="0.5" 
-                                               FontSize="12"
-                                               Text="Filter credentials"/>
-                                    </Grid>
-                                </VisualBrush.Visual>
-                            </VisualBrush>
-                        </Setter.Value>
-                    </Setter>
-                </MultiTrigger>
-            </Style.Triggers>
-        </Style>
-
-        <!--Base style for title bar buttons-->
-        <Style x:Key="CaptionButtonStyle" TargetType="Button">
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Grid x:Name="LayoutRoot" 
-                              Background="Transparent" 
-                              Width="44" 
-                              Height="30">
-                            <TextBlock x:Name="txt" 
-                                       Text="{TemplateBinding Content}" 
-                                       FontFamily="Segoe MDL2 Assets" 
-                                       FontSize="10" 
-                                       Foreground="Black" 
-                                       HorizontalAlignment="Center" 
-                                       VerticalAlignment="Center"
-                                       RenderOptions.ClearTypeHint="Auto" 
-                                       TextOptions.TextRenderingMode="Aliased"
-                                       TextOptions.TextFormattingMode="Display"/>
-                        </Grid>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" 
-                                     Value="True">
-                                <Setter TargetName="LayoutRoot" 
-                                        Property="Background" 
-                                        Value="#E5E5E5"/>
-                                <Setter TargetName="txt" 
-                                        Property="Foreground"
-                                        Value="#000000"/>
-                            </Trigger>
-                            <Trigger Property="IsMouseCaptured" 
-                                     Value="True">
-                                <Setter TargetName="LayoutRoot"
-                                        Property="Background"
-                                        Value="#959595"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style>
-
-        <!--Minimize-->
-        <Style x:Key="MinimizeButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
-            <Setter Property="Content" Value="&#xE949;"/>
-        </Style>
-
-        <!--Maximize-->
-        <Style x:Key="MaximizeButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
-            <Setter Property="Content" Value="&#xE739;"/>
-        </Style>
-
-        <!--Restore-->
-        <Style x:Key="RestoreButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
-            <Setter Property="Content" Value="&#xE923;"/>
-        </Style>
-
-        <!--Close-->
-        <Style x:Key="CloseButtonStyle" TargetType="Button" BasedOn="{StaticResource CaptionButtonStyle}">
-            <Setter Property="Content" Value="&#xE106;"/>
-        </Style>
-
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Light" PrimaryColor="DeepPurple" SecondaryColor="Lime" />
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.Defaults.xaml" />
+                <ResourceDictionary Source="/PasswordManager;component/Resources/Dictionary.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+            <conv:InvertBooleanConverter x:Key="InvertBooleanConv"/>
+            <BooleanToVisibilityConverter x:Key="BoolToVisibilityConv"/>
+        </ResourceDictionary>
     </Window.Resources>
 
     <!--Title bar button commands-->
@@ -153,7 +67,6 @@
                             VerticalAlignment="Center"
                             Orientation="Horizontal">
                     <Menu WindowChrome.IsHitTestVisibleInChrome="True"
-                          Background="Transparent"
                           Height="30">
                         <MenuItem Header="File"
                                   Height="30">
@@ -215,10 +128,11 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <TextBox Grid.Row="0"
-                             Style="{StaticResource HintTextBoxStyle}"
                              Name="SearchTextBox" 
                              Margin="10" 
                              HorizontalAlignment="Stretch"
+                             materialDesign:TextFieldAssist.HasClearButton="True"
+                             materialDesign:HintAssist.Hint="Filter credentials"
                              Text="{Binding FilterText, UpdateSourceTrigger=PropertyChanged}"/>
                     <StackPanel Grid.Row="1"
                                 Grid.Column="0"
@@ -226,6 +140,7 @@
                                 Margin="10 0">
                         <TextBlock Text="Sort by"
                                    Margin="0 0 10 0"
+                                   Style="{StaticResource MaterialDesignCaptionTextBlock}"
                                    VerticalAlignment="Center"/>
                         <ComboBox ItemsSource="{Binding SortModes}"
                                   SelectedItem="{Binding CurrentSortMode}"
