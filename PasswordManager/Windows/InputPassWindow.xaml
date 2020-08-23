@@ -9,7 +9,7 @@
         d:DataContext="{x:Static vm:InputPassViewModel.DesignTimeInstance}"
         Title="Login"
         WindowStartupLocation="CenterScreen" 
-        ResizeMode="CanResize"
+        ResizeMode="NoResize"
         Closed="Window_Closed"
         SizeToContent="WidthAndHeight"
         MinHeight="170"
@@ -47,6 +47,7 @@
                     Width="75" 
                     Content="OK" 
                     Height="30" 
+                    Style="{StaticResource MaterialDesignFlatButton}"
                     Command="{Binding ContinueCommand}"
                     CommandParameter="{Binding ElementName=PasswordBoxControl}"
                     IsDefault="True"/>
@@ -55,7 +56,9 @@
                     Width="75" 
                     Content="Cancel" 
                     Height="30"
-                    Margin="10"
+                    Margin="5"
+                    Foreground="Red"
+                    Style="{StaticResource MaterialDesignFlatButton}"
                     IsCancel="True"/>
         </StackPanel>
     </Grid>

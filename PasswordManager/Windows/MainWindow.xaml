@@ -134,10 +134,10 @@
                                   Fill="Black"/>
                         </Button>
                         <Button WindowChrome.IsHitTestVisibleInChrome="True" 
-                                Style="{StaticResource MaterialDesignFlatButton}"
                                 ToolTip="Close"
                                 Height="30"
                                 Cursor="Arrow"
+                                Style="{StaticResource MaterialDesignFlatButton}"
                                 materialDesign:ButtonAssist.CornerRadius="0"
                                 materialDesign:ShadowAssist.ShadowDepth="Depth1"
                                 BorderThickness="0"
@@ -284,6 +284,7 @@
                                     Height="32" 
                                     Width="50" 
                                     Command="{Binding AcceptEditCommand}" 
+                                    Style="{StaticResource MaterialDesignFlatButton}"
                                     Visibility="{Binding IsEditMode, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                             <Button Name="CancelButton" 
                                     Content="Cancel" 
@@ -291,6 +292,8 @@
                                     Height="32" 
                                     Padding="4" 
                                     Width="50" 
+                                    Foreground="Red"
+                                    Style="{StaticResource MaterialDesignFlatButton}"
                                     Command="{Binding DeclineEditCommand}" 
                                     Visibility="{Binding IsEditMode, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                         </StackPanel>
