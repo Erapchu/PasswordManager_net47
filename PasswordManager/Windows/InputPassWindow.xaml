@@ -14,9 +14,6 @@
         SizeToContent="WidthAndHeight"
         MinHeight="170"
         MinWidth="300">
-    <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="boolToVisibility"/>
-    </Window.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -40,24 +37,24 @@
                    TextWrapping="Wrap" 
                    HorizontalAlignment="Center"
                    Margin="5"
-                   Visibility="{Binding IsStatusShowed, Converter={StaticResource boolToVisibility}}"/>
+                   Visibility="{Binding IsStatusShowed, Converter={StaticResource BooleanToVisibilityConverter}}"/>
         <StackPanel Grid.Row="3" 
                     Orientation="Horizontal"
                     VerticalAlignment="Center" 
                     HorizontalAlignment="Right">
             <Button VerticalAlignment="Center"
                     Grid.Column="0"
-                    Width="70" 
+                    Width="75" 
                     Content="OK" 
-                    Height="25" 
+                    Height="30" 
                     Command="{Binding ContinueCommand}"
                     CommandParameter="{Binding ElementName=PasswordBoxControl}"
                     IsDefault="True"/>
             <Button VerticalAlignment="Center" 
                     Grid.Column="1"
-                    Width="70" 
+                    Width="75" 
                     Content="Cancel" 
-                    Height="25"
+                    Height="30"
                     Margin="10"
                     IsCancel="True"/>
         </StackPanel>
