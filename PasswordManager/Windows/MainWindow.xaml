@@ -7,6 +7,7 @@
         xmlns:vm="clr-namespace:PasswordManager.ViewModel"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         xmlns:conv="clr-namespace:PasswordManager.Core.Converters;assembly=PasswordManager.Core"
+        xmlns:data="clr-namespace:PasswordManager.Core.Data;assembly=PasswordManager.Core"
         mc:Ignorable="d"
         d:DataContext="{x:Static vm:MainViewModel.DesignTimeInstance}"
         Title="Password manager"
@@ -29,9 +30,62 @@
 
     <!--Window resources-->
     <Window.Resources>
-        <ResourceDictionary>
-            <conv:InvertBooleanConverter x:Key="InvertBooleanConv"/>
-        </ResourceDictionary>
+        <conv:InvertBooleanConverter x:Key="InvertBooleanConv"/>
+
+        <Style x:Key="ListBoxMaterialDesignButton" 
+               TargetType="{x:Type Button}"
+               BasedOn="{StaticResource MaterialDesignIconForegroundButton}">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="Height" Value="24"/>
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, 
+                Path=IsMouseOver}" Value="true"/>
+                    </MultiDataTrigger.Conditions>
+                    <Setter Property="Visibility" Value="Visible"/>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <!--ListBox item's style-->
+        <Style x:Key="ListBoxItemStyle"
+               TargetType="ListBoxItem"
+               BasedOn="{StaticResource MaterialDesignListBoxItem}">
+            <Setter Property="Height" Value="40"/>
+        </Style>
+
+        <DataTemplate x:Key="CredentialDataTemplate"
+                      DataType="{x:Type data:Credentials}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Text="{Binding Name}"
+                           HorizontalAlignment="Left"
+                           VerticalAlignment="Center"
+                           TextTrimming="CharacterEllipsis"/>
+                <Button Grid.Column="1"
+                        Command="{Binding ChangeCommand}"
+                        Style="{StaticResource ListBoxMaterialDesignButton}">
+                    <materialDesign:PackIcon Kind="Pencil"
+                                             Width="20"
+                                             Height="20"/>
+                </Button>
+                <Button Grid.Column="2"
+                        Foreground="OrangeRed"
+                        Margin="5 0 0 0"
+                        Command="{Binding RemoveCommand}"
+                        Style="{StaticResource ListBoxMaterialDesignButton}">
+                    <materialDesign:PackIcon Kind="Delete"
+                                             Width="20"
+                                             Height="20"/>
+                </Button>
+            </Grid>
+        </DataTemplate>
     </Window.Resources>
 
     <!--Title bar button commands-->
@@ -63,28 +117,6 @@
                 Mode="PrimaryLight">
                 <Grid Grid.Row="0" 
                   Height="30">
-                    <StackPanel HorizontalAlignment="Left"
-                            VerticalAlignment="Center"
-                            Orientation="Horizontal">
-                        <Menu WindowChrome.IsHitTestVisibleInChrome="True"
-                          Height="30">
-                            <MenuItem Header="File"
-                                  Height="30">
-                                <MenuItem Header="Exit"
-                                      Click="ExitItem_Click"/>
-                            </MenuItem>
-                            <MenuItem Header="Account"
-                                  Height="30">
-                                <MenuItem Header="Add new credentials"
-                                      Command="{Binding AddCommand}"/>
-                                <MenuItem Header="Change selected credentials"
-                                      Command="{Binding ChangeCommand}"/>
-                                <MenuItem Header="Remove selected credentials"
-                                      Command="{Binding RemoveCommand}">
-                                </MenuItem>
-                            </MenuItem>
-                        </Menu>
-                    </StackPanel>
 
                     <TextBlock Text="Password manager"
                            HorizontalAlignment="Center"
@@ -172,33 +204,22 @@
                                 Grid.Column="0"
                                 Orientation="Horizontal"
                                 Margin="10 0">
-                        <TextBlock Text="Sort by"
-                                   Margin="0 0 10 0"
-                                   VerticalAlignment="Center"/>
+                        <materialDesign:PackIcon Kind="Sort"
+                                                 HorizontalAlignment="Left"
+                                                 VerticalAlignment="Center"/>
                         <ComboBox ItemsSource="{Binding SortModes}"
                                   SelectedItem="{Binding CurrentSortMode}"
-                                  VerticalAlignment="Center"/>
+                                  VerticalAlignment="Center"
+                                  Margin="5 0 0 0"/>
                     </StackPanel>
                     <ListBox Grid.Row="2"
                              x:Name="AccountsList" 
                              Margin="10" 
+                             HorizontalContentAlignment ="Stretch"
+                             ItemContainerStyle="{StaticResource ListBoxItemStyle}"
+                             ItemTemplate="{StaticResource CredentialDataTemplate}"
                              ItemsSource="{Binding AllAccountsCollectionView}" 
                              SelectedItem="{Binding SelectedCredentials, Mode=TwoWay}">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="{Binding Name}"/>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                        <ListBox.ContextMenu>
-                            <ContextMenu>
-                                <MenuItem Header="Add"
-                                          Command="{Binding AddCommand}"/>
-                                <MenuItem Header="Change"
-                                          Command="{Binding ChangeCommand}"/>
-                                <MenuItem Header="Remove"
-                                          Command="{Binding RemoveCommand}"/>
-                            </ContextMenu>
-                        </ListBox.ContextMenu>
                     </ListBox>
                 </Grid>
                 <Grid Grid.Column="1">
@@ -209,12 +230,16 @@
                     <StackPanel Grid.Row="0"
                                 Grid.Column="0">
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <TextBlock Text="Name" 
-                                       VerticalAlignment="Center"></TextBlock>
+                            <materialDesign:PackIcon 
+                                Kind="AccountCircle" 
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Foreground="{Binding ElementName=NameTextBox, Path=BorderBrush}" />
                             <TextBox Name="NameTextBox" 
                                      Width="250" 
                                      MaxHeight="36" 
-                                     Margin="5" 
+                                     Margin="5"
+                                     materialDesign:HintAssist.Hint="Name"
                                      IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
                                      Text="{Binding SelectedCredentials.Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                      TextWrapping="Wrap" 
@@ -222,12 +247,16 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" 
                                     HorizontalAlignment="Right">
-                            <TextBlock Text="Login" 
-                                       VerticalAlignment="Center"></TextBlock>
+                            <materialDesign:PackIcon 
+                                Kind="Account" 
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Foreground="{Binding ElementName=LoginTextBox, Path=BorderBrush}" />
                             <TextBox Name="LoginTextBox" 
                                      Width="250" 
                                      MaxHeight="36" 
                                      Margin="5" 
+                                     materialDesign:HintAssist.Hint="Login"
                                      IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
                                      Text="{Binding SelectedCredentials.Login, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                      TextWrapping="Wrap" 
@@ -235,12 +264,16 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" 
                                     HorizontalAlignment="Right">
-                            <TextBlock Text="Password" 
-                                       VerticalAlignment="Center"></TextBlock>
+                            <materialDesign:PackIcon 
+                                Kind="Lock" 
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Foreground="{Binding ElementName=PasswordTextBox, Path=BorderBrush}" />
                             <TextBox Name="PasswordTextBox" 
                                      Width="250" 
                                      MaxHeight="36" 
                                      Margin="5" 
+                                     materialDesign:HintAssist.Hint="Password"
                                      IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
                                      Text="{Binding SelectedCredentials.Password, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                      TextWrapping="Wrap" 
@@ -248,31 +281,37 @@
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" 
                                     HorizontalAlignment="Right">
-                            <TextBlock Text="Other" 
-                                       VerticalAlignment="Center"></TextBlock>
+                            <materialDesign:PackIcon 
+                                Kind="InfoOutline" 
+                                HorizontalAlignment="Left"
+                                VerticalAlignment="Center"
+                                Foreground="{Binding ElementName=OtherTextBox, Path=BorderBrush}" />
                             <TextBox Name="OtherTextBox"
                                      Width="250" 
                                      Margin="5" 
+                                     materialDesign:HintAssist.Hint="Other"
                                      IsReadOnly="{Binding IsEditMode, Converter={StaticResource InvertBooleanConv}}" 
                                      Text="{Binding SelectedCredentials.Other, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
                                      TextWrapping="Wrap" 
                                      AcceptsReturn="True" 
                                      MaxHeight="72" />
                         </StackPanel>
-                        <Separator/>
-                        <StackPanel Orientation="Vertical" 
-                                    HorizontalAlignment="Left">
-                            <TextBlock Text="Last time usage:"
-                                       VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" 
+                                    HorizontalAlignment="Center">
+                            <materialDesign:PackIcon 
+                                Kind="Pencil" 
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
                             <TextBlock Text="{Binding SelectedCredentials.LastTimeUsage}"
                                        Margin="5"
                                        VerticalAlignment="Center"/>
                         </StackPanel>
-                        <Separator/>
-                        <StackPanel Orientation="Vertical" 
-                                    HorizontalAlignment="Left">
-                            <TextBlock Text="Creation time:"
-                                       VerticalAlignment="Center"/>
+                        <StackPanel Orientation="Horizontal" 
+                                    HorizontalAlignment="Center">
+                            <materialDesign:PackIcon 
+                                Kind="AccountPlus" 
+                                HorizontalAlignment="Center"
+                                VerticalAlignment="Center"/>
                             <TextBlock Text="{Binding SelectedCredentials.CreationTime}"
                                        Margin="5"
                                        VerticalAlignment="Center"/>

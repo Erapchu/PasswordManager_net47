@@ -14,7 +14,6 @@ namespace PasswordManager.Core.Data
     [Serializable]
     public class Credentials : INotifyPropertyChanged, ICloneable
     {
-
         public Credentials(string name, string login, string password, string other) : this()
         {
             Name = name;
